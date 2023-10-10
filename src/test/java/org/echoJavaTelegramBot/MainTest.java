@@ -1,5 +1,6 @@
 package org.echoJavaTelegramBot;
 
+import JavaBots.TelegramBot.Telegram_Bot;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
