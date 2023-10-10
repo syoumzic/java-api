@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         String botName = "echo";
         String botToken = System.getenv("BOT_TOKEN");
-        Bot tg_bot;
+        Bot tg_bot = new Telegram_Bot(botName, botToken);
     }
 }
 
