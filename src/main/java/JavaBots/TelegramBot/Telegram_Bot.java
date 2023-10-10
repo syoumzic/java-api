@@ -1,5 +1,7 @@
-package org.echoJavaTelegramBot;
+package JavaBots.TelegramBot;
 
+import JavaBots.Bot;
+import botLogic.Logic;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -7,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-public class Telegram_Bot extends TelegramLongPollingBot implements Bot{
+public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
     final String botName;
     final String botToken;
 
@@ -18,7 +20,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot{
         try {
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(this);
-            System.out.println("Bot is working");
+            System.out.println("JavaBots.Bot is working");
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +44,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot{
 
             SendMessage message = new SendMessage();
             message.setChatId(chat_id);
-            message.setText(message_text);
+            message.setText(Logic.processMessage(message_text));
 
             try {
                 execute(message);

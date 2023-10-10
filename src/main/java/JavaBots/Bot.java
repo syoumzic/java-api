@@ -1,9 +1,8 @@
-package org.echoJavaTelegramBot;
+package JavaBots;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-interface Bot{
+public interface Bot{
     String getBotUsername();
     String getBotToken();
-    void onUpdateReceived(Update update);
 }
