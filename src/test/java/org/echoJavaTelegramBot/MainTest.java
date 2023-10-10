@@ -1,38 +1,27 @@
 package org.echoJavaTelegramBot;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.*;
+import org.junit.runners.MethodSorters;
 
-/**
- * Unit test for simple App.
- */
-public class MainTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public MainTest(String testName )
-    {
-        super( testName );
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class MainTest{
+    static Telegram_Bot bot;
+    static String botName = "echo";
+    static String botToken = System.getenv("BOT_TOKEN");
+
+    @BeforeClass
+    static public void botTokenValidity(){
+        Assert.assertNotNull(botToken);
+        bot = new Telegram_Bot(botName, botToken);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( MainTest.class );
+    @Test
+    public void getBotName(){
+        Assert.assertEquals(bot.getBotUsername(), botName);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    public void getBotToken(){
+        Assert.assertEquals(bot.getBotToken(), botToken);
     }
 }
