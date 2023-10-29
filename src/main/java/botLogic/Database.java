@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,37 +19,51 @@ public class Database implements Data {
     private Statement state;
     private ResultSet result;
 
-    public List<String> getSchedule(String id, int day) {
-        //String query = "";
-
+    public List<String> getSchedule(String id, int day) throws RuntimeException {
+        String group = "";
+        List<String> schedule;
         try {
-            // opening database connection to MySQL server
             connect = DriverManager.getConnection(url, user, password);
-
-            // getting Statement object to execute query
             state = connect.createStatement();
-
-            // executing SELECT query
-            //result = state.executeQuery(query);
-
+            result = state.executeQuery("SELECT `group` FROM `users` WHERE id='12839392'");
+            if (result.next()) group = result.getString(1);
+            result = state.executeQuery("SELECT * FROM `" + group + "`");
+            schedule = new ArrayList<String>();
+            while (result.next()){
+                schedule.add(result.getString(day));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
             //close Connection, Statement and resultSet here
             try {
                 connect.close();
-            } catch (SQLException se) { /*can't do anything */ }
-            try {
                 state.close();
-            } catch (SQLException se) { /*can't do anything */ }
-            try {
                 result.close();
-            } catch (SQLException se) { /*can't do anything */ }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return null;
+        return schedule;
     }
 
-    public void setSchedule(String group, List<List<String>> schedule){
+    public void setSchedule(String group, List<List<String>> schedule) throws RuntimeException {
+        try {
+            connect = DriverManager.getConnection(url, user, password);
+            state = connect.createStatement();
+            result = state.executeQuery("");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            //close Connection, Statement and resultSet here
+            try {
+                connect.close();
+                state.close();
+                result.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void addUser(String id, String group){
