@@ -12,10 +12,13 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
     final String botName;
     final String botToken;
+    Logic logic;
 
-    public Telegram_Bot(String botName, String botToken) {
+    public Telegram_Bot(String botName, String botToken, Logic logic) {
         this.botName = botName;
         this.botToken = botToken;
+        this.logic = logic;
+
         TelegramBotsApi telegramBotsApi = null;
         try {
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -44,7 +47,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
 
             SendMessage message = new SendMessage();
             message.setChatId(chat_id);
-            message.setText(Logic.processMessage(message_text));
+            message.setText(logic.processMessage(chat_id, message_text));
 
             try {
                 execute(message);
