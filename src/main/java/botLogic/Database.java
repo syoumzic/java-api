@@ -22,7 +22,7 @@ public class Database implements Data {
 
     public List<String> getSchedule(String id, int day){
         String group = "";
-        List<String> schedule;
+        List<String> schedule = null;
         try {
             connect = DriverManager.getConnection(url, user, password);
             state = connect.createStatement();
@@ -33,16 +33,16 @@ public class Database implements Data {
             while (result.next()){
                 schedule.add(result.getString(day));
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
         } finally {
             //close Connection, Statement and resultSet here
             try {
                 connect.close();
                 state.close();
                 result.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
             }
         }
         return schedule;
@@ -61,13 +61,13 @@ public class Database implements Data {
             state.executeUpdate(query);
             Iterator<String> iter;
             iter = schedule.get(0).iterator();
-            int maxIter;
-            maxIter = 0;
+            int max_iter;
+            max_iter = 0;
             int index;
             for (int i = 0; i < 14; i++){
                 iter = schedule.get(i).iterator();
                 index = 0;
-                while (iter.hasNext() && index < maxIter){
+                while (iter.hasNext() && index < max_iter){
                     index++;
                     state.executeUpdate("UPDATE `" + group + "` SET `" +
                             Integer.toString(i + 1) + "` = '" + iter.next() +
@@ -79,7 +79,7 @@ public class Database implements Data {
                             "`) VALUES ('" + iter.next() + "')");
 
                 }
-                maxIter = Integer.max(maxIter, schedule.get(i).size());
+                max_iter = Integer.max(max_iter, schedule.get(i).size());
             }
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
@@ -88,15 +88,73 @@ public class Database implements Data {
             try {
                 connect.close();
                 state.close();
-            } catch (SQLException e) {
-            throw new RuntimeException(e);
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
             }
         }
     }
 
     public void addUser(String id, String group){
+        try {
+            connect = DriverManager.getConnection(url, user, password);
+
+            state = connect.createStatement();
+
+            state.executeUpdate("INSERT INTO `users` (`id`, `group`) VALUES" +
+                    " ('" + id + "', '" + group + "')");
+
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        } finally {
+            //close Connection, Statement and resultSet here
+            try {
+                connect.close();
+                state.close();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
+        }
     }
 
     public void updateUser(String id, String group){
+        try {
+            connect = DriverManager.getConnection(url, user, password);
+
+            state = connect.createStatement();
+
+            state.executeUpdate("UPDATE `users` SET `group` = '"
+                    + group + "' WHERE `id` = " + id);
+
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        } finally {
+            //close Connection, Statement and resultSet here
+            try {
+                connect.close();
+                state.close();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
+        }
+    }
+    public void dropTable(String name_table){
+        try {
+            connect = DriverManager.getConnection(url, user, password);
+
+            state = connect.createStatement();
+
+            state.executeUpdate("DROP TABLE `" + name_table + "`");
+
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        } finally {
+            //close Connection, Statement and resultSet here
+            try {
+                connect.close();
+                state.close();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
+        }
     }
 }

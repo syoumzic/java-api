@@ -6,4 +6,5 @@ interface Data {
     void setSchedule(String group, List<List<String>> schedule);
     void addUser(String id, String group);
     void updateUser(String id, String group);
+    void dropTable(String name_table);
 }
