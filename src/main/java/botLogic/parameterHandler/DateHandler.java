@@ -1,15 +1,39 @@
 package botLogic.parameterHandler;
 
 import botLogic.Logic;
+import botLogic.User;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class DateHandler {
-    boolean dateIsCorrect(String message){
+public class DateHandler implements ParameterHandler{
+    public String startMessage(){
+        return "Укажите день";
+    }
+
+    public String action(User user, String message){
+        if(dateIsCorrect(message)){
+            user.flushParameterHandler();
+            //data base moment
+            List<String>schedule = Arrays.asList("-", "матан", "матан");
+            return toString(schedule);
+        }
+
+        return "дата введена некоректно!";
+    }
+
+    String toString(List<String>schedule){
+        StringBuilder concat = new StringBuilder();
+        for(String lesson : schedule)
+                concat.append(lesson).append("\n");
+        return concat.toString();
+    }
+
+    private boolean dateIsCorrect(String message){
         final String dateFormat = "dd.MM";
 
         DateFormat sdf = new SimpleDateFormat(dateFormat);
@@ -21,19 +45,5 @@ public class DateHandler {
         }
 
         return true;
-    }
-
-    String action(Logic logic, String chatId, String message){
-        if(dateIsCorrect(message)){
-            logic.flushParameterHandler(chatId);
-            List<String> schedule = logic.dataBase.getSchedule(chatId, 0);
-
-            StringBuilder strSchedule = new StringBuilder();
-            for(String lesson :schedule) strSchedule.append(lesson).append("\n");
-
-            return strSchedule.toString();
-        }
-
-        return "дата введена некоректно!";
     }
 }

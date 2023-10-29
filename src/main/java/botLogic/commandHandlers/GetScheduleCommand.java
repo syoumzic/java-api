@@ -1,13 +1,14 @@
 package botLogic.commandHandlers;
 
-import botLogic.Logic;
+import botLogic.User;
+import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.GroupHandler;
-
-import java.util.List;
+import botLogic.parameterHandler.ParameterHandler;
 
 public class GetScheduleCommand implements CommandHandler{
-    public String action(Logic logic, String chatId){
-        logic.changeParameterHandler(chatId, new GroupHandler());
-        return "Укажите день";
+    public String action(User user){
+        ParameterHandler dateHandler = new DateHandler();
+        user.setParameterHandler(dateHandler);
+        return dateHandler.startMessage();
     }
 }

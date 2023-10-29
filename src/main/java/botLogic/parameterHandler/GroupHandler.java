@@ -1,14 +1,16 @@
 package botLogic.parameterHandler;
 
-import botLogic.Logic;
-
-import java.util.regex.Pattern;
+import botLogic.User;
 
 public class GroupHandler implements ParameterHandler {
-    public String action(Logic logic, String chatId, String message){
+    public String startMessage(){
+        return "Укажите новый номер группы";
+    }
+
+    public String action(User user, String message){
         if(message.length() >= 3 && message.split(" ").length == 1){
-            //logic.dataBase.updateUser(chatId, message);
-            logic.changeParameterHandler(chatId, null);
+            //data base moment
+            user.setParameterHandler(null);
             return "Группа успешно добавлена!";
         }
         return "Группа введена некоректно";

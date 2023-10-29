@@ -1,8 +1,7 @@
 package botLogic.commandHandlers;
 
-import botLogic.Logic;
-import botLogic.parameterHandler.ParameterHandler;
+import botLogic.User;
 
 public interface CommandHandler {
-    public String action(Logic logic, String chatId);
+    public String action(User user);
 }

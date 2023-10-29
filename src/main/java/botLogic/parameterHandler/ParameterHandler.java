@@ -1,7 +1,8 @@
 package botLogic.parameterHandler;
 
-import botLogic.Logic;
+import botLogic.User;
 
 public interface ParameterHandler {
-    public String action(Logic logic, String chatId, String message);
+    public String startMessage();
+    public String action(User user, String message);
 }
