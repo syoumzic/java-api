@@ -20,7 +20,7 @@ public class Database implements Data {
     private Statement state;
     private ResultSet result;
 
-    public List<String> getSchedule(String id, int day){
+    public List<String> getSchedule(String id, int day) throws SQLException{
         String group = "";
         List<String> schedule = null;
         try {
@@ -48,7 +48,7 @@ public class Database implements Data {
         return schedule;
     }
 
-    public void setSchedule(String group, List<List<String>> schedule){
+    public void setSchedule(String group, List<List<String>> schedule) throws SQLException {
         try {
             connect = DriverManager.getConnection(url, user, password);
             state = connect.createStatement();
@@ -94,7 +94,7 @@ public class Database implements Data {
         }
     }
 
-    public void addUser(String id, String group){
+    public void addUser(String id, String group) throws SQLException{
         try {
             connect = DriverManager.getConnection(url, user, password);
 
@@ -116,7 +116,7 @@ public class Database implements Data {
         }
     }
 
-    public void updateUser(String id, String group){
+    public void updateUser(String id, String group) throws SQLException{
         try {
             connect = DriverManager.getConnection(url, user, password);
 
@@ -137,7 +137,7 @@ public class Database implements Data {
             }
         }
     }
-    public void dropTable(String name_table){
+    public void dropTable(String name_table) throws SQLException{
         try {
             connect = DriverManager.getConnection(url, user, password);
 
