@@ -2,13 +2,15 @@ package botLogic.parameterHandler;
 
 import botLogic.User;
 
+import java.util.regex.Pattern;
+
 public class GroupHandler implements ParameterHandler {
     public String startMessage(){
-        return "Укажите новый номер группы";
+        return "Укажите номер вашей группы";
     }
 
     public String action(User user, String message){
-        if(message.length() >= 3 && message.split(" ").length == 1){
+        if(Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message)){
             //data base moment
             user.setParameterHandler(null);
             return "Группа успешно добавлена!";

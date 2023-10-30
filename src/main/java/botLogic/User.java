@@ -1,22 +1,24 @@
 package botLogic;
 
 import botLogic.commandHandlers.*;
-import botLogic.parameterHandler.GroupHandler;
+import botLogic.parameterHandler.NothingHandler;
 import botLogic.parameterHandler.ParameterHandler;
 
 public class User {
-    ParameterHandler parameterHandler;
-
+    private ParameterHandler parameterHandler;
     User(ParameterHandler parameterHandler){
         this.parameterHandler = parameterHandler;
     }
 
     public String processMessage(String message){
         message = message.trim();
-        return message.startsWith("/")? commandHandle(message) : parameterHandle(message);
+        return message.startsWith("/")? processCommand(message) : processParameter(message);
     }
 
-    public String commandHandle(String message){
+    public String processCommand(String message){
+        var commandHandler = getCommandHandler(message);
+
+        if(commandHandler == null) return "комманда не найдена!";
         return getCommandHandler(message).action(this);
     }
 
@@ -24,13 +26,13 @@ public class User {
         return switch (message) {
             case "/start" -> new StartCommand();
             case "/help" -> new HelpCommand();
-            case "/change group" -> new ChangeGroupCommand();
+            case "/change_group" -> new ChangeGroupCommand();
             case "/schedule" -> new GetScheduleCommand();
             default -> null;
         };
     }
 
-    public String parameterHandle(String message){
+    public String processParameter(String message){
         return parameterHandler.action(this, message);
     }
 
@@ -39,6 +41,6 @@ public class User {
     }
 
     public void flushParameterHandler(){
-        parameterHandler = null;
+        parameterHandler = new NothingHandler();
     }
 }
