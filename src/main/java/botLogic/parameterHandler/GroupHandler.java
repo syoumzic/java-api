@@ -2,6 +2,7 @@ package botLogic.parameterHandler;
 
 import botLogic.User;
 
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class GroupHandler implements ParameterHandler {
@@ -12,6 +13,21 @@ public class GroupHandler implements ParameterHandler {
     public String action(User user, String message){
         if(Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message)){
             //data base moment
+            try {
+                user.getDatabase().addUser(user.getId(), message);
+            } catch (SQLException exep){
+                int errNum = exep.getErrorCode();
+                if (errNum == 1586){
+                    try {
+                        user.getDatabase().updateUser(user.getId(), message);
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getStackTrace());
+                    }
+                }
+                else {
+                    System.out.println(exep.getStackTrace());
+                }
+            }
             user.setParameterHandler(null);
             return "Группа успешно добавлена!";
         }
