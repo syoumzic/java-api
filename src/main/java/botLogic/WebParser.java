@@ -4,24 +4,39 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //https://urfu.ru/api/schedule/groups/suggest/?query=<group>
 //https://urfu.ru/api/schedule/groups/lessons/<id>/<YYYYMMDD>
 
 public class WebParser implements Parser {
 
-    public List<List<String>>parse(String group) throws IOException, ParseException {
-        return null;
+    public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException {
+        String groupId = getGroupId(group);
+        if(groupId == null) return null;
+        return getSchedule(groupId);
     }
 
-    public Long getGroupId(String group) throws IOException, ParseException {
-        if(group.length() < 3) return null; // при запросе выдаст невалидную страницу
+    public String getGroupId(String group) throws IllegalArgumentException, IOException, ParseException {
+        if(group.length() < 3) throw new IllegalArgumentException();
 
         URL url = new URL("https://urfu.ru/api/schedule/groups/suggest/?query=" + group);
         JSONParser parser = new JSONParser();
@@ -34,9 +49,14 @@ public class WebParser implements Parser {
             JSONObject suggestion = (JSONObject)suggestions.get(i);
             String value = (String)suggestion.get("value");
 
-            if(Objects.equals(group, value)) return (Long)suggestion.get("data");
+            if(Objects.equals(group, value))
+                return Long.toString((Long)suggestion.get("data"));
         }
 
+        return null;
+    }
+
+    List<List<String>>getSchedule(String id){
         return null;
     }
 }
