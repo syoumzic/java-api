@@ -7,5 +7,6 @@ interface Data {
     void setSchedule(String group, List<List<String>> schedule) throws SQLException;
     void addUser(String id, String group) throws SQLException;
     void updateUser(String id, String group) throws SQLException;
+    String getUsersGroup(String id) throws SQLException;
     void dropTable(String name_table) throws SQLException;
 }
