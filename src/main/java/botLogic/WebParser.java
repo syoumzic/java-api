@@ -56,7 +56,77 @@ public class WebParser implements Parser {
         return null;
     }
 
-    List<List<String>>getSchedule(String id){
-        return null;
+    public List<List<String>> getSchedule(String id) throws IllegalArgumentException, IOException, ParseException {
+        if(id == null) throw new IllegalArgumentException();
+
+        LocalDate shiftDate = LocalDate.now().minusWeeks(1);
+        LocalDate firstDayOfEvenWeek = firstDayOfEvenWeek(shiftDate);
+
+        int shiftYear = shiftDate.getYear();
+        int shiftMonth = shiftDate.getMonthValue();
+        int shiftDay = shiftDate.getDayOfMonth();
+
+        Document document = Jsoup.connect(String.format("https://urfu.ru/api/schedule/groups/lessons/%s/%d%02d%02d", id, shiftYear, shiftMonth, shiftDay)).get();
+        Elements documentLessons = document.select("tr");
+
+        final int daysCount = 14;
+        int day = 0;
+        int shift = (int)firstDayOfEvenWeek.until(shiftDate, ChronoUnit.DAYS);
+        int index = 0;
+
+        List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
+        for(int i = 0; i < daysCount; i++) scheduleList.add(new ArrayList<String>());
+
+        List<String>currentSchedule = null;
+
+        for(Element lesson : documentLessons){
+            if(lesson.className().equals("divide") && !lesson.select("b").isEmpty()){               //тег, после которого начинается теги предметов на день
+                currentSchedule = scheduleList.get((day + shift) % daysCount);
+                index = 0;
+                continue;
+            }
+
+            if(lesson.className().equals("divide")) {                                                       //тег, после которого заканчиваются теги предметов на день
+                currentSchedule.add("end");                                                                 //строка конца предметов
+                day++;
+                continue;
+            }
+
+            if(lesson.className().equals("shedule-weekday-row shedule-weekday-first-row")){                //тег пустого расписания
+                continue;
+            }
+
+            String lessonName = "";
+            String lessonCabinet = "";
+
+            Element lessonNameElement = lesson.select("dl:nth-child(1)").get(0);
+
+            lessonName = lessonNameElement.child(0).text();
+            Elements cabinetSelectorResult = lessonNameElement.select("span:nth-child(2)");
+            if(!cabinetSelectorResult.isEmpty()) lessonCabinet = cabinetSelectorResult.get(0).text();
+
+            Matcher pattern = Pattern.compile("^[0-9]+").matcher(lessonName);
+            int newIndex = (pattern.find()? Integer.parseInt(pattern.group(0)) : 1);
+            for(int i = 1; i < newIndex - index; i++) currentSchedule.add("-");
+            index = newIndex;
+
+            currentSchedule.add(lessonName + " " + lessonCabinet);
+        }
+
+        return scheduleList;
+    }
+
+    private static LocalDate firstDayOfEvenWeek(LocalDate date){
+        LocalDate currentDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+
+        int weekOfYear = currentDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+
+        if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) //неделя в России начинается не с воскресенья
+            weekOfYear -= 1;
+
+        if (weekOfYear % 2 == 0)currentDate = currentDate.with(ChronoField.DAY_OF_WEEK, 1);
+        else currentDate = currentDate.minusWeeks(1).with(ChronoField.DAY_OF_WEEK, 1);
+
+        return currentDate;
     }
 }
