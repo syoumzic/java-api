@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 
 //1050; //SQLSTATE: 42S01 Message: Table '%s' already exists
@@ -23,16 +24,19 @@ public class Database implements Data {
     private ResultSet result;
 
     public List<String> getSchedule(String id, int day) throws SQLException{
-        String group = "";
+        String group = null;
+        String lesson = null;
         List<String> schedule;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
         if (result.next()) group = result.getString(1);
-        result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group));
+        result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
         schedule = new ArrayList<>();
         while (result.next()) {
-            schedule.add(result.getString(1));
+            lesson = result.getString(1);
+            if (Objects.equals(lesson, "end")) break;
+            schedule.add(lesson);
         }
         connect.close();
         state.close();
@@ -43,12 +47,13 @@ public class Database implements Data {
     public void setSchedule(String group, List<List<String>> schedule) throws SQLException {
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
+        group = group.toLowerCase();
         if (state.executeQuery(String.format("show tables like '%s'", group)).next()){
             dropTable(group);
         }
         StringBuilder query = new StringBuilder(String.format("CREATE TABLE `%s` (`id` INT NOT NULL AUTO_INCREMENT,", group));
         for (int i = 0; i < 14; i ++){
-            query.append(String.format(" `%s` VARCHAR(64) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' NOT NULL DEFAULT '-',", (i + 1)));
+            query.append(String.format(" `%s` VARCHAR(300) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' NOT NULL DEFAULT '-',", (i + 1)));
         }
         query.append(" primary key (id)) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8");
         state.executeUpdate(query.toString());
@@ -96,14 +101,14 @@ public class Database implements Data {
     }
 
     public String getUsersGroup(String id) throws SQLException{
-        String group;
+        String group = null;
         connect = DriverManager.getConnection(url, user, password);
 
         state = connect.createStatement();
 
         result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE `id` = '%s'", id));
 
-        group = result.getString(1);
+        if (result.next()) group = result.getString(1);
 
         connect.close();
 

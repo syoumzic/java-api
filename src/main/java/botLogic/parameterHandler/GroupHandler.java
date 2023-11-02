@@ -21,11 +21,11 @@ public class GroupHandler implements ParameterHandler {
                     try {
                         user.getDatabase().updateUser(user.getId(), message);
                     } catch (SQLException ex) {
-                        System.out.println(Arrays.toString(ex.getStackTrace()));
+                        System.out.println(ex.getMessage());
                     }
                 }
                 else {
-                    System.out.println(exep.getStackTrace());
+                    System.out.println(exep.getMessage());
                 }
                 return "внутренняя ошибка";
             }
