@@ -7,7 +7,7 @@ import botLogic.parameterHandler.ParameterHandler;
 public class User {
     private ParameterHandler parameterHandler;
     private Data dataBase = null;
-    private Parser parser = new WebParser();
+    private Parser parser = null;
     private String id = null;
     User(ParameterHandler parameterHandler, Parser parser, Data dataBase, String id){
         this.parameterHandler = parameterHandler;
@@ -21,8 +21,8 @@ public class User {
         return message.startsWith("/")? processCommand(message) : processParameter(message);
     }
 
-    public Database getDatabase(){
-        return (Database) dataBase;
+    public Data getDatabase(){
+        return dataBase;
     }
 
     public WebParser getWebParser(){

@@ -3,6 +3,7 @@ package botLogic.parameterHandler;
 import botLogic.User;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class GroupHandler implements ParameterHandler {
@@ -21,11 +22,11 @@ public class GroupHandler implements ParameterHandler {
                     try {
                         user.getDatabase().updateUser(user.getId(), message);
                     } catch (SQLException ex) {
-                        System.out.println(ex.getStackTrace());
+                        System.out.println(Arrays.toString(ex.getStackTrace()));
                     }
                 }
                 else {
-                    System.out.println(exep.getStackTrace());
+                    System.out.println(Arrays.toString(exep.getStackTrace()));
                 }
             }
             user.setParameterHandler(null);
