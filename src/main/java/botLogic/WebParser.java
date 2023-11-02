@@ -9,10 +9,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -24,20 +22,33 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//https://urfu.ru/api/schedule/groups/suggest/?query=<group>
-//https://urfu.ru/api/schedule/groups/lessons/<id>/<YYYYMMDD>
-
 public class WebParser implements Parser {
 
+    /**
+     * осуществляет получение id группы по названю для дальнейшего поиска расписания
+     * @param group название группы
+     * @throws IllegalArgumentException передана невалидная группа
+     * @throws IOException ошибка соединения
+     * @throws ParseException ошибка чтение данных
+     * @return расписание на две недели или null если такой группы нет
+     */
     public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException {
+        if(group.length() < 3) throw new IllegalArgumentException();
+
         String groupId = getGroupId(group);
         if(groupId == null) return null;
+
         return getSchedule(groupId);
     }
 
-    public String getGroupId(String group) throws IllegalArgumentException, IOException, ParseException {
-        if(group.length() < 3) throw new IllegalArgumentException();
-
+    /**
+     * Получение id по названию группы
+     * @param group название группы
+     * @throws IOException ошибка соединения
+     * @throws ParseException ошибка чтение данных
+     * @return id группы
+     */
+    public String getGroupId(String group) throws IOException, ParseException {
         URL url = new URL("https://urfu.ru/api/schedule/groups/suggest/?query=" + group);
         JSONParser parser = new JSONParser();
         Object rawDocument = parser.parse(new InputStreamReader(url.openStream()));
@@ -56,9 +67,14 @@ public class WebParser implements Parser {
         return null;
     }
 
-    public List<List<String>> getSchedule(String id) throws IllegalArgumentException, IOException, ParseException {
-        if(id == null) throw new IllegalArgumentException();
-
+    /**
+     * Получение расписаниея по id группы
+     * @param id id группы
+     * @throws IOException ошибка соединения
+     * @throws ParseException ошибка чтение данных
+     * @return расписание
+     */
+    public List<List<String>> getSchedule(String id) throws IOException, ParseException{
         LocalDate shiftDate = LocalDate.now().minusWeeks(1);
         LocalDate firstDayOfEvenWeek = firstDayOfEvenWeek(shiftDate);
 
@@ -96,25 +112,26 @@ public class WebParser implements Parser {
                 continue;
             }
 
-            String lessonName = "";
-            String lessonCabinet = "";
-
-            Element lessonNameElement = lesson.select("dl:nth-child(1)").get(0);
-
-            lessonName = lessonNameElement.child(0).text();
-            Elements cabinetSelectorResult = lessonNameElement.select("span:nth-child(2)");
-            if(!cabinetSelectorResult.isEmpty()) lessonCabinet = cabinetSelectorResult.get(0).text();
+            Elements filterLesson = lesson.select("td");
+            if(filterLesson.size() < 2) throw new ParseException(0);
+            String lessonName = getName(lesson.select("td").get(1));
 
             Matcher pattern = Pattern.compile("^[0-9]+").matcher(lessonName);
             int newIndex = (pattern.find()? Integer.parseInt(pattern.group(0)) : 1);
             for(int i = 1; i < newIndex - index; i++) currentSchedule.add("-");
             index = newIndex;
 
-            currentSchedule.add(lessonName + " " + lessonCabinet);
+            currentSchedule.add(lessonName);
         }
 
         return scheduleList;
     }
+
+    /**
+     * рассчитывает первый день ближашей чётной недели
+     * @param date дата
+     * @return смещенная дата
+     */
 
     private static LocalDate firstDayOfEvenWeek(LocalDate date){
         LocalDate currentDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
@@ -128,5 +145,32 @@ public class WebParser implements Parser {
         else currentDate = currentDate.minusWeeks(1).with(ChronoField.DAY_OF_WEEK, 1);
 
         return currentDate;
+    }
+
+    /**
+     * извлекает из тега информацию о предмете
+     * @param lesson тег
+     * @throws ParseException выбрасывается при невалидном теге
+     * @return информация о предмете
+     */
+    private String getName(Element lesson) throws ParseException{
+        StringBuilder lessonBuilder = new StringBuilder();
+        for(int i = 0; i < lesson.childrenSize(); i++){
+            Element lessonNameElement = lesson.child(i);
+
+            if(lessonNameElement.childrenSize() == 0) throw new ParseException(0);
+            String name = lessonNameElement.child(0).text();
+            lessonBuilder.append(name);
+
+            if(!lessonNameElement.select("span:nth-child(2)").isEmpty()) {          //возможен случай, когда группа не указана
+                String place = lessonNameElement.child(1).child(1).text();
+                lessonBuilder.append(" ").append(place);
+            }
+
+            if(i != lesson.childrenSize() - 1)
+                lessonBuilder.append("\n");
+        }
+
+        return lessonBuilder.toString();
     }
 }

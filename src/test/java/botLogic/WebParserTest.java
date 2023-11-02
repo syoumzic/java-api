@@ -9,27 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WebParserTest {
-//    @Test
-//    public void testGroupIdParser() throws IOException, ParseException {
-//        WebParser parser = new WebParser();
-//
-//        var groups = new String[]{"МЕН-220201", "МЕН-220203", "РИ-311110", "РИ-311151", "РИС", "МЕН", "МЕН-2202012323"};
-//        var output = new String[]{"56393", "56415", "57108", "57022", null, null, null};
-//
-//        for(int i = 0; i < groups.length; i++)
-//            Assert.assertEquals(output[i], parser.getGroupId(groups[i]));
-//    }
-
     @Test
-    public void testScheduleGetter() throws IOException, ParseException{
+    public void testGroupIdParser() throws IOException, ParseException {
         WebParser parser = new WebParser();
-        List<List<String>>schedule = parser.getSchedule("56393");
 
-        for(List<String>daySchedule : schedule) {
-            for (String lesson : daySchedule) {
-                System.out.printf("|%s|%n", lesson);
-            }
-            System.out.println("--------");
-        }
+        var groups = new String[]{"МЕН-220201", "МЕН-220203", "РИ-311110", "РИ-311151", "РИС", "МЕН", "МЕН-2202012323"};
+        var output = new String[]{"56393", "56415", "57108", "57022", null, null, null};
+
+        for(int i = 0; i < groups.length; i++)
+            Assert.assertEquals(output[i], parser.getGroupId(groups[i]));
     }
 }
