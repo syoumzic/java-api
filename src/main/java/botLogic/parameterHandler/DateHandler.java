@@ -21,7 +21,7 @@ public class DateHandler implements ParameterHandler{
         if(dateIsCorrect(message)){
             user.flushParameterHandler();
             Calendar calendar = new Calendar();
-            int numberDay = calendar.getFirstDayOfEvenWeek();
+            int numberDay = calendar.getFirstDayOfEvenWeek() + 1;
 
             List<String> schedule = null;
             try{
@@ -38,9 +38,10 @@ public class DateHandler implements ParameterHandler{
                         user
                             .getDatabase()
                             .setSchedule(user.getDatabase().getUsersGroup(user.getId()), schedule_pars);
+                        schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
 
                     } catch (SQLException e) {
-                        System.out.println(Arrays.toString(e.getStackTrace()));
+                        System.out.println(e.getMessage());
                     } catch (ParseException e){
                         return "ошибка считывания расписания. Попробуйте позже";
                     }catch (IOException e){
@@ -48,11 +49,12 @@ public class DateHandler implements ParameterHandler{
                     }
                 }
                 else {
-                    System.out.println(Arrays.toString(ex.getStackTrace()));
+                    System.out.println(ex.getMessage());
                 }
             }
 
             assert schedule != null;
+
             return toString(schedule);
         }
 
