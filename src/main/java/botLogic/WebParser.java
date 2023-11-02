@@ -1,5 +1,6 @@
 package botLogic;
 
+import org.checkerframework.checker.units.qual.C;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -76,7 +77,6 @@ public class WebParser implements Parser {
      */
     public List<List<String>> getSchedule(String id) throws IOException, ParseException{
         LocalDate shiftDate = LocalDate.now().minusWeeks(1);
-        LocalDate firstDayOfEvenWeek = firstDayOfEvenWeek(shiftDate);
 
         int shiftYear = shiftDate.getYear();
         int shiftMonth = shiftDate.getMonthValue();
@@ -85,9 +85,11 @@ public class WebParser implements Parser {
         Document document = Jsoup.connect(String.format("https://urfu.ru/api/schedule/groups/lessons/%s/%d%02d%02d", id, shiftYear, shiftMonth, shiftDay)).get();
         Elements documentLessons = document.select("tr");
 
+        Calendar calendar = new Calendar();
+
         final int daysCount = 14;
         int day = 0;
-        int shift = (int)firstDayOfEvenWeek.until(shiftDate, ChronoUnit.DAYS);
+        int shift = calendar.getFirstDayOfEvenWeek(shiftDate);
         int index = 0;
 
         List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
@@ -125,26 +127,6 @@ public class WebParser implements Parser {
         }
 
         return scheduleList;
-    }
-
-    /**
-     * рассчитывает первый день ближашей чётной недели
-     * @param date дата
-     * @return смещенная дата
-     */
-
-    private static LocalDate firstDayOfEvenWeek(LocalDate date){
-        LocalDate currentDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-
-        int weekOfYear = currentDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-
-        if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) //неделя в России начинается не с воскресенья
-            weekOfYear -= 1;
-
-        if (weekOfYear % 2 == 0)currentDate = currentDate.with(ChronoField.DAY_OF_WEEK, 1);
-        else currentDate = currentDate.minusWeeks(1).with(ChronoField.DAY_OF_WEEK, 1);
-
-        return currentDate;
     }
 
     /**
