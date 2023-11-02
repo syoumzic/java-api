@@ -13,7 +13,6 @@ public class GroupHandler implements ParameterHandler {
 
     public String action(User user, String message){
         if(Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message)){
-            //data base moment
             try {
                 user.getDatabase().addUser(user.getId(), message);
             } catch (SQLException exep){
@@ -26,8 +25,9 @@ public class GroupHandler implements ParameterHandler {
                     }
                 }
                 else {
-                    System.out.println(Arrays.toString(exep.getStackTrace()));
+                    System.out.println(exep.getStackTrace());
                 }
+                return "внутренняя ошибка";
             }
             user.setParameterHandler(null);
             return "Группа успешно добавлена!";

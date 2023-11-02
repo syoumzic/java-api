@@ -1,10 +1,11 @@
 package botLogic.parameterHandler;
 
 import botLogic.User;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -18,28 +19,28 @@ public class DateHandler implements ParameterHandler{
         if(dateIsCorrect(message)){
             user.flushParameterHandler();
             int numberDay = 0;
-            //data base moment
-            //Arrays.asList("-", "матан", "матан")
             List<String> schedule = null;
             try{
                 schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
             } catch (SQLException ex) {
                 int errNum = ex.getErrorCode();
                 if (errNum == 1146){
-                    //Вызываем парсер;
                     try {
                         List<List<String>> schedule_pars = user
                                 .getWebParser()
                                 .parse(user.getDatabase()
-                                .getUsersGroup(user.getId())
-                                .toUpperCase());
+                                        .getUsersGroup(user.getId())
+                                        .toUpperCase());
                         user
-                                .getDatabase()
-                                .setSchedule(user
-                                        .getDatabase()
-                                        .getUsersGroup(user.getId()), schedule_pars);
+                            .getDatabase()
+                            .setSchedule(user.getDatabase().getUsersGroup(user.getId()), schedule_pars);
+
                     } catch (SQLException e) {
                         System.out.println(Arrays.toString(e.getStackTrace()));
+                    } catch (ParseException e){
+                        return "ошибка считывания расписания. Попробуйте позже";
+                    }catch (IOException e){
+                        System.out.println("ошибка соединения с интернетом!");
                     }
                 }
                 else {
@@ -68,7 +69,7 @@ public class DateHandler implements ParameterHandler{
         sdf.setLenient(false);
         try {
             sdf.parse(message);
-        } catch (ParseException e) {
+        } catch (java.text.ParseException e) {
             return false;
         }
 
