@@ -25,6 +25,7 @@ public class Calendar {
         LocalDate date = LocalDate.parse(string, formatter);
         return getFirstDayOfEvenWeek(date);
     }
+
     /**
      * возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты
      * @param date дата

@@ -19,6 +19,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,14 +32,13 @@ public class WebParser implements Parser {
      * @throws IllegalArgumentException передана невалидная группа
      * @throws IOException ошибка соединения
      * @throws ParseException ошибка чтение данных
+     * @throws NoSuchElementException группа не найдена
      * @return расписание на две недели или null если такой группы нет
      */
-    public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException {
+    public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException, NoSuchElementException {
         if(group.length() < 3) throw new IllegalArgumentException();
 
         String groupId = getGroupId(group.toUpperCase());
-        if(groupId == null) return null;
-
         return getSchedule(groupId);
     }
 
@@ -49,7 +49,7 @@ public class WebParser implements Parser {
      * @throws ParseException ошибка чтение данных
      * @return id группы
      */
-    public String getGroupId(String group) throws IOException, ParseException {
+    public String getGroupId(String group) throws IOException, ParseException, NoSuchElementException {
         URL url = new URL("https://urfu.ru/api/schedule/groups/suggest/?query=" + group);
         JSONParser parser = new JSONParser();
         Object rawDocument = parser.parse(new InputStreamReader(url.openStream()));
@@ -65,7 +65,7 @@ public class WebParser implements Parser {
                 return Long.toString((Long)suggestion.get("data"));
         }
 
-        return null;
+        throw new NoSuchElementException();
     }
 
     /**

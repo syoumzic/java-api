@@ -4,6 +4,7 @@ import botLogic.User;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 public class GroupHandler implements ParameterHandler {
@@ -22,6 +23,8 @@ public class GroupHandler implements ParameterHandler {
                         user.getDatabase().updateUser(user.getId(), message);
                     } catch (SQLException ex) {
                         System.out.println(ex.getMessage());
+                    }catch (NoSuchElementException e){
+                        return "группа не найдена!";
                     }
                 }
                 else {
