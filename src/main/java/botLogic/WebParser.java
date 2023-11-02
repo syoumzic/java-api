@@ -36,7 +36,7 @@ public class WebParser implements Parser {
     public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException {
         if(group.length() < 3) throw new IllegalArgumentException();
 
-        String groupId = getGroupId(group);
+        String groupId = getGroupId(group.toUpperCase());
         if(groupId == null) return null;
 
         return getSchedule(groupId);

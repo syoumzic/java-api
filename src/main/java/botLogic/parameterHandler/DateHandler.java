@@ -1,6 +1,8 @@
 package botLogic.parameterHandler;
 
+import botLogic.Calendar;
 import botLogic.User;
+import org.checkerframework.checker.units.qual.C;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -18,7 +20,9 @@ public class DateHandler implements ParameterHandler{
     public String action(User user, String message){
         if(dateIsCorrect(message)){
             user.flushParameterHandler();
-            int numberDay = 0;
+            Calendar calendar = new Calendar();
+            int numberDay = calendar.getFirstDayOfEvenWeek();
+
             List<String> schedule = null;
             try{
                 schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
@@ -40,7 +44,7 @@ public class DateHandler implements ParameterHandler{
                     } catch (ParseException e){
                         return "ошибка считывания расписания. Попробуйте позже";
                     }catch (IOException e){
-                        System.out.println("ошибка соединения с интернетом!");
+                        System.out.println("ошибка соединения с интернетом");
                     }
                 }
                 else {
