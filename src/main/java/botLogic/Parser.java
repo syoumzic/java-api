@@ -1,6 +1,6 @@
 package botLogic;
 import java.util.List;
 
-interface Parser{
+public interface Parser{
     List<List<String>> parse(String group);
 }

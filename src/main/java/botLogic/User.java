@@ -6,13 +6,31 @@ import botLogic.parameterHandler.ParameterHandler;
 
 public class User {
     private ParameterHandler parameterHandler;
-    User(ParameterHandler parameterHandler){
+    private Data dataBase = null;
+    private Parser parser = null;
+    private String id = null;
+    User(ParameterHandler parameterHandler, Parser parser, Data dataBase, String id){
         this.parameterHandler = parameterHandler;
+        this.dataBase = dataBase;
+        this.parser = parser;
+        this.id = id;
     }
 
     public String processMessage(String message){
         message = message.trim();
         return message.startsWith("/")? processCommand(message) : processParameter(message);
+    }
+
+    public Data getDatabase(){
+        return dataBase;
+    }
+
+    public Parser getWebParser(){
+        return parser;
+    }
+
+    public String getId(){
+        return id;
     }
 
     public String processCommand(String message){
