@@ -25,8 +25,8 @@ public class User {
         return dataBase;
     }
 
-    public WebParser getWebParser(){
-        return (WebParser) parser;
+    public Parser getWebParser(){
+        return parser;
     }
 
     public String getId(){
