@@ -2,6 +2,7 @@ package botLogic.parameterHandler;
 
 import botLogic.User;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,8 +17,37 @@ public class DateHandler implements ParameterHandler{
     public String action(User user, String message){
         if(dateIsCorrect(message)){
             user.flushParameterHandler();
+            int numberDay = 0;
             //data base moment
-            List<String>schedule = Arrays.asList("-", "матан", "матан");
+            //Arrays.asList("-", "матан", "матан")
+            List<String> schedule = null;
+            try{
+                schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
+            } catch (SQLException ex) {
+                int errNum = ex.getErrorCode();
+                if (errNum == 1146){
+                    //Вызываем парсер;
+                    try {
+                        List<List<String>> schedule_pars = user
+                                .getWebParser()
+                                .parse(user.getDatabase()
+                                .getUsersGroup(user.getId())
+                                .toUpperCase());
+                        user
+                                .getDatabase()
+                                .setSchedule(user
+                                        .getDatabase()
+                                        .getUsersGroup(user.getId()), schedule_pars);
+                    } catch (SQLException e) {
+                        System.out.println(Arrays.toString(e.getStackTrace()));
+                    }
+                }
+                else {
+                    System.out.println(Arrays.toString(ex.getStackTrace()));
+                }
+            }
+
+            assert schedule != null;
             return toString(schedule);
         }
 
