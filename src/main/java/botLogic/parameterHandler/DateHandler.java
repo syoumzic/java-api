@@ -32,8 +32,7 @@ public class DateHandler implements ParameterHandler{
         try{
             schedule = user.getDatabase().getSchedule(user.getId(), numberDay + 1);
         } catch (SQLException ex) {
-            int errNum = ex.getErrorCode();
-            if (errNum == 1146){
+            if (ex.getErrorCode() == 1146){
                 try {
                     List<List<String>> schedule_pars = user
                             .getWebParser()
@@ -49,7 +48,7 @@ public class DateHandler implements ParameterHandler{
                     System.out.println(e.getMessage());
                 } catch (ParseException e){
                     return "Ошибка считывания расписания. Попробуйте позже";
-                }catch (IOException e){
+                } catch (IOException e){
                     System.out.println("Ошибка соединения с интернетом");
                 }
             }
