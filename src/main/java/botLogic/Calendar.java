@@ -7,23 +7,31 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Locale;
 
 public class Calendar {
     /**
      * возвращает сколько дней прошло с прошлой чётной недели первого дня относительно текущей даты
-     * @param string дата
+     * @param date дата
      * @return смещенная дата
      */
-    public int getFirstDayOfEvenWeek(String string) throws DateTimeParseException {
+    public int getFirstDayOfEvenWeek(String date) throws DateTimeParseException {
+        return getFirstDayOfEvenWeek(getLocalDate(date));
+    }
+
+    /**
+     * переводит строку в дату
+     * @param date строка
+     * @throws DateTimeParseException если перевести в формат невозможно
+     * @return LocalDate
+     */
+    public LocalDate getLocalDate(String date) throws DateTimeParseException{
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendPattern("dd.MM")
+                .appendPattern("d.MM")
                 .parseDefaulting(ChronoField.YEAR, LocalDate.now().getYear())
                 .toFormatter(Locale.US);
 
-        LocalDate date = LocalDate.parse(string, formatter);
-        return getFirstDayOfEvenWeek(date);
+        return LocalDate.parse(date, formatter);
     }
 
     /**
