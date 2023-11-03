@@ -25,7 +25,7 @@ public class DateHandler implements ParameterHandler{
         try {
             numberDay = calendar.getFirstDayOfEvenWeek(message);
         } catch (DateTimeParseException e) {
-            return "введена некоректная дата";
+            return "Введена некорректная дата";
         }
 
         List<String> schedule = null;
@@ -48,9 +48,9 @@ public class DateHandler implements ParameterHandler{
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
                 } catch (ParseException e){
-                    return "ошибка считывания расписания. Попробуйте позже";
+                    return "Ошибка считывания расписания. Попробуйте позже";
                 }catch (IOException e){
-                    System.out.println("ошибка соединения с интернетом");
+                    System.out.println("Ошибка соединения с интернетом");
                 }
             }
             else {
@@ -58,7 +58,7 @@ public class DateHandler implements ParameterHandler{
             }
         }
 
-        assert schedule != null;
+        if (schedule.isEmpty()) return "В этот день у вас нет пар";
         user.flushParameterHandler();
 
         return toString(schedule);
@@ -71,9 +71,4 @@ public class DateHandler implements ParameterHandler{
         return concat.toString();
     }
 
-    private boolean dateIsCorrect(String message){
-
-
-        return true;
-    }
 }

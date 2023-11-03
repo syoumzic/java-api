@@ -18,19 +18,21 @@ public class GroupHandler implements ParameterHandler {
                 user.getDatabase().addUser(user.getId(), message);
             } catch (SQLException exep){
                 int errNum = exep.getErrorCode();
-                if (errNum == 1586){
+                if (errNum == 1062){
                     try {
                         user.getDatabase().updateUser(user.getId(), message);
                     } catch (SQLException ex) {
-                        System.out.println(ex.getMessage());
+                        System.out.println(ex.getErrorCode() + " " + ex.getMessage());
                     }catch (NoSuchElementException e){
                         return "группа не найдена!";
                     }
+                    return "Группа обновлена";
                 }
                 else {
-                    System.out.println(exep.getMessage());
+                    System.out.println(exep.getErrorCode() + " " + exep.getMessage());
+                    return "Внутренняя ошибка";
                 }
-                return "внутренняя ошибка";
+
             }
             user.setParameterHandler(null);
             return "Группа успешно добавлена!";
