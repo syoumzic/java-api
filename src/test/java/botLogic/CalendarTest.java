@@ -9,6 +9,16 @@ import static org.junit.Assert.assertThrows;
 
 public class CalendarTest {
     @Test
+    public void checkShiftDate(){
+        Calendar calendar = new Calendar();
+
+        for(int i = 1; i < 30; i++){
+            System.out.println(calendar.getFirstDayOfEvenWeek(LocalDate.of(2023, 11, i)));
+        }
+    }
+
+
+    @Test
     public void checkCorrectDate() {
         Calendar calendar = new Calendar();
 
