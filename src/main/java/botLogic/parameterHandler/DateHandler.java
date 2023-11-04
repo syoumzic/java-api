@@ -43,7 +43,7 @@ public class DateHandler implements ParameterHandler{
 
                     schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
                 }catch(SQLException e){
-                    return "внутреняя ошибка";
+                    return "Внутренняя ошибка";
                 }catch (IOException e){
                     return "Ошибка считывания расписания. Попробуйте позже";
                 } catch (NoSuchElementException e){

@@ -19,28 +19,22 @@ public class GroupHandler implements ParameterHandler {
         if(Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message)){
             user.getDatabase().addUserGroup(user.getId(), message);
             user.flushParameterHandler();
-
             try{
-                user.getDatabase().getSchedule(user.getId(), 0);
+                user.getDatabase().tableIsExist(message.toLowerCase());
             } catch (SQLException ex) {
-                if (ex.getErrorCode() == 1146){
-                    try {
-                        List<List<String>> schedule_pars = user
-                                .getWebParser()
-                                .parse(user.getDatabase()
-                                        .getUsersGroup(user.getId())
-                                        .toUpperCase());
-                        user
+                try {
+                    List<List<String>> schedule_pars = user
+                            .getWebParser()
+                            .parse(user.getDatabase()
+                                    .getUsersGroup(user.getId())
+                                    .toUpperCase());
+                    user
                             .getDatabase()
                             .setSchedule(user.getDatabase().getUsersGroup(user.getId()), schedule_pars);
-                    }catch (IOException e){
-                        return "Ошибка считывания расписания. Попробуйте позже";
-                    } catch (NoSuchElementException e){
-                        return "Не удалось найти группу с таким названием";
-                    }
-                }
-                else {
-                    System.out.println(ex.getMessage());
+                }catch (IOException e){
+                    return "Ошибка считывания расписания. Попробуйте позже";
+                } catch (NoSuchElementException e){
+                    return "Не удалось найти группу с таким номером";
                 }
             }
 

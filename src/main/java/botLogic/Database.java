@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Objects;
 
 
-//1050; //SQLSTATE: 42S01 Message: Table '%s' already exists
-
+/**
+ * Класс для работы с базой данных, чтение и запись.
+ */
 public class Database implements Data {
     private final String url = System.getenv("URL");
     private final String user = System.getenv("NAMEUSER");
@@ -23,6 +24,13 @@ public class Database implements Data {
     private Statement state;
     private ResultSet result;
 
+    /**
+     * Метод для считывания расписания из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param day Номер дня недели от 1 до 14(Четная и Нечетная недели)
+     * @return Возвращает расписание на день по id пользователя.
+     * @throws SQLException Ошибка существования таблицы в базе данных.
+     */
     public List<String> getSchedule(String id, int day) throws SQLException {
         String group = null;
         String lesson = null;
@@ -48,6 +56,11 @@ public class Database implements Data {
         }
     }
 
+    /**
+     * Метод для записи расписания в базу данных.
+     * @param group Номер группы пользователя.
+     * @param schedule Расписание для записи в базу данных.
+     */
     public void setSchedule(String group, List<List<String>> schedule){
         try {
             connect = DriverManager.getConnection(url, user, password);
@@ -84,6 +97,12 @@ public class Database implements Data {
         }
     }
 
+    /**
+     * Метод для записи в базу данных индивидуального расписания пользователя.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param schedule Индивидуальное расписание для записи.
+     * @param day Номер дня недели, на который сохраняется расписание.
+     */
     public void setCastomSchedule(String id, List<String> schedule, int day){
         try {
             connect = DriverManager.getConnection(url, user, password);
@@ -109,6 +128,13 @@ public class Database implements Data {
         }
     }
 
+    /**
+     * Метод для получения из базы данных индивидуального расписания из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param day Номер дня недели, на который сохраняется расписание.
+     * @return Возвращает индивидуальное расписание пользователя.
+     * @throws SQLException Ошибка существования индивидуального расписания.
+     */
     public List<String> getCastomSchedule (String id, int day) throws SQLException {
         List<String> schedule = null;
         String lesson = null;
@@ -127,6 +153,11 @@ public class Database implements Data {
         return schedule;
     }
 
+    /**
+     * Метод добавляющий пользователя в базу данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param group Номер группы пользователя.
+     */
     public void addUserGroup(String id, String group){
         try {
             connect = DriverManager.getConnection(url, user, password);
@@ -148,6 +179,11 @@ public class Database implements Data {
         }
     }
 
+    /**
+     * Метод для получения номера группы пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает номер группы.
+     */
     public String getUsersGroup(String id){
         String group = null;
         try {
@@ -168,6 +204,24 @@ public class Database implements Data {
         return group;
     }
 
+    /**
+     * Проверка существования таблицы в базе данных.
+     * @param name_table Имя таблицы в базе данных.
+     * @return Возвращает, существует ли таблица в базе данных.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public Boolean tableIsExist(String name_table) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+
+        state = connect.createStatement();
+
+        return state.executeQuery(String.format("show tables like '%s'", name_table)).next();
+    }
+
+    /**
+     * Приватный метод для удаления таблицы из базы данных.
+     * @param name_table Имя таблицы в базе данных.
+     */
     private void dropTable(String name_table){
         try {
             connect = DriverManager.getConnection(url, user, password);
@@ -183,19 +237,5 @@ public class Database implements Data {
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
         }
-
-    }
-    private Boolean tableIsExist(String name_table){
-        try {
-            connect = DriverManager.getConnection(url, user, password);
-
-            state = connect.createStatement();
-
-            return state.executeQuery(String.format("show tables like '%s'", name_table)).next();
-
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        }
-        return null;
     }
 }

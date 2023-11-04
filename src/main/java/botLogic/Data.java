@@ -9,4 +9,6 @@ public interface Data {
     void addUserGroup(String id, String group);
     String getUsersGroup(String id);
 
+    Boolean tableIsExist(String name_table) throws SQLException;
+
 }
