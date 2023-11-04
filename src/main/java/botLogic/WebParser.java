@@ -29,14 +29,12 @@ public class WebParser implements Parser {
     /**
      * осуществляет получение id группы по названю для дальнейшего поиска расписания
      * @param group название группы
-     * @throws IllegalArgumentException передана невалидная группа
-     * @throws IOException ошибка соединения
-     * @throws ParseException ошибка чтение данных
      * @throws NoSuchElementException группа не найдена
+     * @throws IOException ошибка чтения данных
      * @return расписание на две недели или null если такой группы нет
      */
-    public List<List<String>>parse(String group) throws IllegalArgumentException, IOException, ParseException, NoSuchElementException {
-        if(group.length() < 3) throw new IllegalArgumentException();
+    public List<List<String>>parse(String group) throws NoSuchElementException, IOException {
+        if(group.length() < 3) throw new NoSuchElementException();
 
         String groupId = getGroupId(group.toUpperCase());
         return getSchedule(groupId);
@@ -45,16 +43,21 @@ public class WebParser implements Parser {
     /**
      * Получение id по названию группы
      * @param group название группы
-     * @throws IOException ошибка соединения
-     * @throws ParseException ошибка чтение данных
+     * @throws NoSuchElementException группа не найдена
+     * @throws IOException ошибка чтени
      * @return id группы
      */
-    public String getGroupId(String group) throws IOException, ParseException, NoSuchElementException {
+    public String getGroupId(String group) throws NoSuchElementException, IOException {
         URL url = new URL("https://urfu.ru/api/schedule/groups/suggest/?query=" + group);
         JSONParser parser = new JSONParser();
-        Object rawDocument = parser.parse(new InputStreamReader(url.openStream()));
 
-        JSONObject document = (JSONObject) parser.parse(new InputStreamReader(url.openStream()));
+        JSONObject document;
+        try {
+            document = (JSONObject) parser.parse(new InputStreamReader(url.openStream()));
+        }catch(ParseException e){
+            throw new IOException();
+        }
+
         JSONArray suggestions = (JSONArray)document.get("suggestions");
 
         for(int i = 0; i < suggestions.size(); i++){
@@ -71,11 +74,10 @@ public class WebParser implements Parser {
     /**
      * Получение расписаниея по id группы
      * @param id id группы
-     * @throws IOException ошибка соединения
-     * @throws ParseException ошибка чтение данных
+     * @throws IOException ошибка чтения данных
      * @return расписание
      */
-    public List<List<String>> getSchedule(String id) throws IOException, ParseException{
+    public List<List<String>> getSchedule(String id) throws IOException{
         LocalDate shiftDate = LocalDate.now().minusWeeks(1);
 
         int shiftYear = shiftDate.getYear();
@@ -115,7 +117,7 @@ public class WebParser implements Parser {
             }
 
             Elements filterLesson = lesson.select("td");
-            if(filterLesson.size() < 2) throw new ParseException(0);
+            if(filterLesson.size() < 2) throw new IOException();
             String lessonName = getName(lesson.select("td").get(1));
 
             Matcher pattern = Pattern.compile("^[0-9]+").matcher(lessonName);
@@ -132,15 +134,15 @@ public class WebParser implements Parser {
     /**
      * извлекает из тега информацию о предмете
      * @param lesson тег
-     * @throws ParseException выбрасывается при невалидном теге
+     * @throws IOException ошибка чтения данных
      * @return информация о предмете
      */
-    private String getName(Element lesson) throws ParseException{
+    private String getName(Element lesson) throws IOException{
         StringBuilder lessonBuilder = new StringBuilder();
         for(int i = 0; i < lesson.childrenSize(); i++){
             Element lessonNameElement = lesson.child(i);
 
-            if(lessonNameElement.childrenSize() == 0) throw new ParseException(0);
+            if(lessonNameElement.childrenSize() == 0) throw new IOException();
             String name = lessonNameElement.child(0).text();
             lessonBuilder.append(name);
 
