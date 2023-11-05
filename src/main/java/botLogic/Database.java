@@ -5,19 +5,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
- * Класс для работы с базой данных, чтение и запись в неё.
- * @author Мельниченко Андрей (Foges)
+ * Класс для работы с базой данных, чтение и запись.
  */
 public class Database implements Data {
     private final String url = System.getenv("URL");
@@ -39,17 +34,10 @@ public class Database implements Data {
     public List<String> getSchedule(String id, int day) throws SQLException {
         String group = null;
         String lesson = null;
-        List<String> schedule = null;
-        Boolean flag = false;
+        List<String> schedule;
         try {
-            schedule = getCastomSchedule(id, day);
+            return getCastomSchedule(id, day);
         } catch (SQLException ex) {
-            flag = true;
-        }
-        connect = DriverManager.getConnection(url, user, password);
-        state = connect.createStatement();
-        result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
-        if (result.next() && (result.getInt(1) == 0 || flag)) {
             connect = DriverManager.getConnection(url, user, password);
             state = connect.createStatement();
             result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
@@ -64,8 +52,8 @@ public class Database implements Data {
             connect.close();
             state.close();
             result.close();
+            return schedule;
         }
-        return schedule;
     }
 
     /**
@@ -141,13 +129,13 @@ public class Database implements Data {
     }
 
     /**
-     * Приватный метод для получения из базы данных индивидуального расписания из базы данных.
+     * Метод для получения из базы данных индивидуального расписания из базы данных.
      * @param id Идентификатор пользователя в базе данных.
      * @param day Номер дня недели, на который сохраняется расписание.
      * @return Возвращает индивидуальное расписание пользователя.
      * @throws SQLException Ошибка существования индивидуального расписания.
      */
-    private List<String> getCastomSchedule (String id, int day) throws SQLException {
+    public List<String> getCastomSchedule (String id, int day) throws SQLException {
         List<String> schedule = null;
         String lesson = null;
         connect = DriverManager.getConnection(url, user, password);
@@ -163,37 +151,6 @@ public class Database implements Data {
         state.close();
         result.close();
         return schedule;
-    }
-
-    /**
-     * Метод позволяет узнать следующую пару на текущий момент.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер дня текущей недели.
-     * @return Возвращает следующую пару.
-     */
-    public String getNextLesson (String id, int day) {
-        String lesson = null;
-        LocalTime time = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        int current_time = Integer.parseInt(time.format(DateTimeFormatter.ofPattern("HH"))) * 60
-                + Integer.parseInt(time.format(DateTimeFormatter.ofPattern("mm")));
-        Pattern pattern = Pattern.compile("(\\d\\d):(\\d\\d)");
-        Matcher matcher;
-        try {
-            connect = DriverManager.getConnection(url, user, password);
-            state = connect.createStatement();
-            List<String> schedule = getSchedule(id, day);
-            for (String less : schedule){
-                matcher = pattern.matcher(less);
-                if (!less.equals("-") && current_time <= Integer.parseInt(matcher.group(1)) * 60
-                        + Integer.parseInt(matcher.group(2))) {
-                    return less;
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        }
-        return "Сегодня у вас больше нет пар";
     }
 
     /**
@@ -220,25 +177,6 @@ public class Database implements Data {
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
         }
-    }
-
-    /**
-     * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
-     * @param id Идентификатор пользователя в базе данных.
-     */
-    public void switchUserStatus(String id){
-        try{
-            connect = DriverManager.getConnection(url, user, password);
-            state = connect.createStatement();
-            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
-            if (result.next()) state.executeUpdate(String.format("Update `users` set `useIndiv` = '%d' where `id` = '%s'", (result.getInt(1) + 1) % 2, id));
-            connect.close();
-            state.close();
-            result.close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        }
-
     }
 
     /**
@@ -278,26 +216,6 @@ public class Database implements Data {
         state = connect.createStatement();
 
         return state.executeQuery(String.format("show tables like '%s'", name_table)).next();
-    }
-
-    /**
-     * Метод для удаления индивидуального расписания из базы данных.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер дня от 0 до 14, где 0 - полное удаление.
-     */
-    public void deleteSchedule(String id, int day) {
-        if (day != 0) {
-            try {
-                connect = DriverManager.getConnection(url, user, password);
-                state = connect.createStatement();
-                state.executeUpdate(String.format("Alter table `%s` drop column `%s`", id, day));
-            } catch (SQLException ex) {
-                System.out.println(ex.getErrorCode() + ex.getMessage());
-            }
-
-        } else {
-            dropTable(id);
-        }
     }
 
     /**
