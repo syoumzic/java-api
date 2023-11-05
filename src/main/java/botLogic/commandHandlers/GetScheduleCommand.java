@@ -1,14 +1,70 @@
 package botLogic.commandHandlers;
 
-import botLogic.User;
+import botLogic.*;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.parameterHandler.GroupHandler;
 import botLogic.parameterHandler.ParameterHandler;
 
-public class GetScheduleCommand implements CommandHandler{
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
+public class GetScheduleCommand extends Command {
+    Reference<LocalDate>date = new Reference<>();
+
+    public GetScheduleCommand(){
+        setParameterHandlers(new DateHandler(date));
+    }
+
     public String action(User user){
-        ParameterHandler dateHandler = new DateHandler();
-        user.setParameterHandler(dateHandler);
-        return dateHandler.startMessage();
+        user.flushCommand();
+
+        Calendar calendar = new Calendar();
+        int numberDay = calendar.getFirstDayOfEvenWeek(date.current) + 1;
+
+        List<String> schedule = null;
+
+        try{
+            schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
+        } catch (SQLException ex) {
+            if (ex.getErrorCode() == 1146){
+                try {
+                    Parser parser = new WebParser();
+
+                    List<List<String>> weeksShedule = parser.parse(user.getDatabase()
+                                                                        .getUsersGroup(user.getId())
+                                                                        .toUpperCase());
+
+                    user
+                        .getDatabase()
+                        .setSchedule(user.getDatabase().getUsersGroup(user.getId()), weeksShedule);
+
+                    schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
+                }catch(SQLException e){
+                    return "Внутренняя ошибка";
+                }catch (IOException e){
+                    return "Ошибка считывания расписания. Попробуйте позже";
+                } catch (NoSuchElementException e){
+                    return "Не удалось найти группу с таким названием";
+                }
+            }
+            else {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+        if (schedule.isEmpty()) return "В этот день у вас нет пар";
+
+        return toString(schedule);
+    }
+
+    private String toString(List<String>schedule){
+        StringBuilder concat = new StringBuilder();
+        for(String lesson : schedule)
+            concat.append(lesson).append("\n");
+        return concat.toString();
     }
 }
