@@ -1,18 +1,23 @@
 package botLogic.commandHandlers;
 
+import botLogic.Reference;
 import botLogic.User;
 import botLogic.parameterHandler.GroupHandler;
 import botLogic.parameterHandler.ParameterHandler;
 
-public class StartCommand implements CommandHandler {
-    public String action(User user){
+public class StartCommand extends Command {
+    public String action(User user) throws RuntimeException{
         HelpCommand helpCommand = new HelpCommand();
-        ParameterHandler groupHandler = new GroupHandler();
-        user.setParameterHandler(groupHandler);
-        return "Привет, я учебный бот УрФУ, мои возможности:\n" +
-               "Показывать расписание на определённую дату\n" +
-                helpCommand.action(user) +
-                "\n" +
-                groupHandler.startMessage();
+        ChangeGroupCommand changeGroupCommand = new ChangeGroupCommand();
+
+        String message = "Привет, я учебный бот УрФУ, мои возможности:\n" +
+                         "Показывать расписание на определённую дату\n" +
+                         helpCommand.action(user) +
+                         "\n" +
+                         changeGroupCommand.handle(user, "");
+
+        user.setCommand(changeGroupCommand);
+
+        return message;
     }
 }

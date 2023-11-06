@@ -1,6 +1,7 @@
 package botLogic.parameterHandler;
 
 import botLogic.Calendar;
+import botLogic.Reference;
 import botLogic.User;
 import org.checkerframework.checker.units.qual.C;
 import org.json.simple.parser.ParseException;
@@ -16,56 +17,22 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class DateHandler implements ParameterHandler{
+    Reference<LocalDate>callbackDate;
+
+    public DateHandler(Reference<LocalDate> callbackDate){
+        this.callbackDate = callbackDate;
+    }
+
     public String startMessage(){
         return "Укажите день (например 1.12)";
     }
 
-    public String action(User user, String message){
+    public void handle(String message) throws RuntimeException{
         Calendar calendar = new Calendar();
-        int numberDay = calendar.getFirstDayOfEvenWeek(message) + 1;
-
-        List<String>schedule = null;
-
         try{
-            schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
-        } catch (SQLException ex) {
-            if (ex.getErrorCode() == 1146){
-                try {
-                    List<List<String>> schedule_pars = user
-                            .getWebParser()
-                            .parse(user.getDatabase()
-                                    .getUsersGroup(user.getId())
-                                    .toUpperCase());
-
-                    user
-                            .getDatabase()
-                            .setSchedule(user.getDatabase().getUsersGroup(user.getId()), schedule_pars);
-
-                    schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
-                }catch(SQLException e){
-                    return "Внутренняя ошибка";
-                }catch (IOException e){
-                    return "Ошибка считывания расписания. Попробуйте позже";
-                } catch (NoSuchElementException e){
-                    return "Не удалось найти группу с таким названием";
-                }
-            }
-            else {
-                System.out.println(ex.getMessage());
-            }
+            callbackDate.current = calendar.getLocalDate(message);
+        }catch(DateTimeParseException e){
+            throw new RuntimeException("введена некорректная дата");
         }
-
-        if (schedule.isEmpty()) return "В этот день у вас нет пар";
-        user.flushParameterHandler();
-
-        return toString(schedule);
     }
-
-    String toString(List<String>schedule){
-        StringBuilder concat = new StringBuilder();
-        for(String lesson : schedule)
-                concat.append(lesson).append("\n");
-        return concat.toString();
-    }
-
 }

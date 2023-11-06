@@ -1,46 +1,46 @@
 package botLogic;
 
 import botLogic.commandHandlers.*;
-import botLogic.parameterHandler.NothingHandler;
-import botLogic.parameterHandler.ParameterHandler;
 
 public class User {
-    private ParameterHandler parameterHandler;
+    private Command command = null;
     private Data dataBase = null;
-    private Parser parser = null;
     private String id = null;
-    User(ParameterHandler parameterHandler, Parser parser, Data dataBase, String id){
-        this.parameterHandler = parameterHandler;
+
+    User(Data dataBase, String id){
         this.dataBase = dataBase;
-        this.parser = parser;
         this.id = id;
     }
 
     public String processMessage(String message){
         message = message.trim();
-        return message.startsWith("/")? processCommand(message) : processParameter(message);
+
+        if(isCommand(message)){
+            command = getCommand(message);
+            if(command == null) return "комманда не найдена";
+
+            return command.handle(this, message);
+        }
+
+        if(command != null)
+            return command.handle(this, message);
+
+        return new HelpCommand().action(this);
+    }
+
+    private boolean isCommand(String message){
+        return message.startsWith("/");
     }
 
     public Data getDatabase(){
         return dataBase;
     }
 
-    public Parser getWebParser(){
-        return parser;
-    }
-
     public String getId(){
         return id;
     }
 
-    public String processCommand(String message){
-        var commandHandler = getCommandHandler(message);
-
-        if(commandHandler == null) return "комманда не найдена!";
-        return getCommandHandler(message).action(this);
-    }
-
-    private CommandHandler getCommandHandler(String message){
+    private Command getCommand(String message){
         return switch (message) {
             case "/start" -> new StartCommand();
             case "/help" -> new HelpCommand();
@@ -50,15 +50,12 @@ public class User {
         };
     }
 
-    public String processParameter(String message){
-        return parameterHandler.action(this, message);
+    public void setCommand(Command command){
+        this.command = command;
     }
 
-    public void setParameterHandler(ParameterHandler parameterHandler){
-        this.parameterHandler = parameterHandler;
+    public void flushCommand(){
+        this.command = null;
     }
 
-    public void flushParameterHandler(){
-        parameterHandler = new NothingHandler();
-    }
 }
