@@ -10,14 +10,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 public class Calendar {
-    /**
-     * возвращает сколько дней прошло с прошлой чётной недели первого дня относительно текущей даты
-     * @param date дата
-     * @return смещенная дата
-     */
-    public int getFirstDayOfEvenWeek(String date) throws DateTimeParseException {
-        return getFirstDayOfEvenWeek(getLocalDate(date));
-    }
 
     /**
      * переводит строку в дату
@@ -39,7 +31,8 @@ public class Calendar {
      * @param date дата
      * @return смещенная дата
      */
-    public int getFirstDayOfEvenWeek(LocalDate date){
+    
+    public int getShift(LocalDate date){
         LocalDate shiftDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
 
         int weekOfYear = shiftDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);

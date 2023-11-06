@@ -1,6 +1,5 @@
 package botLogic;
 
-import org.checkerframework.checker.units.qual.C;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,10 +12,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,7 +87,7 @@ public class WebParser implements Parser {
 
         final int daysCount = 14;
         int day = 0;
-        int shift = calendar.getFirstDayOfEvenWeek(shiftDate);
+        int shift = calendar.getShift(shiftDate);
         int index = 0;
 
         List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
