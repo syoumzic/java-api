@@ -51,8 +51,6 @@ public class Database implements Data {
         try {
             result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
             if (result.next() && (result.getInt(1) == 0 || flag)) {
-                connect = DriverManager.getConnection(url, user, password);
-                state = connect.createStatement();
                 result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
                 if (result.next()) group = result.getString(1);
                 result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
