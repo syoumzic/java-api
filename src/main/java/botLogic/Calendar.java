@@ -7,9 +7,15 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Locale;
 
 public class Calendar {
+
+    public int getMinute(){
+        Date date = new Date();  // current time
+        return date.getHours() * 60 + date.getMinutes();
+    }
 
     /**
      * переводит строку в дату
@@ -43,6 +49,6 @@ public class Calendar {
         if (weekOfYear % 2 == 0) shiftDate = shiftDate.with(ChronoField.DAY_OF_WEEK, 1);
         else shiftDate = shiftDate.minusWeeks(1).with(ChronoField.DAY_OF_WEEK, 1);
 
-        return (int)shiftDate.until(date, ChronoUnit.DAYS);
+        return (int)shiftDate.until(date, ChronoUnit.DAYS) + 1;
     }
 }

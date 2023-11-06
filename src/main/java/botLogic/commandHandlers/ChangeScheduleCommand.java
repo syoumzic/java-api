@@ -1,6 +1,7 @@
 package botLogic.commandHandlers;
 
 import botLogic.Calendar;
+import botLogic.LogicException;
 import botLogic.Reference;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
@@ -18,11 +19,15 @@ public class ChangeScheduleCommand extends AbstractCommand {
         setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule));
     }
 
-    protected String execute(User user) {
+    protected String execute(User user) throws LogicException{
         Calendar calendar = new Calendar();
-        user.getDatabase().setCastomSchedule(user.getId(),
-                schedule.current,
-                new Calendar().getShift(date.current));
+        try {
+            user.getDatabase().setCastomSchedule(user.getId(),
+                                                 schedule.current,
+                                                 calendar.getShift(date.current));
+        }catch(SQLException e){
+            throw new LogicException("Внутренняя ошибка");
+        }
         return "Расписание обновлено";
     }
 }

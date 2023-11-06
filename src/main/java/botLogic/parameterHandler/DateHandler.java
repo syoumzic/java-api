@@ -1,6 +1,7 @@
 package botLogic.parameterHandler;
 
 import botLogic.Calendar;
+import botLogic.LogicException;
 import botLogic.Reference;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -16,12 +17,12 @@ public class DateHandler implements ParameterHandler{
         return "Укажите день (например 1.12)";
     }
 
-    public void handle(String message) throws RuntimeException{
+    public void handle(String message) throws LogicException {
         Calendar calendar = new Calendar();
         try{
             callbackDate.current = calendar.getLocalDate(message);
         }catch(DateTimeParseException e){
-            throw new RuntimeException("Дата введена некорректно");
+            throw new LogicException("Дата введена некорректно");
         }
     }
 }

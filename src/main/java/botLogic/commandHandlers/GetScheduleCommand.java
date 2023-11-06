@@ -20,7 +20,7 @@ public class GetScheduleCommand extends AbstractCommand {
         user.flushCommand();
 
         Calendar calendar = new Calendar();
-        int numberDay = calendar.getShift(date.current) + 1;
+        int numberDay = calendar.getShift(date.current);
 
         List<String> schedule = null;
         try{

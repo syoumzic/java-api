@@ -1,9 +1,10 @@
 package botLogic.commandHandlers;
 
+import botLogic.LogicException;
 import botLogic.User;
 
 public class StartCommand extends AbstractCommand {
-    public String execute(User user) throws RuntimeException{
+    public String execute(User user) throws LogicException {
         Command helpCommand = new HelpCommand();
         Command changeGroupCommand = new ChangeGroupCommand();
 
@@ -14,7 +15,6 @@ public class StartCommand extends AbstractCommand {
                          changeGroupCommand.handle(user, "");
 
         user.setCommand(changeGroupCommand);
-
         return message;
     }
 }

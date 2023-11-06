@@ -1,5 +1,6 @@
 package botLogic.commandHandlers;
 
+import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.ParameterHandler;
 
@@ -30,7 +31,7 @@ public abstract class AbstractCommand implements Command{
      * @throws RuntimeException ошибка выполнения (любая: неправильный параметр, ошибка выполнения комманды)
      * @return ответ
      */
-    public String handle(User user, String message) throws RuntimeException {
+    public String handle(User user, String message) throws LogicException {
         if(currentParameter != null)
             currentParameter.handle(message);
 
@@ -39,5 +40,5 @@ public abstract class AbstractCommand implements Command{
         return (currentParameter == null)? execute(user) : currentParameter.startMessage();
     }
 
-    protected abstract String execute(User user) throws RuntimeException;
+    protected abstract String execute(User user) throws LogicException;
 }

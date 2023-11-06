@@ -1,7 +1,9 @@
 package botLogic.parameterHandler;
 
+import botLogic.LogicException;
 import botLogic.Reference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -23,12 +25,15 @@ public class ScheduleHandler implements ParameterHandler{
                 "   10:40 632 Объектно-ориентированное программирование \n" +
                 "   16:00 Прикладная физическая культура";
     }
-    public void handle(String message) throws RuntimeException{
+    public void handle(String message) throws LogicException {
+        callbackSchedule.current = new ArrayList<String>();
+
         for(String lesson : message.split("\n")){
             if(Objects.equals(lesson, "")) throw new RuntimeException("обнаружена пустая строчка \n" +
                                                         "если предмета нет, необходимо ставить '-'");
-            if(lesson.length() >= 1024) throw new RuntimeException("превышена макимальная длинна на предмета");
-            if(!Pattern.matches("\\s*\\d{1,2}:\\d{2}\\s+[А-Яa-я][A-Za-z]", message)) throw new RuntimeException(String.format("строчка '%s' не соответствует формату", lesson));
+            if(lesson.length() >= 64) throw new RuntimeException("превышена макимальная длинна на предмета");
+            if(!Pattern.matches("\\s*\\d{1,2}:\\d{2}\\s+[А-Яa-яA-Za-z]+$", lesson)) throw new LogicException(String.format("строчка '%s' не соответствует формату", lesson));
+            callbackSchedule.current.add(lesson);
         }
     }
 }

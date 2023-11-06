@@ -16,7 +16,6 @@ public class User {
         message = message.trim();
 
         try {
-
             if (isCommand(message)) {
                 command = getCommand(message);
                 if (command == null) return "комманда не найдена";
@@ -29,8 +28,12 @@ public class User {
 
             return new HelpCommand().handle(this, "");
         }
-        catch(RuntimeException e){
+        catch(LogicException e){
             return e.getMessage();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return "Внутренняя ошибка";
         }
     }
 
@@ -53,7 +56,7 @@ public class User {
             case "/change_group" -> new ChangeGroupCommand();
             case "/change_schedule" -> new ChangeScheduleCommand();
             case "/schedule" -> new GetScheduleCommand();
-            case
+            case "/next_lesson" -> new NextLessonCommand();
             default -> null;
         };
     }

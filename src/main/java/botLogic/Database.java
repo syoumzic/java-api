@@ -121,11 +121,16 @@ public class Database implements Data {
      * @param day Номер дня недели, на который сохраняется расписание.
      */
     public void setCastomSchedule(String id, List<String> schedule, int day) throws SQLException{
+        boolean flag = tableIsExist(id);
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try {
-            if (!tableIsExist(id))
+            if (!flag) {
                 state.executeUpdate(String.format("Create table `%s`(`id` int primary key not null auto_increment)", id));
+                switchUserStatus(id);
+                connect = DriverManager.getConnection(url, user, password);
+                state = connect.createStatement();
+            }
             if (!state.executeQuery(String.format("show columns from `%s` like '%s'", id, day)).next())
                 state.executeUpdate(String.format("Alter table `%s` Add column `%s` varchar(64) not null default '-'", id, day));
             result = state.executeQuery(String.format("select count(`id`) from `%s`", id));
@@ -161,21 +166,17 @@ public class Database implements Data {
         String lesson = null;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
-        try {
-            result = state.executeQuery(String.format("Select `%s` from `%s`", day, id));
-            schedule = new ArrayList<>();
-            while (result.next()) {
-                lesson = result.getString(1);
-                if (Objects.equals(lesson, "end")) break;
-                schedule.add(lesson);
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        } finally {
-            connect.close();
-            state.close();
-            result.close();
+        result = state.executeQuery(String.format("Select `%s` from `%s`", day, id));
+        schedule = new ArrayList<>();
+        while (result.next()) {
+            lesson = result.getString(1);
+            if (Objects.equals(lesson, "end")) break;
+            schedule.add(lesson);
         }
+        connect.close();
+        state.close();
+        result.close();
+
         return schedule;
     }
 
@@ -188,9 +189,7 @@ public class Database implements Data {
      */
     public String getNextLesson (String id, int day, int current_time) throws SQLException{
         String lesson = null;
-        LocalTime time = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        Pattern pattern = Pattern.compile("(\\d\\d):(\\d\\d)");
+        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d\\d)");
         Matcher matcher;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
@@ -198,6 +197,7 @@ public class Database implements Data {
             List<String> schedule = getSchedule(id, day);
             for (String less : schedule){
                 matcher = pattern.matcher(less);
+                matcher.find();
                 if (!less.equals("-") && current_time <= Integer.parseInt(matcher.group(1)) * 60
                         + Integer.parseInt(matcher.group(2))) {
                     return less;
@@ -316,6 +316,7 @@ public class Database implements Data {
             }
         } else {
             dropTable(id);
+            switchUserStatus(id);
         }
     }
 
