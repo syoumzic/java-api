@@ -1,6 +1,7 @@
 package botLogic.parameterHandler;
 
 import botLogic.LogicException;
+import botLogic.User;
 
 public interface ParameterHandler {
     /**
@@ -12,5 +13,5 @@ public interface ParameterHandler {
      * обработка введённых параметров
      * @throws LogicException введены некоректные данные
      */
-    void handle(String message) throws LogicException;
+    void handle(User user, String message) throws LogicException;
 }

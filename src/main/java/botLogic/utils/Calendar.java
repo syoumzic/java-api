@@ -10,14 +10,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 
-public class Calendar {
+public class Calendar implements Time{
 
     /**
      * преобразует часы и минуты в числоо
      * @return вычисляет сколько минут прошло с начала дня
      */
     public int getMinute(){
-        Date date = new Date();  // current time
+        java.util.Date date = new Date();  // current time
         return date.getHours() * 60 + date.getMinutes();
     }
 

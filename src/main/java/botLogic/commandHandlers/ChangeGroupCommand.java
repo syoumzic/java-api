@@ -29,9 +29,8 @@ public class ChangeGroupCommand extends AbstractCommand {
         try{
             user.getDatabase().addUserGroup(user.getId(), group.current);
 
-            if(!user.getDatabase().tableIsExist(group.current.toLowerCase())){
-                Parser parser = new WebParser();
-                List<List<String>> weeksSchedule = parser.parse(user.getDatabase()
+             if(!user.getDatabase().tableIsExist(group.current.toLowerCase())){
+                List<List<String>> weeksSchedule = user.getParser().parse(user.getTime(), user.getDatabase()
                         .getUsersGroup(user.getId())
                         .toUpperCase());
 

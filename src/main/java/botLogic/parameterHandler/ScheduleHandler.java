@@ -1,6 +1,7 @@
 package botLogic.parameterHandler;
 
 import botLogic.LogicException;
+import botLogic.User;
 import botLogic.utils.Reference;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ScheduleHandler implements ParameterHandler{
      * @param message сообщение пользователя
      * @throws LogicException группа не валидна
      */
-    public void handle(String message) throws LogicException {
+    public void handle(User user, String message) throws LogicException {
         callbackSchedule.current = new ArrayList<String>();
         int minute = -1;
         for(String lesson : message.split("\n")){

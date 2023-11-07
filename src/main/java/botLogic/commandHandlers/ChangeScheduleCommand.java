@@ -31,11 +31,10 @@ public class ChangeScheduleCommand extends AbstractCommand {
             return "Для начала укажите свою группу";
         }
 
-        Calendar calendar = new Calendar();
         try {
             user.getDatabase().setCastomSchedule(user.getId(),
                                                  schedule.current,
-                                                 calendar.getShift(date.current));
+                                                 user.getTime().getShift(date.current));
         }catch(SQLException e){
             throw new LogicException("Внутренняя ошибка");
         }
