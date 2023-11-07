@@ -5,19 +5,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
- * Класс для работы с базой данных, чтение и запись в неё.
- * @author Мельниченко Андрей (Foges)
+ * Класс для работы с базой данных, чтение и запись.
  */
 public class Database implements Data {
     private final String url = System.getenv("URL");
@@ -42,7 +37,7 @@ public class Database implements Data {
         List<String> schedule = null;
         boolean flag = false;
         try {
-            schedule = getCastomSchedule(id, day);
+            return getCastomSchedule(id, day);
         } catch (SQLException ex) {
             flag = true;
         }
@@ -60,6 +55,7 @@ public class Database implements Data {
                     if (Objects.equals(lesson, "end")) break;
                     schedule.add(lesson);
                 }
+
             }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
@@ -67,7 +63,9 @@ public class Database implements Data {
             connect.close();
             state.close();
             result.close();
+            return schedule;
         }
+
 
         return schedule;
     }
@@ -155,13 +153,13 @@ public class Database implements Data {
     }
 
     /**
-     * Приватный метод для получения из базы данных индивидуального расписания из базы данных.
+     * Метод для получения из базы данных индивидуального расписания из базы данных.
      * @param id Идентификатор пользователя в базе данных.
      * @param day Номер дня недели, на который сохраняется расписание.
      * @return Возвращает индивидуальное расписание пользователя.
      * @throws SQLException Ошибка существования индивидуального расписания.
      */
-    private List<String> getCastomSchedule (String id, int day) throws SQLException {
+    public List<String> getCastomSchedule (String id, int day) throws SQLException {
         List<String> schedule = null;
         String lesson = null;
         connect = DriverManager.getConnection(url, user, password);
