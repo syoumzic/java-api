@@ -18,7 +18,7 @@ public class ScheduleHandler implements ParameterHandler{
 
     public String startMessage(){
         return  "Перечислите предметы по порядку через enter (ctrl+enter) (если предмета нет, то ставить '-')\n" +
-                "Предметы перечисляются в формате: [дата] [кабинет] [название предмета]\n" +
+                "Предметы перечисляются в формате: [время] [кабинет] [название предмета]\n" +
                 "Кабинет является необязательным параметром\n" +
                 "\n" +
                 "Пример:\n" +
@@ -36,7 +36,7 @@ public class ScheduleHandler implements ParameterHandler{
             Pattern timePattern = Pattern.compile("^\\s*(\\d{1,2}):(\\d{2})");
             Matcher matcher = timePattern.matcher(lesson);
 
-            if(!matcher.find()) throw new LogicException("для строки %s не указано время");
+            if(!matcher.find()) throw new LogicException(String.format("для строки %s не указано время", lesson));
 
             int nextMinute = Integer.parseInt(matcher.group(1)) * 60 + Integer.parseInt(matcher.group(2));
             if(nextMinute <= minute) throw new LogicException("Расписание идёт не по порядку");

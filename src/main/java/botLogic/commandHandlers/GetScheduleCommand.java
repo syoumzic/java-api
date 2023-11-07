@@ -19,10 +19,17 @@ public class GetScheduleCommand extends AbstractCommand {
     protected String execute(User user) throws LogicException{
         user.flushCommand();
 
+        try{
+            user.getDatabase().getUsersGroup(user.getId());
+        }catch(SQLException e){
+            return "Для начала укажите свою группу";
+        }
+
         Calendar calendar = new Calendar();
         int numberDay = calendar.getShift(date.current);
 
         List<String> schedule = null;
+
         try{
             schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
         } catch (SQLException ex) {

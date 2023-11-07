@@ -20,6 +20,12 @@ public class ChangeScheduleCommand extends AbstractCommand {
     }
 
     protected String execute(User user) throws LogicException{
+        try{
+            user.getDatabase().getUsersGroup(user.getId());
+        }catch(SQLException e){
+            return "Для начала укажите свою группу";
+        }
+
         Calendar calendar = new Calendar();
         try {
             user.getDatabase().setCastomSchedule(user.getId(),
