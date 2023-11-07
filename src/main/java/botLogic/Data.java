@@ -13,5 +13,4 @@ public interface Data {
     void switchUserStatus(String id) throws SQLException;
     void deleteSchedule(String id, int day) throws SQLException;
     Boolean tableIsExist(String name_table) throws SQLException;
-
 }

@@ -87,7 +87,7 @@ public class WebParser implements Parser {
 
         final int daysCount = 14;
         int day = 0;
-        int shift = calendar.getShift(shiftDate);
+        int shift = calendar.getShift(shiftDate) - 1;
         int index = 0;
 
         List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
@@ -114,7 +114,8 @@ public class WebParser implements Parser {
 
             Elements filterLesson = lesson.select("td");
             if(filterLesson.size() < 2) throw new IOException();
-            String lessonTime = getTime(filterLesson.get(0));
+            String lessonTime = "";
+            lessonTime = getTime(filterLesson.get(0));
             String lessonName = getName(filterLesson.get(1));
 
             Matcher pattern = Pattern.compile("^[0-9]+").matcher(lessonName);
@@ -155,6 +156,12 @@ public class WebParser implements Parser {
         return lessonBuilder.toString();
     }
 
+    /**
+     * Извлекает из элемента строку с указанием времени
+     * @param timeElement узел времени
+     * @return Время
+     * @throws IOException ошибка считывания
+     */
     private String getTime(Element timeElement) throws IOException{
         Pattern pattern = Pattern.compile("\\d\\d:\\d\\d");
         Matcher matcher = pattern.matcher(timeElement.text());

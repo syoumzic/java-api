@@ -26,6 +26,12 @@ public class ScheduleHandler implements ParameterHandler{
                 "10:40 632 Объектно-ориентированное программирование \n" +
                 "16:00 Прикладная физическая культура";
     }
+
+    /**
+     * проверяет валидность введёного расписания
+     * @param message сообщение пользователя
+     * @throws LogicException группа не валидна
+     */
     public void handle(String message) throws LogicException {
         callbackSchedule.current = new ArrayList<String>();
         int minute = -1;

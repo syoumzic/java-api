@@ -12,6 +12,11 @@ public class User {
         this.id = id;
     }
 
+    /**
+     * обрабатывает сообщение от пользователя
+     * @param message сообщение пользователя
+     * @return ответ на сообщение
+     */
     public String processMessage(String message){
         message = message.trim();
 
@@ -37,6 +42,11 @@ public class User {
         }
     }
 
+    /**
+     * проверяет является ли сообщение командой
+     * @param message сообщение пользователя
+     * @return является ли сообщение командой
+     */
     private boolean isCommand(String message){
         return message.startsWith("/");
     }
@@ -49,6 +59,11 @@ public class User {
         return id;
     }
 
+    /**
+     * Возвращает обработчик комманды
+     * @param message название команды
+     * @return обработчик комманды
+     */
     private Command getCommand(String message){
         return switch (message) {
             case "/help" -> new HelpCommand();

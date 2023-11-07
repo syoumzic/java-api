@@ -8,6 +8,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class NextLessonCommand extends AbstractCommand {
+
+    /**
+     * выдаёт ближайшую пару
+     * @param user текущий пользователь
+     * @return
+     * @throws LogicException
+     */
     protected String execute(User user) throws LogicException{
         try{
             user.getDatabase().getUsersGroup(user.getId());

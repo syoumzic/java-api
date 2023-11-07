@@ -15,6 +15,11 @@ public class GroupHandler implements ParameterHandler {
         return "Укажите номер вашей группы";
     }
 
+    /**
+     * проверяет валидность введённой группы
+     * @param message сообщение пользователя
+     * @throws LogicException группа не валидна
+     */
     public void handle(String message) throws LogicException{
         if(!Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message))
             throw new LogicException("Группа введено некорректно");

@@ -17,6 +17,11 @@ public class DateHandler implements ParameterHandler{
         return "Укажите день (например 1.12)";
     }
 
+    /**
+     * проверяет валидность введённой даты
+     * @param message сообщение пользователя
+     * @throws LogicException дата не валидна
+     */
     public void handle(String message) throws LogicException {
         Calendar calendar = new Calendar();
         try{

@@ -3,6 +3,12 @@ package botLogic.commandHandlers;
 import botLogic.User;
 
 public class HelpCommand extends AbstractCommand {
+
+    /**
+     * возвращает список команд
+     * @param user текущий пользователь
+     * @return
+     */
     protected String execute(User user){
         user.flushCommand();
 

@@ -16,6 +16,11 @@ public class GetScheduleCommand extends AbstractCommand {
         setParameterHandlers(new DateHandler(date));
     }
 
+    /**
+     * выдаёт расписание на день
+     * @param user текущий пользователь
+     * @return сообщение успешного выполнения
+     */
     protected String execute(User user) throws LogicException{
         user.flushCommand();
 
