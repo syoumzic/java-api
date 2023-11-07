@@ -2,15 +2,21 @@ package botLogic;
 
 import botLogic.commandHandlers.*;
 import botLogic.dataBase.Data;
+import botLogic.parser.Parser;
+import botLogic.utils.Time;
 
 public class User {
     private Command command = null;
-    private Data dataBase = null;
-    private String id = null;
+    private Data dataBase;
+    private String id;
+    private Parser parser;
+    private Time time;
 
-    User(Data dataBase, String id){
+    User(Data dataBase, String id, Parser parser, Time time){
         this.dataBase = dataBase;
         this.id = id;
+        this.parser = parser;
+        this.time = time;
     }
 
     /**
@@ -58,6 +64,14 @@ public class User {
 
     public String getId(){
         return id;
+    }
+
+    public Parser getParser(){
+        return parser;
+    }
+
+    public Time getTime(){
+        return time;
     }
 
     /**

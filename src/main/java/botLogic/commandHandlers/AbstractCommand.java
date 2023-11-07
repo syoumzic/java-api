@@ -31,7 +31,7 @@ public abstract class AbstractCommand implements Command{
      */
     public String handle(User user, String message) throws LogicException {
         if(currentParameter != null)
-            currentParameter.handle(message);
+            currentParameter.handle(user, message);
 
         currentParameter = handlers.poll();          //next parameter
 

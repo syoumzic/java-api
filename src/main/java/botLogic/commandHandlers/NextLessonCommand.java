@@ -22,11 +22,10 @@ public class NextLessonCommand extends AbstractCommand {
             return "Для начала укажите свою группу";
         }
 
-        Calendar calendar = new Calendar();
         try {
             return user.getDatabase().getNextLesson(user.getId(),
-                                                    calendar.getShift(LocalDate.now()),
-                                                    calendar.getMinute());
+                                                    user.getTime().getShift(LocalDate.now()),
+                                                    user.getTime().getMinute());
         }catch(SQLException e){
             throw new LogicException("Внутренняя ошибка");
         }

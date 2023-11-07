@@ -34,8 +34,7 @@ public class GetScheduleCommand extends AbstractCommand {
             return "Для начала укажите свою группу";
         }
 
-        Calendar calendar = new Calendar();
-        int numberDay = calendar.getShift(date.current);
+        int numberDay = user.getTime().getShift(date.current);
 
         List<String> schedule = null;
 
@@ -44,11 +43,8 @@ public class GetScheduleCommand extends AbstractCommand {
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 1146){
                 try {
-                    Parser parser = new WebParser();
 
-                    List<List<String>> weeksShedule = parser.parse(user.getDatabase()
-                                                                        .getUsersGroup(user.getId())
-                                                                        .toUpperCase());
+                    List<List<String>> weeksShedule = user.getParser().parse(user.getTime(), user.getDatabase().getUsersGroup(user.getId()).toUpperCase());
 
                     user
                         .getDatabase()

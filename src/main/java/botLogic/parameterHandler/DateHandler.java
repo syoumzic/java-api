@@ -1,10 +1,12 @@
 package botLogic.parameterHandler;
 
-import botLogic.utils.Calendar;
+import botLogic.User;
+import botLogic.utils.Time;
 import botLogic.LogicException;
 import botLogic.utils.Reference;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.zip.DataFormatException;
 
 public class DateHandler implements ParameterHandler{
     private Reference<LocalDate>callbackDate;
@@ -22,10 +24,11 @@ public class DateHandler implements ParameterHandler{
      * @param message сообщение пользователя
      * @throws LogicException дата не валидна
      */
-    public void handle(String message) throws LogicException {
-        Calendar calendar = new Calendar();
+    public void handle(User user, String message) throws LogicException {
+        Time time = user.getTime();
+
         try{
-            callbackDate.current = calendar.getLocalDate(message);
+            callbackDate.current = time.getLocalDate(message);
         }catch(DateTimeParseException e){
             throw new LogicException("Дата введена некорректно");
         }

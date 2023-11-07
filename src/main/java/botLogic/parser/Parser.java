@@ -1,4 +1,5 @@
 package botLogic.parser;
+import botLogic.utils.Time;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -13,5 +14,5 @@ public interface Parser{
      * @throws IOException ошибка считывания расписания
      * @throws NoSuchElementException группа не найдена
      */
-    List<List<String>> parse(String group) throws IOException, NoSuchElementException;
+    List<List<String>> parse(Time time, String group) throws IOException, NoSuchElementException;
 }

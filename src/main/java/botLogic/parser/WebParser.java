@@ -1,6 +1,8 @@
 package botLogic.parser;
 
+import botLogic.User;
 import botLogic.utils.Calendar;
+import botLogic.utils.Time;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,11 +32,11 @@ public class WebParser implements Parser {
      * @throws IOException ошибка чтения данных
      * @return расписание на две недели или null если такой группы нет
      */
-    public List<List<String>>parse(String group) throws NoSuchElementException, IOException {
+    public List<List<String>>parse(Time time, String group) throws NoSuchElementException, IOException {
         if(group.length() < 3) throw new NoSuchElementException();
 
         String groupId = getGroupId(group.toUpperCase());
-        return getSchedule(groupId);
+        return getSchedule(time, groupId);
     }
 
     /**
@@ -74,7 +76,7 @@ public class WebParser implements Parser {
      * @throws IOException ошибка чтения данных
      * @return расписание
      */
-    public List<List<String>> getSchedule(String id) throws IOException{
+    public List<List<String>> getSchedule(Time time, String id) throws IOException{
         LocalDate shiftDate = LocalDate.now().minusWeeks(1);
 
         int shiftYear = shiftDate.getYear();
@@ -84,11 +86,9 @@ public class WebParser implements Parser {
         Document document = Jsoup.connect(String.format("https://urfu.ru/api/schedule/groups/lessons/%s/%d%02d%02d", id, shiftYear, shiftMonth, shiftDay)).get();
         Elements documentLessons = document.select("tr");
 
-        Calendar calendar = new Calendar();
-
         final int daysCount = 14;
         int day = 0;
-        int shift = calendar.getShift(shiftDate) - 1;
+        int shift = time.getShift(shiftDate) - 1;
         int index = 0;
 
         List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
