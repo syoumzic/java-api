@@ -32,7 +32,7 @@ public class User {
             return e.getMessage();
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.printf(e.getMessage());
             return "Внутренняя ошибка";
         }
     }

@@ -16,7 +16,6 @@ public class Calendar {
         Date date = new Date();  // current time
         return date.getHours() * 60 + date.getMinutes();
     }
-
     /**
      * переводит строку в дату
      * @param date строка

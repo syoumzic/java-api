@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class WebParserTest {
     @Test
-    public void testGroupIdParser() throws IOException, ParseException {
+    public void testGroupIdParser() throws IOException {
         WebParser parser = new WebParser();
 
         var groups = new String[]{"МЕН-220201", "МЕН-220203", "РИ-311110", "РИ-311151", "РИС", "МЕН", "МЕН-2202012323"};

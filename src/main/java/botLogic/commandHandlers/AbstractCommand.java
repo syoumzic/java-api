@@ -28,7 +28,7 @@ public abstract class AbstractCommand implements Command{
      * если обработчики закончились, запускает функцию action реализованную в классах наследниках
      * @param user пользователь
      * @param message сообщение
-     * @throws RuntimeException ошибка выполнения (любая: неправильный параметр, ошибка выполнения комманды)
+     * @throws LogicException ошибка выполнения (любая: неправильный параметр, ошибка выполнения комманды)
      * @return ответ
      */
     public String handle(User user, String message) throws LogicException {

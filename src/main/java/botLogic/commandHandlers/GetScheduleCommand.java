@@ -16,7 +16,7 @@ public class GetScheduleCommand extends AbstractCommand {
         setParameterHandlers(new DateHandler(date));
     }
 
-    protected String execute(User user) throws RuntimeException{
+    protected String execute(User user) throws LogicException{
         user.flushCommand();
 
         Calendar calendar = new Calendar();
@@ -40,11 +40,11 @@ public class GetScheduleCommand extends AbstractCommand {
 
                     schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
                 }catch(SQLException e){
-                    throw new RuntimeException("Внутренняя ошибка");
+                    throw new LogicException("Внутренняя ошибка");
                 }catch (IOException e){
-                    throw new RuntimeException("Ошибка считывания расписания. Попробуйте позже");
+                    throw new LogicException("Ошибка считывания расписания. Попробуйте позже");
                 } catch (NoSuchElementException e){
-                    throw new RuntimeException("Не удалось найти группу с таким номером");
+                    throw new LogicException("Не удалось найти группу с таким номером");
                 }
             }
             else {

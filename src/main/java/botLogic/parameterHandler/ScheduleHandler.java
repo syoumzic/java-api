@@ -20,19 +20,28 @@ public class ScheduleHandler implements ParameterHandler{
         return  "Перечислите предметы по порядку через enter (ctrl+enter) (если предмета нет, то ставить '-')\n" +
                 "Предметы перечисляются в формате: [дата] [кабинет] [название предмета]\n" +
                 "Кабинет является необязательным параметром\n" +
+                "\n" +
                 "Пример:\n" +
-                "   9:00 514 Основы проектной деятельности\n" +
-                "   10:40 632 Объектно-ориентированное программирование \n" +
-                "   16:00 Прикладная физическая культура";
+                "9:00 514 Основы проектной деятельности\n" +
+                "10:40 632 Объектно-ориентированное программирование \n" +
+                "16:00 Прикладная физическая культура";
     }
     public void handle(String message) throws LogicException {
         callbackSchedule.current = new ArrayList<String>();
-
+        int minute = -1;
         for(String lesson : message.split("\n")){
-            if(Objects.equals(lesson, "")) throw new RuntimeException("обнаружена пустая строчка \n" +
-                                                        "если предмета нет, необходимо ставить '-'");
-            if(lesson.length() >= 64) throw new RuntimeException("превышена макимальная длинна на предмета");
-            if(!Pattern.matches("\\s*\\d{1,2}:\\d{2}\\s+[А-Яa-яA-Za-z]+$", lesson)) throw new LogicException(String.format("строчка '%s' не соответствует формату", lesson));
+            if(Objects.equals(lesson, "")) throw new LogicException("обнаружена пустая строчка \n" +
+                                                                       "если предмета нет, необходимо ставить '-'");
+            if(lesson.length() >= 64) throw new LogicException("превышена макимальная длинна на предмета");
+            Pattern timePattern = Pattern.compile("^\\s*(\\d{1,2}):(\\d{2})");
+            Matcher matcher = timePattern.matcher(lesson);
+
+            if(!matcher.find()) throw new LogicException("для строки %s не указано время");
+
+            int nextMinute = Integer.parseInt(matcher.group(1)) * 60 + Integer.parseInt(matcher.group(2));
+            if(nextMinute <= minute) throw new LogicException("Расписание идёт не по порядку");
+            minute = nextMinute;
+
             callbackSchedule.current.add(lesson);
         }
     }
