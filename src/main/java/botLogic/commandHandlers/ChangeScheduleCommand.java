@@ -1,8 +1,8 @@
 package botLogic.commandHandlers;
 
-import botLogic.Calendar;
+import botLogic.utils.Calendar;
 import botLogic.LogicException;
-import botLogic.Reference;
+import botLogic.utils.Reference;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.ScheduleHandler;

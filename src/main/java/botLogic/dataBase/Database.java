@@ -1,4 +1,6 @@
-package botLogic;
+package botLogic.dataBase;
+
+import botLogic.dataBase.Data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

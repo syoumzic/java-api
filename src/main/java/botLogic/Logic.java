@@ -1,6 +1,6 @@
 package botLogic;
-import botLogic.parameterHandler.*;
-import botLogic.commandHandlers.*;
+import botLogic.dataBase.Data;
+import botLogic.dataBase.Database;
 
 import java.util.HashMap;
 

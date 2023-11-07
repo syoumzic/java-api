@@ -1,4 +1,4 @@
-package botLogic;
+package botLogic.parser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;

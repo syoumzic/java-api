@@ -1,4 +1,4 @@
-package botLogic;
+package botLogic.utils;
 
 /**
  * необходим для ссылочной пердачи данных

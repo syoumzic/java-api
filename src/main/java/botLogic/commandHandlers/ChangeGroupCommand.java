@@ -2,6 +2,9 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.GroupHandler;
+import botLogic.parser.Parser;
+import botLogic.parser.WebParser;
+import botLogic.utils.Reference;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -9,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ChangeGroupCommand extends AbstractCommand {
-    Reference<String>group = new Reference<>();
+    Reference<String> group = new Reference<>();
 
     public ChangeGroupCommand(){
         setParameterHandlers(new GroupHandler(group));

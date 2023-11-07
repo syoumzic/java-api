@@ -1,8 +1,8 @@
 package botLogic.parameterHandler;
 
-import botLogic.Calendar;
+import botLogic.utils.Calendar;
 import botLogic.LogicException;
-import botLogic.Reference;
+import botLogic.utils.Reference;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 

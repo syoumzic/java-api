@@ -2,6 +2,10 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.DateHandler;
+import botLogic.parser.Parser;
+import botLogic.parser.WebParser;
+import botLogic.utils.Calendar;
+import botLogic.utils.Reference;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,7 +14,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class GetScheduleCommand extends AbstractCommand {
-    private Reference<LocalDate>date = new Reference<>();
+    private Reference<LocalDate> date = new Reference<>();
 
     public GetScheduleCommand(){
         setParameterHandlers(new DateHandler(date));
