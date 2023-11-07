@@ -34,26 +34,40 @@ public class Database implements Data {
     public List<String> getSchedule(String id, int day) throws SQLException {
         String group = null;
         String lesson = null;
-        List<String> schedule;
+        List<String> schedule = null;
+        boolean flag = false;
         try {
             return getCastomSchedule(id, day);
         } catch (SQLException ex) {
-            connect = DriverManager.getConnection(url, user, password);
-            state = connect.createStatement();
-            result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
-            if (result.next()) group = result.getString(1);
-            result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
-            schedule = new ArrayList<>();
-            while (result.next()) {
-                lesson = result.getString(1);
-                if (Objects.equals(lesson, "end")) break;
-                schedule.add(lesson);
+            flag = true;
+        }
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try {
+            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
+            if (result.next() && (result.getInt(1) == 0 || flag)) {
+                result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
+                if (result.next()) group = result.getString(1);
+                result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
+                schedule = new ArrayList<>();
+                while (result.next()) {
+                    lesson = result.getString(1);
+                    if (Objects.equals(lesson, "end")) break;
+                    schedule.add(lesson);
+                }
+
             }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
             connect.close();
             state.close();
             result.close();
             return schedule;
         }
+
+
+        return schedule;
     }
 
     /**
@@ -61,10 +75,10 @@ public class Database implements Data {
      * @param group Номер группы пользователя.
      * @param schedule Расписание для записи в базу данных.
      */
-    public void setSchedule(String group, List<List<String>> schedule){
+    public void setSchedule(String group, List<List<String>> schedule) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
         try {
-            connect = DriverManager.getConnection(url, user, password);
-            state = connect.createStatement();
             group = group.toLowerCase();
             if (state.executeQuery(String.format("show tables like '%s'", group)).next()) {
                 dropTable(group);
@@ -90,10 +104,11 @@ public class Database implements Data {
                 }
                 max_iter = Integer.max(max_iter, schedule.get(i).size());
             }
-            connect.close();
-            state.close();
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
         }
     }
 
@@ -103,12 +118,17 @@ public class Database implements Data {
      * @param schedule Индивидуальное расписание для записи.
      * @param day Номер дня недели, на который сохраняется расписание.
      */
-    public void setCastomSchedule(String id, List<String> schedule, int day){
+    public void setCastomSchedule(String id, List<String> schedule, int day) throws SQLException{
+        boolean flag = tableIsExist(id);
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
         try {
-            connect = DriverManager.getConnection(url, user, password);
-            state = connect.createStatement();
-            if (!tableIsExist(id))
+            if (!flag) {
                 state.executeUpdate(String.format("Create table `%s`(`id` int primary key not null auto_increment)", id));
+                switchUserStatus(id);
+                connect = DriverManager.getConnection(url, user, password);
+                state = connect.createStatement();
+            }
             if (!state.executeQuery(String.format("show columns from `%s` like '%s'", id, day)).next())
                 state.executeUpdate(String.format("Alter table `%s` Add column `%s` varchar(64) not null default '-'", id, day));
             result = state.executeQuery(String.format("select count(`id`) from `%s`", id));
@@ -125,6 +145,10 @@ public class Database implements Data {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
+        }
+        finally {
+            connect.close();
+            state.close();
         }
     }
 
@@ -150,7 +174,40 @@ public class Database implements Data {
         connect.close();
         state.close();
         result.close();
+
         return schedule;
+    }
+
+    /**
+     * Метод позволяет узнать следующую пару на текущий момент.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param day Номер текущего дня недели от 1 до 14.
+     * @param current_time Текущее время в минутах с начала дня
+     * @return Возвращает следующую пару.
+     */
+    public String getNextLesson (String id, int day, int current_time) throws SQLException{
+        String lesson = null;
+        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d\\d)");
+        Matcher matcher;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try {
+            List<String> schedule = getSchedule(id, day);
+            for (String less : schedule){
+                matcher = pattern.matcher(less);
+                matcher.find();
+                if (!less.equals("-") && current_time <= Integer.parseInt(matcher.group(1)) * 60
+                        + Integer.parseInt(matcher.group(2))) {
+                    return less;
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+        return "Сегодня у вас больше нет пар";
     }
 
     /**
@@ -158,12 +215,10 @@ public class Database implements Data {
      * @param id Идентификатор пользователя в базе данных.
      * @param group Номер группы пользователя.
      */
-    public void addUserGroup(String id, String group){
+    public void addUserGroup(String id, String group) throws SQLException {
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
         try {
-            connect = DriverManager.getConnection(url, user, password);
-
-            state = connect.createStatement();
-
             if (state.executeQuery(String.format("Select `id` from `users` where `id` = '%s'", id)).next()){
                 state.executeUpdate(String.format("UPDATE `users` SET `group` = '%s' WHERE `id` = '%s'", group, id));
             }
@@ -171,12 +226,32 @@ public class Database implements Data {
                 state.executeUpdate(String.format("INSERT INTO `users` (`id`, `group`) VALUES ('%s', '%s')", id, group));
             }
 
-            connect.close();
-
-            state.close();
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
         }
+    }
+
+    /**
+     * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
+     * @param id Идентификатор пользователя в базе данных.
+     */
+    public void switchUserStatus(String id) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
+            if (result.next()) state.executeUpdate(String.format("Update `users` set `useIndiv` = '%d' where `id` = '%s'", (result.getInt(1) + 1) % 2, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+            result.close();
+        }
+
     }
 
     /**
@@ -184,23 +259,17 @@ public class Database implements Data {
      * @param id Идентификатор пользователя в базе данных.
      * @return Возвращает номер группы.
      */
-    public String getUsersGroup(String id){
+    public String getUsersGroup(String id) throws SQLException{
         String group = null;
-        try {
-            connect = DriverManager.getConnection(url, user, password);
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE `id` = '%s'", id));
+        if (result.next()) group = result.getString(1);
+        if (group == null) throw new SQLException();
 
-            state = connect.createStatement();
+        connect.close();
+        state.close();
 
-            result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE `id` = '%s'", id));
-
-            if (result.next()) group = result.getString(1);
-
-            connect.close();
-
-            state.close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        }
         return group;
     }
 
@@ -212,30 +281,55 @@ public class Database implements Data {
      */
     public Boolean tableIsExist(String name_table) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
-
         state = connect.createStatement();
+        try {
+            return state.executeQuery(String.format("show tables like '%s'", name_table)).next();
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+        return null;
+    }
 
-        return state.executeQuery(String.format("show tables like '%s'", name_table)).next();
+    /**
+     * Метод для удаления индивидуального расписания из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param day Номер дня от 0 до 14, где 0 - полное удаление.
+     */
+    public void deleteSchedule(String id, int day) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        if (day != 0) {
+            try {
+                state.executeUpdate(String.format("Alter table `%s` drop column `%s`", id, day));
+            } catch (SQLException ex) {
+                System.out.println(ex.getErrorCode() + ex.getMessage());
+            } finally {
+                connect.close();
+                state.close();
+            }
+        } else {
+            dropTable(id);
+            switchUserStatus(id);
+        }
     }
 
     /**
      * Приватный метод для удаления таблицы из базы данных.
      * @param name_table Имя таблицы в базе данных.
      */
-    private void dropTable(String name_table){
+    private void dropTable(String name_table) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
         try {
-            connect = DriverManager.getConnection(url, user, password);
-
-            state = connect.createStatement();
-
             state.executeUpdate(String.format("DROP TABLE `%s`", name_table));
-
-            connect.close();
-
-            state.close();
-
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
         }
     }
 }

@@ -1,18 +1,26 @@
 package botLogic.commandHandlers;
 
+import botLogic.LogicException;
 import botLogic.User;
-import botLogic.parameterHandler.GroupHandler;
-import botLogic.parameterHandler.ParameterHandler;
 
-public class StartCommand implements CommandHandler {
-    public String action(User user){
-        HelpCommand helpCommand = new HelpCommand();
-        ParameterHandler groupHandler = new GroupHandler();
-        user.setParameterHandler(groupHandler);
-        return "Привет, я учебный бот УрФУ, мои возможности:\n" +
-               "Показывать расписание на определённую дату\n" +
-                helpCommand.action(user) +
-                "\n" +
-                groupHandler.startMessage();
+public class StartCommand extends AbstractCommand {
+
+    /**
+     * стартовая команда
+     * @param user текущий пользователя
+     * @return сообщение успешного выполнения
+     */
+    public String execute(User user) throws LogicException {
+        Command helpCommand = new HelpCommand();
+        Command changeGroupCommand = new ChangeGroupCommand();
+
+        String message = "Привет, я учебный бот УрФУ, мои возможности:\n" +
+                         "Показывать расписание на определённую дату\n" +
+                         helpCommand.handle(user, "") +
+                         "\n" +
+                         changeGroupCommand.handle(user, "");
+
+        user.setCommand(changeGroupCommand);
+        return message;
     }
 }

@@ -2,11 +2,21 @@ package botLogic.commandHandlers;
 
 import botLogic.User;
 
-public class HelpCommand implements CommandHandler {
-    public String action(User user){
+public class HelpCommand extends AbstractCommand {
+
+    /**
+     * возвращает список команд
+     * @param user текущий пользователь
+     * @return
+     */
+    protected String execute(User user){
+        user.flushCommand();
+
         return  "Команды:\n" +
+                "/help - вызов шпаргалки по возможностям бота\n" +
                 "/change_group - изменить номер группы\n" +
-                "/help вызов шпаргалки по возможностям бота\n" +
-                "/schedule - показ расписания на определённую дату\n";
+                "/change_schedule - изменить расписание на день\n" +
+                "/schedule - показ расписания на определённую дату\n" +
+                "/next_lesson - ближайшая пара\n";
     }
 }

@@ -1,6 +1,5 @@
 package botLogic;
 
-import org.checkerframework.checker.units.qual.C;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,10 +12,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,7 +87,7 @@ public class WebParser implements Parser {
 
         final int daysCount = 14;
         int day = 0;
-        int shift = calendar.getFirstDayOfEvenWeek(shiftDate);
+        int shift = calendar.getShift(shiftDate) - 1;
         int index = 0;
 
         List<List<String>>scheduleList = new ArrayList<List<String>>(daysCount);
@@ -118,14 +114,16 @@ public class WebParser implements Parser {
 
             Elements filterLesson = lesson.select("td");
             if(filterLesson.size() < 2) throw new IOException();
-            String lessonName = getName(lesson.select("td").get(1));
+            String lessonTime = "";
+            lessonTime = getTime(filterLesson.get(0));
+            String lessonName = getName(filterLesson.get(1));
 
             Matcher pattern = Pattern.compile("^[0-9]+").matcher(lessonName);
             int newIndex = (pattern.find()? Integer.parseInt(pattern.group(0)) : 1);
             for(int i = 1; i < newIndex - index; i++) currentSchedule.add("-");
             index = newIndex;
 
-            currentSchedule.add(lessonName);
+            currentSchedule.add(lessonTime + " " + lessonName);
         }
 
         return scheduleList;
@@ -133,14 +131,14 @@ public class WebParser implements Parser {
 
     /**
      * извлекает из тега информацию о предмете
-     * @param lesson тег
+     * @param lessonElement тег
      * @throws IOException ошибка чтения данных
      * @return информация о предмете
      */
-    private String getName(Element lesson) throws IOException{
+    private String getName(Element lessonElement) throws IOException{
         StringBuilder lessonBuilder = new StringBuilder();
-        for(int i = 0; i < lesson.childrenSize(); i++){
-            Element lessonNameElement = lesson.child(i);
+        for(int i = 0; i < lessonElement.childrenSize(); i++){
+            Element lessonNameElement = lessonElement.child(i);
 
             if(lessonNameElement.childrenSize() == 0) throw new IOException();
             String name = lessonNameElement.child(0).text();
@@ -151,10 +149,24 @@ public class WebParser implements Parser {
                 lessonBuilder.append(" ").append(place);
             }
 
-            if(i != lesson.childrenSize() - 1)
+            if(i != lessonElement.childrenSize() - 1)
                 lessonBuilder.append("\n");
         }
 
         return lessonBuilder.toString();
+    }
+
+    /**
+     * Извлекает из элемента строку с указанием времени
+     * @param timeElement узел времени
+     * @return Время
+     * @throws IOException ошибка считывания
+     */
+    private String getTime(Element timeElement) throws IOException{
+        Pattern pattern = Pattern.compile("\\d\\d:\\d\\d");
+        Matcher matcher = pattern.matcher(timeElement.text());
+        if (!matcher.find()) throw new IOException();
+
+        return matcher.group(0);
     }
 }
