@@ -22,14 +22,12 @@ public abstract class AbstractCommand implements Command{
     }
 
     /**
-     * последовательно запускает обработчики
-     * при успешном выполнении обработчика переходит на следующий
-     * при некорректно введённых данных остаётся на текущем обработчике
-     * если обработчики закончились, запускает функцию action реализованную в классах наследниках
-     * @param user пользователь
-     * @param message сообщение
-     * @throws RuntimeException ошибка выполнения (любая: неправильный параметр, ошибка выполнения комманды)
-     * @return ответ
+     * собирает данные
+     * последовательно запрашивает необходимые данные (день, группа, ...)
+     * @param user текущий пользователь
+     * @param message сообщение от пользователя
+     * @throws LogicException вызывается если в обработчик были введенны некоректные данные
+     * @return сообщение следующего обработчика
      */
     public String handle(User user, String message) throws LogicException {
         if(currentParameter != null)
@@ -39,6 +37,13 @@ public abstract class AbstractCommand implements Command{
 
         return (currentParameter == null)? execute(user) : currentParameter.startMessage();
     }
+
+    /**
+     * Выполняет определённые действия по завершении сбора данных
+     * @param user текущий пользователь
+     * @return сообщение о успешной применении команды
+     * @throws LogicException ошибка выполнения команды
+     */
 
     protected abstract String execute(User user) throws LogicException;
 }

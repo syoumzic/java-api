@@ -265,15 +265,13 @@ public class Database implements Data {
         String group = null;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
-        try {
-            result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE `id` = '%s'", id));
-            if (result.next()) group = result.getString(1);
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        } finally {
-            connect.close();
-            state.close();
-        }
+        result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE `id` = '%s'", id));
+        if (result.next()) group = result.getString(1);
+        if (group == null) throw new SQLException();
+
+        connect.close();
+        state.close();
+
         return group;
     }
 

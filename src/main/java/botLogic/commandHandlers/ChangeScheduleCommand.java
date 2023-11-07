@@ -19,7 +19,18 @@ public class ChangeScheduleCommand extends AbstractCommand {
         setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule));
     }
 
+    /**
+     * Добавляет индивидуальное расписание
+     * @param user текущий пользователь
+     * @return сообщение успешного выполнения
+     */
     protected String execute(User user) throws LogicException{
+        try{
+            user.getDatabase().getUsersGroup(user.getId());
+        }catch(SQLException e){
+            return "Для начала укажите свою группу";
+        }
+
         Calendar calendar = new Calendar();
         try {
             user.getDatabase().setCastomSchedule(user.getId(),

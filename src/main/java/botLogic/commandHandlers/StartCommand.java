@@ -4,6 +4,12 @@ import botLogic.LogicException;
 import botLogic.User;
 
 public class StartCommand extends AbstractCommand {
+
+    /**
+     * стартовая команда
+     * @param user текущий пользователя
+     * @return сообщение успешного выполнения
+     */
     public String execute(User user) throws LogicException {
         Command helpCommand = new HelpCommand();
         Command changeGroupCommand = new ChangeGroupCommand();

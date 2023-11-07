@@ -12,6 +12,10 @@ import java.util.Locale;
 
 public class Calendar {
 
+    /**
+     * преобразует часы и минуты в числоо
+     * @return вычисляет сколько минут прошло с начала дня
+     */
     public int getMinute(){
         Date date = new Date();  // current time
         return date.getHours() * 60 + date.getMinutes();
@@ -21,7 +25,7 @@ public class Calendar {
      * переводит строку в дату
      * @param date строка
      * @throws DateTimeParseException если перевести в формат невозможно
-     * @return LocalDate
+     * @return возвращает дату
      */
     public LocalDate getLocalDate(String date) throws DateTimeParseException{
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
@@ -37,7 +41,6 @@ public class Calendar {
      * @param date дата
      * @return смещенная дата
      */
-    
     public int getShift(LocalDate date){
         LocalDate shiftDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
 
