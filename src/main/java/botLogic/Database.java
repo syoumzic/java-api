@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -43,30 +45,22 @@ public class Database implements Data {
         }
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
-        try {
-            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
-            if (result.next() && (result.getInt(1) == 0 || flag)) {
-                result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
-                if (result.next()) group = result.getString(1);
-                result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
-                schedule = new ArrayList<>();
-                while (result.next()) {
-                    lesson = result.getString(1);
-                    if (Objects.equals(lesson, "end")) break;
-                    schedule.add(lesson);
-                }
-
+        result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
+        if (result.next() && (result.getInt(1) == 0 || flag)) {
+            result = state.executeQuery(String.format("SELECT `group` FROM `users` WHERE id='%s'", id));
+            if (result.next()) group = result.getString(1);
+            result = state.executeQuery(String.format("SELECT `%s` FROM `%s`", day, group.toLowerCase()));
+            schedule = new ArrayList<>();
+            while (result.next()) {
+                lesson = result.getString(1);
+                if (Objects.equals(lesson, "end")) break;
+                schedule.add(lesson);
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        } finally {
-            connect.close();
-            state.close();
-            result.close();
-            return schedule;
+
         }
-
-
+        connect.close();
+        state.close();
+        result.close();
         return schedule;
     }
 
