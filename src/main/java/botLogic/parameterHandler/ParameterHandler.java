@@ -1,6 +1,8 @@
 package botLogic.parameterHandler;
 
+import botLogic.LogicException;
+
 public interface ParameterHandler {
     String startMessage();
-    void handle(String message) throws RuntimeException;
+    void handle(String message) throws LogicException;
 }

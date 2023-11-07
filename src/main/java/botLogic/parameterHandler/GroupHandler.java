@@ -1,14 +1,7 @@
 package botLogic.parameterHandler;
 
+import botLogic.LogicException;
 import botLogic.Reference;
-import botLogic.User;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 public class GroupHandler implements ParameterHandler {
@@ -22,9 +15,9 @@ public class GroupHandler implements ParameterHandler {
         return "Укажите номер вашей группы";
     }
 
-    public void handle(String message) throws RuntimeException{
+    public void handle(String message) throws LogicException{
         if(!Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message))
-            throw new RuntimeException("Сообщение введено некорректно");
+            throw new LogicException("Группа введено некорректно");
 
         group.current = message;
     }

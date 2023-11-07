@@ -15,17 +15,26 @@ public class User {
     public String processMessage(String message){
         message = message.trim();
 
-        if(isCommand(message)){
-            command = getCommand(message);
-            if(command == null) return "комманда не найдена";
+        try {
+            if (isCommand(message)) {
+                command = getCommand(message);
+                if (command == null) return "комманда не найдена";
 
-            return command.handle(this, message);
+                return command.handle(this, message);
+            }
+
+            if (command != null)
+                return command.handle(this, message);
+
+            return new HelpCommand().handle(this, "");
         }
-
-        if(command != null)
-            return command.handle(this, message);
-
-        return new HelpCommand().action(this);
+        catch(LogicException e){
+            return e.getMessage();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return "Внутренняя ошибка";
+        }
     }
 
     private boolean isCommand(String message){
@@ -42,10 +51,12 @@ public class User {
 
     private Command getCommand(String message){
         return switch (message) {
-            case "/start" -> new StartCommand();
             case "/help" -> new HelpCommand();
+            case "/start" -> new StartCommand();
             case "/change_group" -> new ChangeGroupCommand();
+            case "/change_schedule" -> new ChangeScheduleCommand();
             case "/schedule" -> new GetScheduleCommand();
+            case "/next_lesson" -> new NextLessonCommand();
             default -> null;
         };
     }

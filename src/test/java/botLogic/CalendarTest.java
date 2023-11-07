@@ -13,7 +13,7 @@ public class CalendarTest {
         Calendar calendar = new Calendar();
 
         for(int i = 1; i < 30; i++){
-            System.out.println(calendar.getFirstDayOfEvenWeek(LocalDate.of(2023, 11, i)));
+            System.out.println(calendar.getShift(LocalDate.of(2023, 11, i)));
         }
     }
 

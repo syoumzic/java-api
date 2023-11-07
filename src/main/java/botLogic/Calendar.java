@@ -7,16 +7,14 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Locale;
 
 public class Calendar {
-    /**
-     * возвращает сколько дней прошло с прошлой чётной недели первого дня относительно текущей даты
-     * @param date дата
-     * @return смещенная дата
-     */
-    public int getFirstDayOfEvenWeek(String date) throws DateTimeParseException {
-        return getFirstDayOfEvenWeek(getLocalDate(date));
+
+    public int getMinute(){
+        Date date = new Date();  // current time
+        return date.getHours() * 60 + date.getMinutes();
     }
 
     /**
@@ -39,7 +37,8 @@ public class Calendar {
      * @param date дата
      * @return смещенная дата
      */
-    public int getFirstDayOfEvenWeek(LocalDate date){
+    
+    public int getShift(LocalDate date){
         LocalDate shiftDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
 
         int weekOfYear = shiftDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
@@ -50,6 +49,6 @@ public class Calendar {
         if (weekOfYear % 2 == 0) shiftDate = shiftDate.with(ChronoField.DAY_OF_WEEK, 1);
         else shiftDate = shiftDate.minusWeeks(1).with(ChronoField.DAY_OF_WEEK, 1);
 
-        return (int)shiftDate.until(date, ChronoUnit.DAYS);
+        return (int)shiftDate.until(date, ChronoUnit.DAYS) + 1;
     }
 }
