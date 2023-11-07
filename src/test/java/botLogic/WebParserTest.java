@@ -1,18 +1,19 @@
 package botLogic;
 
-import org.json.simple.parser.ParseException;
+import botLogic.parser.WebParser;
 import org.junit.*;
 
 import java.io.IOException;
-import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertThrows;
 
 public class WebParserTest {
+    /**
+     * проверяет преобразование номера группы в id группы
+     * @throws IOException
+     */
+
     @Test
     public void testGroupIdParser() throws IOException {
         WebParser parser = new WebParser();

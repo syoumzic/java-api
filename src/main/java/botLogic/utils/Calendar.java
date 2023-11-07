@@ -1,4 +1,4 @@
-package botLogic;
+package botLogic.utils;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

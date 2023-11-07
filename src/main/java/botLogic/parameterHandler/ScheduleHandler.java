@@ -1,7 +1,7 @@
 package botLogic.parameterHandler;
 
 import botLogic.LogicException;
-import botLogic.Reference;
+import botLogic.utils.Reference;
 
 import java.util.ArrayList;
 import java.util.List;

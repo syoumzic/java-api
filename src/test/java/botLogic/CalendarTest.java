@@ -1,5 +1,6 @@
 package botLogic;
 
+import botLogic.utils.Calendar;
 import org.junit.*;
 
 import java.time.LocalDate;
@@ -9,6 +10,9 @@ import static org.junit.Assert.assertThrows;
 
 public class CalendarTest {
 
+    /**
+     * проверяет корректность преобразования даты
+     */
     @Test
     public void checkCorrectDate() {
         Calendar calendar = new Calendar();

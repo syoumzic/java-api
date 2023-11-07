@@ -1,5 +1,6 @@
-package botLogic;
+package botLogic.parser;
 
+import botLogic.utils.Calendar;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
