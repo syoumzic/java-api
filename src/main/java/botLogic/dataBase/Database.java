@@ -1,7 +1,5 @@
 package botLogic.dataBase;
 
-import botLogic.dataBase.Data;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -14,9 +12,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
- * Класс для работы с базой данных, чтение и запись.
+ * Класс представляющий собой данные
  */
 public class Database implements Data {
     private final String url = System.getenv("URL");

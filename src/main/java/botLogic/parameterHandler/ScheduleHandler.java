@@ -10,9 +10,16 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Считыватель предметов
+ */
 public class ScheduleHandler implements ParameterHandler{
     private Reference<List<String>>callbackSchedule;
 
+    /**
+     * Конструктор класса ScheduleHandler
+     * @param callbackSchedule ссылка на расписание в которое запишется считанное значение
+     */
     public ScheduleHandler(Reference<List<String>> callbackSchedule){
         this.callbackSchedule = callbackSchedule;
     }
@@ -29,7 +36,7 @@ public class ScheduleHandler implements ParameterHandler{
     }
 
     /**
-     * проверяет валидность введёного расписания
+     * Проверяет валидность введённого расписания
      * @param message сообщение пользователя
      * @throws LogicException группа не валидна
      */

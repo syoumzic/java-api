@@ -3,15 +3,18 @@ package botLogic.parameterHandler;
 import botLogic.LogicException;
 import botLogic.User;
 
+/**
+ * Интерфейс, для управления обработчиком
+ */
 public interface ParameterHandler {
     /**
-     * указание на то, какие данные ожидаются
+     * Указание к ожидаемым параметрам
      */
     String startMessage();
 
     /**
-     * обработка введённых параметров
-     * @throws LogicException введены некоректные данные
+     * Обработка введённых параметров
+     * @throws LogicException введены некорректные данные
      */
     void handle(User user, String message) throws LogicException;
 }

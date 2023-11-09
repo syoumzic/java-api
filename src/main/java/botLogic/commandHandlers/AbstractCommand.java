@@ -7,13 +7,15 @@ import botLogic.parameterHandler.ParameterHandler;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Базовый класс команд, который может обрабатывать параметры
+ */
 public abstract class AbstractCommand implements Command{
     private Queue<ParameterHandler> handlers = new LinkedList<>();
     private ParameterHandler currentParameter;
 
     /**
-     * создаёт очередь из обработчиков
-     * если не использовать очередь будет пустой
+     * Создаёт очередь из обработчиков
      * @param parameterHandlers массив обработчиков, использующихся последовательно в переданном порядке
      */
     protected void setParameterHandlers(ParameterHandler... parameterHandlers){
@@ -22,11 +24,10 @@ public abstract class AbstractCommand implements Command{
     }
 
     /**
-     * собирает данные
-     * последовательно запрашивает необходимые данные (день, группа, ...)
+     * Последовательно запрашивает необходимые данные (день, группа, ...)
      * @param user текущий пользователь
      * @param message сообщение от пользователя
-     * @throws LogicException вызывается если в обработчик были введенны некоректные данные
+     * @throws LogicException вызывается если в обработчике были введены некорректные данные
      * @return сообщение следующего обработчика
      */
     public String handle(User user, String message) throws LogicException {
@@ -41,9 +42,8 @@ public abstract class AbstractCommand implements Command{
     /**
      * Выполняет определённые действия по завершении сбора данных
      * @param user текущий пользователь
-     * @return сообщение о успешной применении команды
+     * @return сообщение об успешной применении команды
      * @throws LogicException ошибка выполнения команды
      */
-
     protected abstract String execute(User user) throws LogicException;
 }

@@ -6,11 +6,17 @@ import botLogic.LogicException;
 import botLogic.utils.Reference;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.zip.DataFormatException;
 
+/**
+ * Считыватель даты
+ */
 public class DateHandler implements ParameterHandler{
     private Reference<LocalDate>callbackDate;
 
+    /**
+     * Конструктор класса DateHandler
+     * @param callbackDate ссылка на дату в которую запишется считанное значение
+     */
     public DateHandler(Reference<LocalDate> callbackDate){
         this.callbackDate = callbackDate;
     }
@@ -20,7 +26,7 @@ public class DateHandler implements ParameterHandler{
     }
 
     /**
-     * проверяет валидность введённой даты
+     * Проверяет валидность введённой даты
      * @param message сообщение пользователя
      * @throws LogicException дата не валидна
      */

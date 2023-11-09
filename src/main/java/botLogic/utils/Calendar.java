@@ -10,10 +10,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Класс обработчика времени
+ */
 public class Calendar implements Time{
 
     /**
-     * преобразует часы и минуты в числоо
+     * Преобразует часы и минуты в число
      * @return вычисляет сколько минут прошло с начала дня
      */
     public int getMinute(){
@@ -22,7 +25,7 @@ public class Calendar implements Time{
     }
 
     /**
-     * переводит строку в дату
+     * Переводит строку в дату
      * @param date строка
      * @throws DateTimeParseException если перевести в формат невозможно
      * @return возвращает дату
@@ -37,7 +40,7 @@ public class Calendar implements Time{
     }
 
     /**
-     * возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты
+     * Возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты
      * @param date дата
      * @return смещенная дата
      */
