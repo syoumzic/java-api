@@ -5,6 +5,9 @@ import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Time;
 
+/**
+ * Класс обрабатывающий сообщение пользователя
+  */
 public class User {
     private Command command = null;
     private Data dataBase;
@@ -12,6 +15,13 @@ public class User {
     private Parser parser;
     private Time time;
 
+    /**
+     * Конструктор класса User
+     * @param dataBase база данных
+     * @param id id пользователя
+     * @param parser считыватель расписания
+     * @param time обработчик времени
+     */
     User(Data dataBase, String id, Parser parser, Time time){
         this.dataBase = dataBase;
         this.id = id;
@@ -20,7 +30,7 @@ public class User {
     }
 
     /**
-     * обрабатывает сообщение от пользователя
+     * Обрабатывает сообщение от пользователя
      * @param message сообщение пользователя
      * @return ответ на сообщение
      */
@@ -50,7 +60,7 @@ public class User {
     }
 
     /**
-     * проверяет является ли сообщение командой
+     * Проверяет сообщение на команду
      * @param message сообщение пользователя
      * @return является ли сообщение командой
      */
@@ -75,9 +85,9 @@ public class User {
     }
 
     /**
-     * Возвращает обработчик комманды
+     * Возвращает обработчик команды
      * @param message название команды
-     * @return обработчик комманды
+     * @return обработчик команды
      */
     private Command getCommand(String message){
         return switch (message) {

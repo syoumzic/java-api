@@ -8,10 +8,13 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Проверяет работу обработчика времени
+ */
 public class CalendarTest {
 
     /**
-     * проверяет корректность преобразования даты
+     * Проверяет корректность преобразования даты из String в LocalDate
      */
     @Test
     public void checkCorrectDate() {

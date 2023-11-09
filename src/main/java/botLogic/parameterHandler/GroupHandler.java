@@ -5,11 +5,18 @@ import botLogic.User;
 import botLogic.utils.Reference;
 import java.util.regex.Pattern;
 
+/**
+ * Считыватель группы
+ */
 public class GroupHandler implements ParameterHandler {
-    Reference<String>group;
+    Reference<String>callbackGroup;
 
-    public GroupHandler(Reference<String> group){
-        this.group = group;
+    /**
+     * Конструктор класса GroupHandler
+     * @param callbackGroup ссылка на группу в которую запишется считанное значение
+     */
+    public GroupHandler(Reference<String> callbackGroup){
+        this.callbackGroup = callbackGroup;
     }
 
     public String startMessage(){
@@ -17,7 +24,7 @@ public class GroupHandler implements ParameterHandler {
     }
 
     /**
-     * проверяет валидность введённой группы
+     * Проверяет валидность введённой группы
      * @param message сообщение пользователя
      * @throws LogicException группа не валидна
      */
@@ -25,6 +32,6 @@ public class GroupHandler implements ParameterHandler {
         if(!Pattern.matches("^[A-Яа-я]+-[0-9]{6}$", message))
             throw new LogicException("Группа введена некорректно");
 
-        group.current = message;
+        callbackGroup.current = message;
     }
 }

@@ -1,7 +1,8 @@
 package JavaBots;
 
-import org.telegram.telegrambots.meta.api.objects.Update;
-
+/**
+ * Интерфейс для управления ботом
+ */
 public interface Bot{
     String getBotUsername();
     String getBotToken();

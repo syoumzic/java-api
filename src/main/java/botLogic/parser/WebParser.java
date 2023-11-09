@@ -1,7 +1,5 @@
 package botLogic.parser;
 
-import botLogic.User;
-import botLogic.utils.Calendar;
 import botLogic.utils.Time;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,6 +21,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Класс представляющий собой считыватель расписания
+ */
 public class WebParser implements Parser {
 
     /**
@@ -131,7 +132,7 @@ public class WebParser implements Parser {
     }
 
     /**
-     * извлекает из тега информацию о предмете
+     * Извлекает из тега информацию о предмете
      * @param lessonElement тег
      * @throws IOException ошибка чтения данных
      * @return информация о предмете

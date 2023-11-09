@@ -1,8 +1,8 @@
 package botLogic.utils;
 
 /**
- * необходим для ссылочной пердачи данных
- * @param <Type> тип переменной
+ * Ссылка на объект
+ * @param <Type> тип объекта
  */
 public class Reference<Type> {
     public Type current;

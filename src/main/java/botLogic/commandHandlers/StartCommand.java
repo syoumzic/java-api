@@ -3,12 +3,15 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 
+/**
+ * команда /start
+ */
 public class StartCommand extends AbstractCommand {
 
     /**
-     * стартовая команда
+     * Стартовая команда
      * @param user текущий пользователя
-     * @return сообщение успешного выполнения
+     * @return приветственное сообщение
      */
     public String execute(User user) throws LogicException {
         Command helpCommand = new HelpCommand();

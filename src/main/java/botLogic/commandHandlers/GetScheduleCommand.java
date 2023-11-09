@@ -2,9 +2,6 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.parser.Parser;
-import botLogic.parser.WebParser;
-import botLogic.utils.Calendar;
 import botLogic.utils.Reference;
 
 import java.io.IOException;
@@ -13,17 +10,23 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * команда /schedule
+ */
 public class GetScheduleCommand extends AbstractCommand {
     private Reference<LocalDate> date = new Reference<>();
 
+    /**
+     * Установка считывания даты
+     */
     public GetScheduleCommand(){
         setParameterHandlers(new DateHandler(date));
     }
 
     /**
-     * выдаёт расписание на день
+     * Выдаёт расписание на день
      * @param user текущий пользователь
-     * @return сообщение успешного выполнения
+     * @return расписание
      */
     protected String execute(User user) throws LogicException{
         user.flushCommand();
@@ -68,6 +71,12 @@ public class GetScheduleCommand extends AbstractCommand {
 
         return toString(schedule);
     }
+
+    /**
+     * Превращает список в строку
+     * @param schedule список предметов
+     * @return предметы через перенос строки в формате string
+     */
 
     private String toString(List<String>schedule){
         StringBuilder concat = new StringBuilder();

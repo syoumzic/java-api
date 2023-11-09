@@ -9,11 +9,20 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+/**
+ * Класс для обработки сообщений пользователя Telegram
+ */
 public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
     final String botName;
     final String botToken;
     Logic logic;
 
+    /**
+     * Конструктор класса Telegram_Bot
+     * @param botName имя бота
+     * @param botToken токен бота
+     * @param logic класс логики
+     */
     public Telegram_Bot(String botName, String botToken, Logic logic) {
         this.botName = botName;
         this.botToken = botToken;
@@ -39,6 +48,10 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
         return this.botToken;
     }
 
+    /**
+     * Обработчик сообщений
+     * @param update обновление сообщений пользователей
+     */
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {

@@ -1,4 +1,5 @@
 package botLogic;
+
 import botLogic.dataBase.Data;
 import botLogic.dataBase.Database;
 import botLogic.parser.Parser;
@@ -8,6 +9,9 @@ import botLogic.utils.Time;
 
 import java.util.HashMap;
 
+/**
+ * Класс для управления многопользовательской логикой
+ */
 public class Logic{
     private final Data dataBase = new Database();
     private final Parser parser = new WebParser();
@@ -15,7 +19,7 @@ public class Logic{
     private final HashMap<String, User>users = new HashMap<>();
 
     /**
-     * обрабатывает сообщение для конкретного пользователя
+     * Обрабатывает сообщение для конкретного пользователя
      * @param id id пользователя
      * @param message сообщение пользователя
      * @return ответ на сообщение
