@@ -25,7 +25,7 @@ public class CommandTest {
     Data database;
     Parser parser;
     User user;
-    List<String> schedule = Arrays.asList("8:00 матан", "-", "10:00 Алгебра и геометрия");
+    List<String> schedule = Arrays.asList("8:00 Матан", "-", "10:00 Алгебра и геометрия");
     List<List<String>> weekSchedule;
 
     /**
@@ -54,7 +54,7 @@ public class CommandTest {
 
         Assert.assertEquals("8:00 Матан\n" +
                                     "-\n" +
-                                    "10:00 Алгебра и геобметрия\n", answer);
+                                    "10:00 Алгебра и геометрия\n", answer);
     }
 
     /**
