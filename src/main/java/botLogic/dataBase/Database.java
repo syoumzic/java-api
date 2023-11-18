@@ -208,7 +208,7 @@ public class Database implements Data {
      * @throws SQLException Ошибка доступа к базе данных.
      */
 
-    public void setUserTime(String id, int time) throws SQLException{
+    public void setNotificationShift(String id, int time) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
@@ -226,7 +226,7 @@ public class Database implements Data {
      * @param id Идентификатор пользователя в базе данных.
      * @return Возвращает число - количество минут.
      */
-    public Integer getUsersTime(String id) throws SQLException{
+    public Integer getNotificationShift(String id) throws SQLException{
         int time = 10;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
@@ -263,23 +263,6 @@ public class Database implements Data {
     }
 
     /**
-     * Метод для получения состояния уведомления из базы данных.
-     * @param id Идентификатор пользователя в базе данных.
-     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
-     * @throws SQLException Ошибка доступа к базе данных.
-     */
-    public Integer getStatusNotifications(String id) throws SQLException{
-        int status = 0;
-        connect = DriverManager.getConnection(url, user, password);
-        state = connect.createStatement();
-        result = state.executeQuery(String.format("SELECT `notification` FROM `users` WHERE `id` = '%s'", id));
-        if (result.next()) status = result.getInt(1);
-        connect.close();
-        state.close();
-        return status;
-    }
-
-    /**
      * Метод для получения номера группы пользователя из базы данных.
      * @param id Идентификатор пользователя в базе данных.
      * @return Возвращает номер группы.
@@ -297,6 +280,25 @@ public class Database implements Data {
         state.close();
 
         return group;
+    }
+
+    /**
+     * Метод для получения списка id пользователей, с включёнными уведомлениями.
+     * @return Возвращает список id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public List<String> getUserIdNotification() throws  SQLException{
+        List<String> usersId = new ArrayList<>();
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery("SELECT `id` FROM `users` WHERE `notification` = 1");
+        while (result.next()) {
+            usersId.add(result.getString(1));
+        }
+        connect.close();
+        state.close();
+
+        return usersId;
     }
 
     /**
