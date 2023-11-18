@@ -69,4 +69,20 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
             }
         }
     }
+
+    /**
+     * Отправка сообщения пользователю
+     * @param chatId id чата
+     * @param text текст сообщения
+     */
+    public void sendMessage(Long chatId, String text) {
+        SendMessage message = new SendMessage();
+        message.setText(text);
+        message.setChatId(chatId.toString());
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 }
