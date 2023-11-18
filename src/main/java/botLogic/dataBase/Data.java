@@ -56,12 +56,27 @@ public interface Data {
     void setUserTime(String id, int time) throws SQLException;
 
     /**
+     * Метод для получения времени в минутах пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает число - количество минут.
+     */
+    Integer getUsersTime(String id) throws SQLException;
+
+    /**
      * Метод для смены статуса уведомлений пользователя в базе данных.
      * @param id Идентификатор пользователя в базе данных.
      * @param status Принимает значения: 1 - уведомления включены / 0 - выключены.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    void switchNotifications(String id, int status) throws SQLException;
+    void setStatusNotifications(String id, int status) throws SQLException;
+
+    /**
+     * Метод для получения состояния уведомления из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    Integer getStatusNotifications(String id) throws SQLException;
 
     /**
      * Метод для получения номера группы пользователя из базы данных.

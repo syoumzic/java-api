@@ -32,7 +32,7 @@ public class Database implements Data {
      * @return Возвращает расписание на день по id пользователя.
      * @throws SQLException Ошибка существования таблицы в базе данных.
      */
-    public List<String> getSchedule(String id, int day) throws SQLException {
+    public List<String> getSchedule(String id, int day) throws SQLException{
         String group = null;
         String lesson = null;
         List<String> schedule = null;
@@ -146,32 +146,6 @@ public class Database implements Data {
     }
 
     /**
-     * Метод для получения из базы данных индивидуального расписания из базы данных.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер дня недели, на который сохраняется расписание.
-     * @return Возвращает индивидуальное расписание пользователя.
-     * @throws SQLException Ошибка существования индивидуального расписания.
-     */
-    public List<String> getCastomSchedule (String id, int day) throws SQLException {
-        List<String> schedule = null;
-        String lesson = null;
-        connect = DriverManager.getConnection(url, user, password);
-        state = connect.createStatement();
-        result = state.executeQuery(String.format("Select `%s` from `%s`", day, id));
-        schedule = new ArrayList<>();
-        while (result.next()) {
-            lesson = result.getString(1);
-            if (Objects.equals(lesson, "end")) break;
-            schedule.add(lesson);
-        }
-        connect.close();
-        state.close();
-        result.close();
-
-        return schedule;
-    }
-
-    /**
      * Метод позволяет узнать следующую пару на текущий момент.
      * @param id Идентификатор пользователя в базе данных.
      * @param day Номер текущего дня недели от 1 до 14.
@@ -208,7 +182,7 @@ public class Database implements Data {
      * @param id Идентификатор пользователя в базе данных.
      * @param group Номер группы пользователя.
      */
-    public void addUserGroup(String id, String group) throws SQLException {
+    public void addUserGroup(String id, String group) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try {
@@ -234,7 +208,7 @@ public class Database implements Data {
      * @throws SQLException Ошибка доступа к базе данных.
      */
 
-    public void setUserTime(String id, int time) throws SQLException {
+    public void setUserTime(String id, int time) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
@@ -248,23 +222,24 @@ public class Database implements Data {
     }
 
     /**
-     * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
+     * Метод для получения времени в минутах пользователя из базы данных.
      * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает число - количество минут.
      */
-    private void switchUserStatus(String id) throws SQLException{
+    public Integer getUsersTime(String id) throws SQLException{
+        int time = 10;
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
-            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
-            if (result.next()) state.executeUpdate(String.format("Update `users` set `useIndiv` = '%d' where `id` = '%s'", (result.getInt(1) + 1) % 2, id));
+            result = state.executeQuery(String.format("SELECT `time` FROM `users` WHERE `id` = '%s'", id));
+            if (result.next()) time = result.getInt(1);
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
         } finally {
             connect.close();
             state.close();
-            result.close();
         }
-
+        return time;
     }
 
     /**
@@ -273,7 +248,7 @@ public class Database implements Data {
      * @param status Принимает значения: 1 - уведомления включены / 0 - выключены.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    public void switchNotifications(String id, int status) throws SQLException{
+    public void setStatusNotifications(String id, int status) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
@@ -288,9 +263,27 @@ public class Database implements Data {
     }
 
     /**
+     * Метод для получения состояния уведомления из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public Integer getStatusNotifications(String id) throws SQLException{
+        int status = 0;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery(String.format("SELECT `notification` FROM `users` WHERE `id` = '%s'", id));
+        if (result.next()) status = result.getInt(1);
+        connect.close();
+        state.close();
+        return status;
+    }
+
+    /**
      * Метод для получения номера группы пользователя из базы данных.
      * @param id Идентификатор пользователя в базе данных.
      * @return Возвращает номер группы.
+     * @throws SQLException Такого пользователя нет.
      */
     public String getUsersGroup(String id) throws SQLException{
         String group = null;
@@ -364,5 +357,51 @@ public class Database implements Data {
             connect.close();
             state.close();
         }
+    }
+
+    /**
+     * Приватный метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
+     * @param id Идентификатор пользователя в базе данных.
+     */
+    private void switchUserStatus(String id) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            result = state.executeQuery(String.format("Select `useIndiv` from `users` where `id` = '%s'", id));
+            if (result.next()) state.executeUpdate(String.format("Update `users` set `useIndiv` = '%d' where `id` = '%s'", (result.getInt(1) + 1) % 2, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+            result.close();
+        }
+
+    }
+
+    /**
+     * Метод для получения из базы данных индивидуального расписания из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param day Номер дня недели, на который сохраняется расписание.
+     * @return Возвращает индивидуальное расписание пользователя.
+     * @throws SQLException Ошибка существования индивидуального расписания.
+     */
+    private List<String> getCastomSchedule (String id, int day) throws SQLException{
+        List<String> schedule = null;
+        String lesson = null;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery(String.format("Select `%s` from `%s`", day, id));
+        schedule = new ArrayList<>();
+        while (result.next()) {
+            lesson = result.getString(1);
+            if (Objects.equals(lesson, "end")) break;
+            schedule.add(lesson);
+        }
+        connect.close();
+        state.close();
+        result.close();
+
+        return schedule;
     }
 }
