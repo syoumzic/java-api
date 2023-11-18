@@ -1,6 +1,8 @@
 package botLogic.utils;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 /**
@@ -8,18 +10,24 @@ import java.time.format.DateTimeParseException;
  */
 public interface Time {
     /**
-     * Преобразует часы и минуты в число
-     * @return вычисляет сколько минут прошло с начала дня
+     * Вычисляет общее время (в минутах)
      */
-    int getMinute();
+    int getTime();
 
     /**
-     * Переводит строку в дату
-     * @param date строка
-     * @throws DateTimeParseException если перевести в формат невозможно
-     * @return возвращает дату
+     * Извлекает из пары общее время (в минутах)
      */
-    LocalDate getLocalDate(String date) throws DateTimeParseException;
+    int getTime(String lesson) throws IOException;
+
+    /**
+     * Извлекает из localDate
+     */
+    LocalDate getLocalDate(String lesson) throws IOException;
+
+    /**
+     * Вычисляет сколько осталось до завтра (в минутах)
+     */
+    long utilTomorrow();
 
     /**
      * Возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты

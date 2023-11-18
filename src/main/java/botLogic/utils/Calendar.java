@@ -1,5 +1,6 @@
 package botLogic.utils;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -7,8 +8,13 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Locale;
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Класс обработчика времени
@@ -16,27 +22,48 @@ import java.util.Locale;
 public class Calendar implements Time{
 
     /**
-     * Преобразует часы и минуты в число
-     * @return вычисляет сколько минут прошло с начала дня
+     * Вычисляет общее время (в минутах)
      */
-    public int getMinute(){
-        java.util.Date date = new Date();  // current time
-        return date.getHours() * 60 + date.getMinutes();
+    public int getTime(){
+        LocalTime currentTime = LocalTime.now();
+        return currentTime.getHour() * 60 + currentTime.getMinute();
     }
 
     /**
-     * Переводит строку в дату
-     * @param date строка
-     * @throws DateTimeParseException если перевести в формат невозможно
-     * @return возвращает дату
+     * Извлекает из пары общее время (в минутах)
      */
-    public LocalDate getLocalDate(String date) throws DateTimeParseException{
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendPattern("d.MM")
-                .parseDefaulting(ChronoField.YEAR, LocalDate.now().getYear())
-                .toFormatter(Locale.US);
+    public int getTime(String lesson) throws IOException{
+        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d{2})");
 
-        return LocalDate.parse(date, formatter);
+        Matcher matcher = pattern.matcher(lesson);
+        if(!matcher.find()) throw new IOException("не удалось считать расписание");
+
+        int hour = Integer.parseInt(matcher.group(1));
+        int minute = Integer.parseInt(matcher.group(2));
+        return hour * 60 + minute;
+    }
+
+    /**
+     * Извлекает из lesson localDate
+     */
+    public LocalDate getLocalDate(String lesson) throws IOException{
+        Pattern pattern = Pattern.compile("(\\d{1,2}).(\\d{2})");
+
+        Matcher matcher = pattern.matcher(lesson);
+        if(!matcher.find()) throw new IOException("не удалось считать расписание");
+
+        int day = Integer.parseInt(matcher.group(1));
+        int month = Integer.parseInt(matcher.group(2));
+        return LocalDate.of(0, day, month);
+    }
+
+    /**
+     * Вычисляет сколько осталось до завтра (в минутах)
+     */
+    public long utilTomorrow(){
+        LocalTime tomorrowTime = LocalTime.MAX;
+        LocalTime currentTime = LocalTime.now();
+        return currentTime.until(tomorrowTime, ChronoUnit.MINUTES);
     }
 
     /**

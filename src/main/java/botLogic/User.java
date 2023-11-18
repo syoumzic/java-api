@@ -1,32 +1,40 @@
 package botLogic;
 
+import JavaBots.Bot;
 import botLogic.commandHandlers.*;
 import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Time;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Класс обрабатывающий сообщение пользователя
   */
 public class User {
-    private Command command = null;
-    private Data dataBase;
-    private String id;
-    private Parser parser;
-    private Time time;
+    private Command command;
+    private final Data dataBase;
+    private final String id;
+    private final Parser parser;
+    private final Time time;
+    private final Bot bot;
+    private final List<ScheduledFuture<?>>notifications;
 
-    /**
-     * Конструктор класса User
-     * @param dataBase база данных
-     * @param id id пользователя
-     * @param parser считыватель расписания
-     * @param time обработчик времени
-     */
-    User(Data dataBase, String id, Parser parser, Time time){
+    public User(Data dataBase, String id, Parser parser, Time time, Bot bot) {
         this.dataBase = dataBase;
         this.id = id;
         this.parser = parser;
         this.time = time;
+        this.bot = bot;
+        this.command = null;
+        this.notifications = new ArrayList<>();
     }
 
     /**
@@ -40,7 +48,7 @@ public class User {
         try {
             if (isCommand(message)) {
                 command = getCommand(message);
-                if (command == null) return "Команда не найдена";
+                if (command == null) throw new LogicException("команда не найдена");
 
                 return command.handle(this, message);
             }
@@ -84,6 +92,10 @@ public class User {
         return time;
     }
 
+    public Bot getBot(){
+        return bot;
+    }
+
     /**
      * Возвращает обработчик команды
      * @param message название команды
@@ -109,4 +121,29 @@ public class User {
         this.command = null;
     }
 
+    /**
+     * Установка уведомлений для пользователя на день
+     */
+    public void setNotifications(ScheduledExecutorService scheduler) throws SQLException, IOException {
+        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
+
+        for(String lesson : schedule){
+            if(lesson.equals("-")) continue;
+
+            int lessonTime = time.getTime(lesson) - dataBase.getNotificationShift(id);
+            int notificationShift = dataBase.getNotificationShift(id);
+            notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift, TimeUnit.MINUTES));
+        }
+    }
+
+    /**
+     * Удаление уведомлений для пользователя на день
+     */
+    public void removeNotifications() {
+        if (!notifications.isEmpty()) {
+            for (ScheduledFuture<?> notification : notifications)
+                notification.cancel(true);
+            notifications.clear();
+        }
+    }
 }

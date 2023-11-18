@@ -1,15 +1,14 @@
 package botLogic.commandHandlers;
 
 import botLogic.LogicException;
-import botLogic.utils.Reference;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.ScheduleHandler;
+import botLogic.utils.Reference;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-
 /**
  * команда /change_schedule
  */
