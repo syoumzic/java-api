@@ -48,10 +48,20 @@ public interface Data {
     void addUserGroup(String id, String group) throws SQLException;
 
     /**
-     * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
+     * Метод для записи настройки времени в базу данных.
      * @param id Идентификатор пользователя в базе данных.
+     * @param time Время в минутах для сохранения.
+     * @throws SQLException Ошибка доступа к базе данных.
      */
-    void switchUserStatus(String id) throws SQLException;
+    void setUserTime(String id, int time) throws SQLException;
+
+    /**
+     * Метод для смены статуса уведомлений пользователя в базе данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param status Принимает значения: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    void switchNotifications(String id, int status) throws SQLException;
 
     /**
      * Метод для получения номера группы пользователя из базы данных.

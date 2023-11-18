@@ -40,7 +40,7 @@ public class User {
         try {
             if (isCommand(message)) {
                 command = getCommand(message);
-                if (command == null) return "комманда не найдена";
+                if (command == null) return "Команда не найдена";
 
                 return command.handle(this, message);
             }

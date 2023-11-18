@@ -228,10 +228,30 @@ public class Database implements Data {
     }
 
     /**
+     * Метод для записи настройки времени в базу данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param time Время в минутах для сохранения.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+
+    public void setUserTime(String id, int time) throws SQLException {
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            state.executeUpdate(String.format("Update `users` set `time` = '%d' where `id` = '%s'", time, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+    }
+
+    /**
      * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
      * @param id Идентификатор пользователя в базе данных.
      */
-    public void switchUserStatus(String id) throws SQLException{
+    private void switchUserStatus(String id) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
@@ -243,6 +263,26 @@ public class Database implements Data {
             connect.close();
             state.close();
             result.close();
+        }
+
+    }
+
+    /**
+     * Метод для смены статуса уведомлений пользователя в базе данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param status Принимает значения: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public void switchNotifications(String id, int status) throws SQLException{
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            state.executeUpdate(String.format("Update `users` set `notification` = '%d' where `id` = '%s'", status, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
         }
 
     }
