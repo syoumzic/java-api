@@ -3,6 +3,9 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 
+import java.sql.SQLException;
+import java.time.DateTimeException;
+
 /**
  * Интерфейс, предназначенный для обработки команды
  */

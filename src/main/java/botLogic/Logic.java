@@ -8,9 +8,6 @@ import botLogic.parser.WebParser;
 import botLogic.utils.Calendar;
 import botLogic.utils.Time;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,7 +23,7 @@ public class Logic{
     private final Time time = new Calendar();
     private final HashMap<String, User>users = new HashMap<>();
     private Bot bot;
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> updateNotificationTask;
 
     /**
@@ -38,21 +35,19 @@ public class Logic{
             for (String id : dataBase.getUserIdNotification()) {
                 User user;
                 if (!users.containsKey(id)) {
-                    user = new User(dataBase, id, parser, time, bot);
+                    user = new User(dataBase, id, parser, time, bot, scheduler);
                     users.put(id, user);
                 }
                 else{
                     user = users.get(id);
                 }
 
-                user.setNotifications(scheduler);
+                user.initNotifications();
             }
 
             updateNotificationTask = scheduler.schedule(() -> updateNotification(bot), time.utilTomorrow(), TimeUnit.MINUTES);
-        }catch(SQLException e){
-            System.out.println("Уведомления установить не удалось");
-        }catch(IOException e){
-            System.out.println("Не удалось считать расписание");
+        }catch (Exception e){
+            System.out.println(e.toString());
         }
     }
 
@@ -66,7 +61,7 @@ public class Logic{
         User user = users.get(id);
 
         if(user == null) {
-            user = new User(dataBase, id, parser, time, bot);
+            user = new User(dataBase, id, parser, time, bot, scheduler);
             users.put(id, user);
         }
 

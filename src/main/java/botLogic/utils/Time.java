@@ -1,9 +1,7 @@
 package botLogic.utils;
 
-import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 
 /**
  * Интерфейс для управления обработчиком времени
@@ -17,12 +15,12 @@ public interface Time {
     /**
      * Извлекает из пары общее время (в минутах)
      */
-    int getTime(String lesson) throws IOException;
+    int getTime(String lesson) throws DateTimeException;
 
     /**
      * Извлекает из localDate
      */
-    LocalDate getLocalDate(String lesson) throws IOException;
+    LocalDate getLocalDate(String lesson) throws DateTimeException;
 
     /**
      * Вычисляет сколько осталось до завтра (в минутах)

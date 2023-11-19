@@ -3,7 +3,9 @@ package botLogic.parameterHandler;
 import botLogic.LogicException;
 import botLogic.User;
 import botLogic.utils.Reference;
+import botLogic.utils.Time;
 
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,13 +17,14 @@ import java.util.regex.Pattern;
  */
 public class ScheduleHandler implements ParameterHandler{
     private Reference<List<String>>callbackSchedule;
-
+    private Time time;
     /**
      * Конструктор класса ScheduleHandler
      * @param callbackSchedule ссылка на расписание в которое запишется считанное значение
      */
-    public ScheduleHandler(Reference<List<String>> callbackSchedule){
+    public ScheduleHandler(Reference<List<String>> callbackSchedule, Time time){
         this.callbackSchedule = callbackSchedule;
+        this.time = time;
     }
 
     public String startMessage(){
@@ -50,9 +53,15 @@ public class ScheduleHandler implements ParameterHandler{
             Pattern timePattern = Pattern.compile("^\\s*(\\d{1,2}):(\\d{2})");
             Matcher matcher = timePattern.matcher(lesson);
 
-            if(!matcher.find()) throw new LogicException(String.format("для строки %s не указано время", lesson));
+            if(!matcher.find()) throw new LogicException("для строки '%s' не указано время".formatted(lesson));
 
-            int nextMinute = Integer.parseInt(matcher.group(1)) * 60 + Integer.parseInt(matcher.group(2));
+            int nextMinute;
+            try {
+                nextMinute = time.getTime(lesson);
+            }catch(DateTimeException e){
+                throw new LogicException("для строки '%s' время указано некорректно".formatted(lesson));
+            }
+
             if(nextMinute <= minute) throw new LogicException("Расписание идёт не по порядку");
             minute = nextMinute;
 

@@ -6,6 +6,7 @@ import botLogic.LogicException;
 import botLogic.utils.Reference;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -37,7 +38,7 @@ public class DateHandler implements ParameterHandler{
 
         try{
             callbackDate.current = time.getLocalDate(message);
-        }catch(IOException e){
+        }catch(DateTimeException e){
             throw new LogicException("Дата введена некорректно");
         }
     }

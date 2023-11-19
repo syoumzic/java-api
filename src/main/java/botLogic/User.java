@@ -6,8 +6,8 @@ import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Time;
 
-import java.io.IOException;
 import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,9 @@ public class User {
     private final Time time;
     private final Bot bot;
     private final List<ScheduledFuture<?>>notifications;
+    private final ScheduledExecutorService scheduler;
 
-    public User(Data dataBase, String id, Parser parser, Time time, Bot bot) {
+    public User(Data dataBase, String id, Parser parser, Time time, Bot bot, ScheduledExecutorService scheduler) {
         this.dataBase = dataBase;
         this.id = id;
         this.parser = parser;
@@ -35,6 +36,7 @@ public class User {
         this.bot = bot;
         this.command = null;
         this.notifications = new ArrayList<>();
+        this.scheduler = scheduler;
     }
 
     /**
@@ -48,8 +50,6 @@ public class User {
         try {
             if (isCommand(message)) {
                 command = getCommand(message);
-                if (command == null) throw new LogicException("команда не найдена");
-
                 return command.handle(this, message);
             }
 
@@ -96,20 +96,26 @@ public class User {
         return bot;
     }
 
+    public ScheduledExecutorService getScheduler(){
+        return scheduler;
+    }
+
     /**
      * Возвращает обработчик команды
      * @param message название команды
      * @return обработчик команды
      */
-    private Command getCommand(String message){
+    private Command getCommand(String message) throws LogicException{
         return switch (message) {
             case "/help" -> new HelpCommand();
             case "/start" -> new StartCommand();
             case "/change_group" -> new ChangeGroupCommand();
-            case "/change_schedule" -> new ChangeScheduleCommand();
+            case "/change_schedule" -> new ChangeScheduleCommand(time);
             case "/schedule" -> new GetScheduleCommand();
             case "/next_lesson" -> new NextLessonCommand();
-            default -> null;
+            case "/notification_on" -> new EnableNotificationCommand();
+            case "/notification_off" -> new DisableNotificationCommand();
+            default -> throw new LogicException("Команда не найдена");
         };
     }
 
@@ -122,13 +128,20 @@ public class User {
     }
 
     /**
-     * Установка уведомлений для пользователя на день
+     * Включение уведомлений для пользователя на день с сохранением в базу данных
      */
-    public void setNotifications(ScheduledExecutorService scheduler) throws SQLException, IOException {
-        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
+    public void enableNotifications() throws SQLException, DateTimeException{
+        initNotifications();
+        dataBase.setStatusNotifications(id, 1);
+    }
 
-        for(String lesson : schedule){
-            if(lesson.equals("-")) continue;
+    /**
+     * Включение уведомлений для пользователя на день с сохранением в базу данных
+     */
+    public void initNotifications() throws SQLException, DateTimeException{
+        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
+        for (String lesson : schedule) {
+            if (lesson.equals("-")) continue;
 
             int lessonTime = time.getTime(lesson) - dataBase.getNotificationShift(id);
             int notificationShift = dataBase.getNotificationShift(id);
@@ -137,13 +150,16 @@ public class User {
     }
 
     /**
-     * Удаление уведомлений для пользователя на день
+     * Выключение уведомлений для пользователя на день
      */
-    public void removeNotifications() {
+    public void disableNotifications() throws SQLException{
+        dataBase.setStatusNotifications(id, 0);
+
         if (!notifications.isEmpty()) {
             for (ScheduledFuture<?> notification : notifications)
                 notification.cancel(true);
             notifications.clear();
         }
+
     }
 }

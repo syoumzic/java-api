@@ -1,6 +1,7 @@
 package botLogic.utils;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,29 +33,31 @@ public class Calendar implements Time{
     /**
      * Извлекает из пары общее время (в минутах)
      */
-    public int getTime(String lesson) throws IOException{
+    public int getTime(String lesson) throws DateTimeException {
         Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d{2})");
 
         Matcher matcher = pattern.matcher(lesson);
-        if(!matcher.find()) throw new IOException("не удалось считать расписание");
+        if(!matcher.find()) throw new DateTimeException("не удалось считать расписание");
 
         int hour = Integer.parseInt(matcher.group(1));
         int minute = Integer.parseInt(matcher.group(2));
+
+        LocalTime.of(hour, minute);          //дополнительная проверка на валидность даты
         return hour * 60 + minute;
     }
 
     /**
      * Извлекает из lesson localDate
      */
-    public LocalDate getLocalDate(String lesson) throws IOException{
+    public LocalDate getLocalDate(String lesson) throws DateTimeException{
         Pattern pattern = Pattern.compile("(\\d{1,2}).(\\d{2})");
 
         Matcher matcher = pattern.matcher(lesson);
-        if(!matcher.find()) throw new IOException("не удалось считать расписание");
+        if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
 
         int day = Integer.parseInt(matcher.group(1));
         int month = Integer.parseInt(matcher.group(2));
-        return LocalDate.of(0, day, month);
+        return LocalDate.of(0, month, day);
     }
 
     /**

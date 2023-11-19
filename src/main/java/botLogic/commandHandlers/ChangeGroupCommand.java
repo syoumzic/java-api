@@ -6,6 +6,7 @@ import botLogic.utils.Reference;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -27,7 +28,7 @@ public class ChangeGroupCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return сообщение успешного выполнения
      */
-    public String execute(User user) throws LogicException {
+    public String execute(User user) throws LogicException{
         user.flushCommand();
 
         try{

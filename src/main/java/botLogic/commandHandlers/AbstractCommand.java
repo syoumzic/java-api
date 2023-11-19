@@ -4,6 +4,8 @@ import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.ParameterHandler;
 
+import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -30,7 +32,7 @@ public abstract class AbstractCommand implements Command{
      * @throws LogicException вызывается если в обработчике были введены некорректные данные
      * @return сообщение следующего обработчика
      */
-    public String handle(User user, String message) throws LogicException {
+    public String handle(User user, String message) throws LogicException{
         if(currentParameter != null)
             currentParameter.handle(user, message);
 
