@@ -1,5 +1,6 @@
 package botLogic.utils;
 
+import javax.validation.constraints.NotNull;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 
@@ -15,12 +16,12 @@ public interface Time {
     /**
      * Извлекает из пары общее время (в минутах)
      */
-    int getTime(String lesson) throws DateTimeException;
+    int getTime(@NotNull String lesson) throws DateTimeException;
 
     /**
      * Извлекает из localDate
      */
-    LocalDate getLocalDate(String lesson) throws DateTimeException;
+    LocalDate getLocalDate(String date) throws DateTimeException;
 
     /**
      * Вычисляет сколько осталось до завтра (в минутах)

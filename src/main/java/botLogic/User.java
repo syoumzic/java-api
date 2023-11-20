@@ -143,9 +143,12 @@ public class User {
         for (String lesson : schedule) {
             if (lesson.equals("-")) continue;
 
-            int lessonTime = time.getTime(lesson) - dataBase.getNotificationShift(id);
+            int lessonTime = time.getTime(lesson);
             int notificationShift = dataBase.getNotificationShift(id);
-            notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift, TimeUnit.MINUTES));
+            int currentTime = time.getTime();
+
+            if(currentTime < lessonTime)
+                notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift - currentTime, TimeUnit.MINUTES));
         }
     }
 
@@ -160,6 +163,5 @@ public class User {
                 notification.cancel(true);
             notifications.clear();
         }
-
     }
 }

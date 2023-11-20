@@ -1,5 +1,6 @@
 package botLogic.utils;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -33,7 +34,7 @@ public class Calendar implements Time{
     /**
      * Извлекает из пары общее время (в минутах)
      */
-    public int getTime(String lesson) throws DateTimeException {
+    public int getTime(@NotNull String lesson) throws DateTimeException {
         Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d{2})");
 
         Matcher matcher = pattern.matcher(lesson);
@@ -49,10 +50,10 @@ public class Calendar implements Time{
     /**
      * Извлекает из lesson localDate
      */
-    public LocalDate getLocalDate(String lesson) throws DateTimeException{
+    public LocalDate getLocalDate(String date) throws DateTimeException{
         Pattern pattern = Pattern.compile("(\\d{1,2}).(\\d{2})");
 
-        Matcher matcher = pattern.matcher(lesson);
+        Matcher matcher = pattern.matcher(date);
         if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
 
         int day = Integer.parseInt(matcher.group(1));
