@@ -71,6 +71,14 @@ public interface Data {
     void setStatusNotifications(String id, int status) throws SQLException;
 
     /**
+     * Метод для получения состояния уведомления у пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    Integer getStatusNotifications(String id) throws SQLException;
+
+    /**
      * Метод для получения номера группы пользователя из базы данных.
      * @param id Идентификатор пользователя в базе данных.
      * @return Возвращает номер группы.

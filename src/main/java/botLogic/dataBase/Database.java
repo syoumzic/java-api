@@ -207,7 +207,6 @@ public class Database implements Data {
      * @param time Время в минутах для сохранения.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-
     public void setNotificationShift(String id, int time) throws SQLException{
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
@@ -260,6 +259,23 @@ public class Database implements Data {
             state.close();
         }
 
+    }
+
+    /**
+     * Метод для получения состояния уведомления у пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public Integer getStatusNotifications(String id) throws SQLException{
+        int status = 0;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery(String.format("SELECT `notification` FROM `users` WHERE `id` = '%s'", id));
+        if (result.next()) status = result.getInt(1);
+        connect.close();
+        state.close();
+        return status;
     }
 
     /**
