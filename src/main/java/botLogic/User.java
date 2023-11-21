@@ -119,6 +119,7 @@ public class User {
             case "/next_lesson" -> new NextLessonCommand();
             case "/notification_on" -> new EnableNotificationCommand();
             case "/notification_off" -> new DisableNotificationCommand();
+            case "/notification_set" -> new SettingsNotificationCommand();
             default -> throw new LogicException("Команда не найдена");
         };
     }
@@ -170,5 +171,7 @@ public class User {
                 notification.cancel(true);
             notifications.clear();
         }
+
+        dataBase.setStatusNotifications(id, 0);
     }
 }

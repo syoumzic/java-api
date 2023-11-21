@@ -229,4 +229,45 @@ public class CommandTest {
         Assertions.assertEquals("Для начала укажите группу", answer);
     }
 
+    /**
+     * Проверка установки времени уведомлений
+     * @throws SQLException не обрабатывается
+     */
+    @Test
+    public void settingsNotificationVerifyTest() throws SQLException{
+        int timeShift = 50;
+
+        user.processMessage("/notification_set");
+        String answer = user.processMessage("50");
+
+        Assertions.assertEquals("Время установлено", answer);
+        Mockito.verify(database).setNotificationShift(id, timeShift);
+    }
+
+    /**
+     * Проверка установки времени уведомлений с некорректным количеством минут
+     * @throws SQLException не обрабатывается
+     */
+    @Test
+    public void settingsNotificationIncorrectTest() throws SQLException{
+        user.processMessage("/notification_set");
+        String answer = user.processMessage("dkfjo");
+
+        Assertions.assertEquals("Введено не время", answer);
+        Mockito.verify(database, Mockito.never()).setNotificationShift(Mockito.eq(id), Mockito.anyInt());
+    }
+
+    /**
+     * Проверка установки времени уведомлений с выходом за границы установленного времени
+     * @throws SQLException не обрабатывается
+     */
+    @Test
+    public void settingsNotificationOutOfRangeTest() throws SQLException{
+        user.processMessage("/notification_set");
+        String answer = user.processMessage("1021");
+
+        Assertions.assertEquals("Ожидается число от 0 до 90", answer);
+        Mockito.verify(database, Mockito.never()).setNotificationShift(Mockito.eq(id), Mockito.anyInt());
+    }
+
 }
