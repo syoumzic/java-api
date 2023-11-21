@@ -10,7 +10,6 @@ import botLogic.utils.Time;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 /**
  * команда /change_schedule

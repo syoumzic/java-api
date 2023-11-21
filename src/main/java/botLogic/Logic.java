@@ -2,16 +2,11 @@ package botLogic;
 
 import JavaBots.Bot;
 import botLogic.dataBase.Data;
-import botLogic.dataBase.Database;
 import botLogic.parser.Parser;
-import botLogic.parser.WebParser;
-import botLogic.utils.Calendar;
 import botLogic.utils.Time;
 
 import java.util.HashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**

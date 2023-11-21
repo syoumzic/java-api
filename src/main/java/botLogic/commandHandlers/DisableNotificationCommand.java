@@ -5,10 +5,12 @@ import botLogic.User;
 
 import java.sql.SQLException;
 
+/**
+ * /notification_off
+ */
 public class DisableNotificationCommand extends AbstractCommand{
     /**
-     * Выполняет определённые действия по завершении сбора данных
-     *
+     * Выключить уведомления для конкретного пользователя
      * @param user текущий пользователь
      * @return сообщение об успешной применении команды
      * @throws LogicException ошибка выполнения команды

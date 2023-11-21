@@ -3,15 +3,14 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.time.DateTimeException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
+/**
+ * /notification_on
+ */
 public class EnableNotificationCommand extends AbstractCommand{
     /**
-     * Выполняет определённые действия по завершении сбора данных
+     * Включает уведомления
      * @param user текущий пользователь
      * @return сообщение об успешной применении команды
      * @throws LogicException ошибка выполнения команды

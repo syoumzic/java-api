@@ -7,7 +7,6 @@ import botLogic.parser.Parser;
 import botLogic.utils.Time;
 
 import java.sql.SQLException;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,11 @@ public class User {
     private final List<ScheduledFuture<?>>notifications;
     private final ScheduledExecutorService scheduler;
 
+    /**
+     * Конструктор класса
+     * @param parser считыватель онлайн расписания
+     * @param scheduler установщик задач
+     */
     public User(Data dataBase, String id, Parser parser, Time time, Bot bot, ScheduledExecutorService scheduler) {
         this.dataBase = dataBase;
         this.id = id;

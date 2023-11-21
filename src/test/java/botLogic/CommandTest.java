@@ -3,7 +3,6 @@ package botLogic;
 import JavaBots.Bot;
 import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
-import botLogic.utils.Calendar;
 import botLogic.utils.Time;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +41,6 @@ public class CommandTest {
 
     @Mock
     Bot bot;
-
-    @Mock
-    ScheduledFuture<?>notification;
 
     @Mock
     Time time;

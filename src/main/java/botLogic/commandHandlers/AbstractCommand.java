@@ -4,8 +4,6 @@ import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.ParameterHandler;
 
-import java.sql.SQLException;
-import java.time.DateTimeException;
 import java.util.LinkedList;
 import java.util.Queue;
 
