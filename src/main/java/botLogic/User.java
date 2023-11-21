@@ -148,6 +148,7 @@ public class User {
      * Реализация включений уведомления для пользователя на день
      */
     public void forceUpdateNotifications() throws SQLException{
+        forceDisableNotifications();
         List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
         for (String lesson : schedule) {
             if (lesson.equals("-")) continue;
@@ -162,16 +163,19 @@ public class User {
     }
 
     /**
+     * Реализация выключения уведомления для пользователя на день с сохранением в базу данных
+     */
+    public void disableNotifications() throws SQLException {
+        forceDisableNotifications();
+        dataBase.setStatusNotifications(id, 0);
+    }
+
+    /**
      * Реализация выключения уведомления для пользователя на день
      */
-
-    public void disableNotifications() throws SQLException {
-        if (!notifications.isEmpty()) {
-            for (ScheduledFuture<?> notification : notifications)
-                notification.cancel(true);
-            notifications.clear();
-        }
-
-        dataBase.setStatusNotifications(id, 0);
+    public void forceDisableNotifications() {
+        for (ScheduledFuture<?> notification : notifications)
+            notification.cancel(true);
+        notifications.clear();
     }
 }
