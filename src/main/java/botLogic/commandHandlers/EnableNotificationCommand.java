@@ -25,12 +25,11 @@ public class EnableNotificationCommand extends AbstractCommand{
             return "Для начала укажите группу";
         }
 
-        try{
-            user.enableNotifications();
+        try {
+            user.getDatabase().setStatusNotifications(user.getId(), 1);
+            user.forceUpdateNotifications();
         }catch (SQLException e){
-            return "Уведомления включить не удалось";
-        }catch (DateTimeException e){
-            return "Не удалось считать расписание, попробуйте изменить его";
+            return "внутренняя ошибка";
         }
 
         return "Уведомления включены";

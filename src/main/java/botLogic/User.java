@@ -130,34 +130,37 @@ public class User {
     /**
      * Включение уведомлений для пользователя на день с сохранением в базу данных
      */
-    public void enableNotifications() throws SQLException, DateTimeException{
-        initNotifications();
-        dataBase.setStatusNotifications(id, 1);
-    }
-
-    /**
-     * Включение уведомлений для пользователя на день с сохранением в базу данных
-     */
-    public void initNotifications() throws SQLException, DateTimeException{
-        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
-        for (String lesson : schedule) {
-            if (lesson.equals("-")) continue;
-
-            int lessonTime = time.getTime(lesson);
-            int notificationShift = dataBase.getNotificationShift(id);
-            int currentTime = time.getTime();
-
-            if(currentTime < lessonTime)
-                notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift - currentTime, TimeUnit.MINUTES));
+    public void updateNotifications(){
+        try {
+            if (dataBase.getStatusNotifications(id) == 1)
+                forceUpdateNotifications();
+        }catch (SQLException e){
+            System.out.println(e.toString());
         }
     }
 
     /**
-     * Выключение уведомлений для пользователя на день
+     * Реализация включений уведомления для пользователя на день
      */
-    public void disableNotifications() throws SQLException{
-        dataBase.setStatusNotifications(id, 0);
+    public void forceUpdateNotifications() throws SQLException{
+        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
+        for (String lesson : schedule) {
+            if (lesson.equals("-")) continue;
 
+            long lessonTime = time.getSecondsOfDay(lesson);
+            long notificationShift = dataBase.getNotificationShift(id) * 60;
+            long currentTime = time.getSecondsOfDay();
+
+            if(lessonTime > currentTime)
+                notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift - currentTime, TimeUnit.SECONDS));
+        }
+    }
+
+    /**
+     * Реализация выключения уведомления для пользователя на день
+     */
+
+    public void disableNotifications() throws SQLException {
         if (!notifications.isEmpty()) {
             for (ScheduledFuture<?> notification : notifications)
                 notification.cancel(true);

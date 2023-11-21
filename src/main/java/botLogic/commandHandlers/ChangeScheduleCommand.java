@@ -32,8 +32,6 @@ public class ChangeScheduleCommand extends AbstractCommand {
      * @return сообщение успешного обновления расписания
      */
     protected String execute(User user) throws LogicException {
-        user.flushCommand();
-
         try{
             user.getDatabase().getUsersGroup(user.getId());
         }catch(SQLException e){
@@ -47,6 +45,10 @@ public class ChangeScheduleCommand extends AbstractCommand {
         }catch(SQLException e){
             throw new LogicException("Внутренняя ошибка");
         }
+
+        user.flushCommand();
+        user.updateNotifications();
+
         return "Расписание обновлено";
     }
 }

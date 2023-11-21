@@ -29,8 +29,6 @@ public class ChangeGroupCommand extends AbstractCommand {
      * @return сообщение успешного выполнения
      */
     public String execute(User user) throws LogicException{
-        user.flushCommand();
-
         try{
             user.getDatabase().addUserGroup(user.getId(), group.current);
 
@@ -48,10 +46,13 @@ public class ChangeGroupCommand extends AbstractCommand {
         } catch (SQLException ex) {
             throw new LogicException("Внутренняя ошибка");
         } catch (IOException e){
-            throw new LogicException("Ошибка считывания расписания. Попробуйте позже");
+            throw new LogicException("Ошибка считывания расписания.");
         } catch (NoSuchElementException e){
             throw new LogicException("Не удалось найти группу с таким номером");
         }
+
+        user.flushCommand();
+        user.updateNotifications();
 
         return "Группа успешно обновлена!";
     }

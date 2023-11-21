@@ -57,7 +57,7 @@ public class GetScheduleCommand extends AbstractCommand {
                 }catch(SQLException e){
                     throw new LogicException("Внутренняя ошибка");
                 }catch (IOException e){
-                    throw new LogicException("Ошибка считывания расписания. Попробуйте позже");
+                    throw new LogicException("Ошибка считывания расписания.");
                 } catch (NoSuchElementException e){
                     throw new LogicException("Не удалось найти группу с таким номером");
                 }

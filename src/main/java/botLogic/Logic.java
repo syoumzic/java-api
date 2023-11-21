@@ -18,13 +18,20 @@ import java.util.concurrent.TimeUnit;
  * Класс для управления многопользовательской логикой
  */
 public class Logic{
-    private final Data dataBase = new Database();
-    private final Parser parser = new WebParser();
-    private final Time time = new Calendar();
-    private final HashMap<String, User>users = new HashMap<>();
+    private final Data dataBase;
+    private final Parser parser;
+    private final Time time;
     private Bot bot;
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture<?> updateNotificationTask;
+    private ScheduledExecutorService scheduler;
+
+    private final HashMap<String, User>users = new HashMap<>();
+
+    public Logic(Data dataBase, Parser parser, Time time, ScheduledExecutorService scheduler) {
+        this.dataBase = dataBase;
+        this.parser = parser;
+        this.time = time;
+        this.scheduler = scheduler;
+    }
 
     /**
      * Инициализируем пользователей с уведомлениями
@@ -42,10 +49,10 @@ public class Logic{
                     user = users.get(id);
                 }
 
-                user.initNotifications();
+                user.forceUpdateNotifications();
             }
 
-            updateNotificationTask = scheduler.schedule(() -> updateNotification(bot), time.utilTomorrow(), TimeUnit.MINUTES);
+            scheduler.schedule(() -> updateNotification(bot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
             System.out.println(e.toString());
         }

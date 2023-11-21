@@ -45,7 +45,7 @@ public class ScheduleHandler implements ParameterHandler{
      */
     public void handle(User user, String message) throws LogicException {
         callbackSchedule.current = new ArrayList<String>();
-        int minute = -1;
+        int second = -1;
         for(String lesson : message.split("\n")){
             if(Objects.equals(lesson, "")) throw new LogicException("обнаружена пустая строчка \n" +
                                                                        "если предмета нет, необходимо ставить '-'");
@@ -55,15 +55,15 @@ public class ScheduleHandler implements ParameterHandler{
 
             if(!matcher.find()) throw new LogicException("для строки '%s' не указано время".formatted(lesson));
 
-            int nextMinute;
+            int nextSecond;
             try {
-                nextMinute = time.getTime(lesson);
+                nextSecond = time.getSecondsOfDay(lesson);
             }catch(DateTimeException e){
                 throw new LogicException("для строки '%s' время указано некорректно".formatted(lesson));
             }
 
-            if(nextMinute <= minute) throw new LogicException("Расписание идёт не по порядку");
-            minute = nextMinute;
+            if(nextSecond <= second) throw new LogicException("Расписание идёт не по порядку");
+            second = nextSecond;
 
             callbackSchedule.current.add(lesson);
         }

@@ -5,6 +5,7 @@ import botLogic.utils.Time;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -18,16 +19,15 @@ public class CalendarTest {
      */
     @Test
     public void checkCorrectDate() {
-        Time calendar = new Calendar();
+        Time time = new Calendar();
+        Assertions.assertEquals(LocalDate.of(0, 11, 3), time.getLocalDate("3.11"));
+        Assertions.assertEquals(LocalDate.of(0, 11, 2), time.getLocalDate("2.11"));
+        Assertions.assertEquals(LocalDate.of(0, 10, 31), time.getLocalDate("31.10"));
+        Assertions.assertEquals(LocalDate.of(0, 1, 1), time.getLocalDate("1.01"));
 
-        Assertions.assertEquals(LocalDate.of(2023, 11, 3), calendar.getLocalDate("3.11"));
-        Assertions.assertEquals(LocalDate.of(2023, 11, 2), calendar.getLocalDate("2.11"));
-        Assertions.assertEquals(LocalDate.of(2023, 10, 31), calendar.getLocalDate("31.10"));
-        Assertions.assertEquals(LocalDate.of(2023, 1, 1), calendar.getLocalDate("1.01"));
-
-        Assertions.assertThrows(DateTimeParseException.class, () -> calendar.getLocalDate("3.11.2023"));
-        Assertions.assertThrows(DateTimeParseException.class, () -> calendar.getLocalDate("2023.11.01"));
-        Assertions.assertThrows(DateTimeParseException.class, () -> calendar.getLocalDate("3 ноября"));
-        Assertions.assertThrows(DateTimeParseException.class, () -> calendar.getLocalDate("1.38"));
+        Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("3.11.2023"));
+        Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("2023.11.01"));
+        Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("3 ноября"));
+        Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("1.38"));
     }
 }

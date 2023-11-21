@@ -9,14 +9,14 @@ import java.time.LocalDate;
  */
 public interface Time {
     /**
-     * Вычисляет общее время (в минутах)
+     * Вычисляет общее время
      */
-    int getTime();
+    int getSecondsOfDay();
 
     /**
-     * Извлекает из пары общее время (в минутах)
+     * Извлекает из пары общее время
      */
-    int getTime(@NotNull String lesson) throws DateTimeException;
+    int getSecondsOfDay(String lesson) throws DateTimeException;
 
     /**
      * Извлекает из localDate
@@ -24,9 +24,9 @@ public interface Time {
     LocalDate getLocalDate(String date) throws DateTimeException;
 
     /**
-     * Вычисляет сколько осталось до завтра (в минутах)
+     * Вычисляет сколько осталось до завтра
      */
-    long utilTomorrow();
+    int getSecondsUtilTomorrow();
 
     /**
      * Возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты

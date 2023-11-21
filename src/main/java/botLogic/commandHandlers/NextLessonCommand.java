@@ -27,7 +27,7 @@ public class NextLessonCommand extends AbstractCommand {
         try {
             return user.getDatabase().getNextLesson(user.getId(),
                                                     user.getTime().getShift(LocalDate.now()),
-                                                    user.getTime().getTime());
+                                                    user.getTime().getSecondsOfDay() / 60);
         }catch(SQLException e){
             throw new LogicException("Внутренняя ошибка");
         }

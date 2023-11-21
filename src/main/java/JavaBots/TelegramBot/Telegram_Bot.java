@@ -36,8 +36,6 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-
-        logic.updateNotification(this);
     }
 
     @Override
