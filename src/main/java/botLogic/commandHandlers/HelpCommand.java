@@ -22,6 +22,7 @@ public class HelpCommand extends AbstractCommand {
                 "/schedule - показ расписания на определённую дату\n" +
                 "/next_lesson - ближайший предмет\n" +
                 "/notification_on - включить уведомления\n" +
-                "/notification_off - выключить уведомления\n";
+                "/notification_off - выключить уведомления\n" +
+                "/notification_set - установить время для отправки уведомления до начала пары\n";
     }
 }
