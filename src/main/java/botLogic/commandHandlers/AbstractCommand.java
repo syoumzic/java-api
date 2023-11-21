@@ -30,7 +30,7 @@ public abstract class AbstractCommand implements Command{
      * @throws LogicException вызывается если в обработчике были введены некорректные данные
      * @return сообщение следующего обработчика
      */
-    public String handle(User user, String message) throws LogicException {
+    public String handle(User user, String message) throws LogicException{
         if(currentParameter != null)
             currentParameter.handle(user, message);
 

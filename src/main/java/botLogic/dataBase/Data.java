@@ -48,10 +48,35 @@ public interface Data {
     void addUserGroup(String id, String group) throws SQLException;
 
     /**
-     * Метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
+     * Метод для записи настройки времени в базу данных.
      * @param id Идентификатор пользователя в базе данных.
+     * @param time Время в минутах для сохранения.
+     * @throws SQLException Ошибка доступа к базе данных.
      */
-    void switchUserStatus(String id) throws SQLException;
+    void setNotificationShift(String id, int time) throws SQLException;
+
+    /**
+     * Метод для получения времени в минутах пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает число - количество минут.
+     */
+    Integer getNotificationShift(String id) throws SQLException;
+
+    /**
+     * Метод для смены статуса уведомлений пользователя в базе данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @param status Принимает значения: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    void setStatusNotifications(String id, int status) throws SQLException;
+
+    /**
+     * Метод для получения состояния уведомления у пользователя из базы данных.
+     * @param id Идентификатор пользователя в базе данных.
+     * @return Возвращает состояние: 1 - уведомления включены / 0 - выключены.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    Integer getStatusNotifications(String id) throws SQLException;
 
     /**
      * Метод для получения номера группы пользователя из базы данных.
@@ -59,6 +84,13 @@ public interface Data {
      * @return Возвращает номер группы.
      */
     String getUsersGroup(String id) throws SQLException;
+
+    /**
+     * Метод для получения списка id пользователей, с включёнными уведомлениями.
+     * @return Возвращает список id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    List<String> getUserIdNotification() throws  SQLException;
 
     /**
      * Проверка существования таблицы в базе данных.

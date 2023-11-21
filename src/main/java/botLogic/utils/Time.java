@@ -1,25 +1,31 @@
 package botLogic.utils;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 /**
  * Интерфейс для управления обработчиком времени
  */
 public interface Time {
     /**
-     * Преобразует часы и минуты в число
-     * @return вычисляет сколько минут прошло с начала дня
+     * Вычисляет общее время
      */
-    int getMinute();
+    int getSecondsOfDay();
 
     /**
-     * Переводит строку в дату
-     * @param date строка
-     * @throws DateTimeParseException если перевести в формат невозможно
-     * @return возвращает дату
+     * Извлекает из пары общее время
      */
-    LocalDate getLocalDate(String date) throws DateTimeParseException;
+    int getSecondsOfDay(String lesson) throws DateTimeException;
+
+    /**
+     * Извлекает из localDate
+     */
+    LocalDate getLocalDate(String date) throws DateTimeException;
+
+    /**
+     * Вычисляет сколько осталось до завтра
+     */
+    int getSecondsUtilTomorrow();
 
     /**
      * Возвращает сколько дней прошло с прошлой чётной недели первого дня относительно даты

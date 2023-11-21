@@ -1,10 +1,11 @@
 package botLogic.commandHandlers;
 
 import botLogic.LogicException;
-import botLogic.utils.Reference;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.ScheduleHandler;
+import botLogic.utils.Reference;
+import botLogic.utils.Time;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -20,8 +21,8 @@ public class ChangeScheduleCommand extends AbstractCommand {
     /**
      * Установка считывания даты и расписания
      */
-    public ChangeScheduleCommand(){
-        setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule));
+    public ChangeScheduleCommand(Time time){
+        setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule, time));
     }
 
     /**
@@ -29,7 +30,7 @@ public class ChangeScheduleCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return сообщение успешного обновления расписания
      */
-    protected String execute(User user) throws LogicException{
+    protected String execute(User user) throws LogicException {
         try{
             user.getDatabase().getUsersGroup(user.getId());
         }catch(SQLException e){
@@ -43,6 +44,10 @@ public class ChangeScheduleCommand extends AbstractCommand {
         }catch(SQLException e){
             throw new LogicException("Внутренняя ошибка");
         }
+
+        user.flushCommand();
+        user.updateNotifications();
+
         return "Расписание обновлено";
     }
 }

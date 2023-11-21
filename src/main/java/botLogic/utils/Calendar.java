@@ -1,14 +1,13 @@
 package botLogic.utils;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Класс обработчика времени
@@ -16,27 +15,48 @@ import java.util.Locale;
 public class Calendar implements Time{
 
     /**
-     * Преобразует часы и минуты в число
-     * @return вычисляет сколько минут прошло с начала дня
+     * Вычисляет общее время (в минутах)
      */
-    public int getMinute(){
-        java.util.Date date = new Date();  // current time
-        return date.getHours() * 60 + date.getMinutes();
+    public int getSecondsOfDay(){
+        return LocalTime.now().toSecondOfDay();
     }
 
     /**
-     * Переводит строку в дату
-     * @param date строка
-     * @throws DateTimeParseException если перевести в формат невозможно
-     * @return возвращает дату
+     * Извлекает из пары общее время (в минутах)
      */
-    public LocalDate getLocalDate(String date) throws DateTimeParseException{
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendPattern("d.MM")
-                .parseDefaulting(ChronoField.YEAR, LocalDate.now().getYear())
-                .toFormatter(Locale.US);
+    public int getSecondsOfDay(String lesson) throws DateTimeException {
+        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d{2})");
 
-        return LocalDate.parse(date, formatter);
+        Matcher matcher = pattern.matcher(lesson);
+        if(!matcher.find()) throw new DateTimeException("не удалось считать расписание");
+
+        int hour = Integer.parseInt(matcher.group(1));
+        int minute = Integer.parseInt(matcher.group(2));
+
+        return LocalTime.of(hour, minute).toSecondOfDay();
+    }
+
+    /**
+     * Извлекает из date localDate
+     */
+    public LocalDate getLocalDate(String date) throws DateTimeException{
+        Pattern pattern = Pattern.compile("^(\\d{1,2}).(\\d{2})$");
+
+        Matcher matcher = pattern.matcher(date);
+        if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
+
+        int day = Integer.parseInt(matcher.group(1));
+        int month = Integer.parseInt(matcher.group(2));
+        return LocalDate.of(0, month, day);
+    }
+
+    /**
+     * Вычисляет сколько осталось до завтра (в минутах)
+     */
+    public int getSecondsUtilTomorrow(){
+        LocalTime tomorrowTime = LocalTime.MAX;
+        LocalTime currentTime = LocalTime.now();
+        return (int)currentTime.until(tomorrowTime, ChronoUnit.SECONDS);
     }
 
     /**
@@ -44,7 +64,7 @@ public class Calendar implements Time{
      * @param date дата
      * @return смещенная дата
      */
-    public int getShift(LocalDate date){
+    public int getShift(final LocalDate date){
         LocalDate shiftDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
 
         int weekOfYear = shiftDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
