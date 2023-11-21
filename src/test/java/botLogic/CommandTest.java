@@ -269,5 +269,4 @@ public class CommandTest {
         Assertions.assertEquals("Ожидается число от 0 до 90", answer);
         Mockito.verify(database, Mockito.never()).setNotificationShift(Mockito.eq(id), Mockito.anyInt());
     }
-
 }

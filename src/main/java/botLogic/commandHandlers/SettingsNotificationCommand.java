@@ -32,6 +32,9 @@ public class SettingsNotificationCommand extends AbstractCommand{
             throw new LogicException("Внутренняя ошибка");
         }
 
+        user.flushCommand();
+        user.updateNotifications();
+
         return "Время установлено";
     }
 }
