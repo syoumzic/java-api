@@ -5,10 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -358,6 +355,37 @@ public class Database implements Data {
             dropTable(id);
             switchUserStatus(id);
         }
+    }
+
+    void setDeadlines(String id, List<String>deadlines, String date) throws SQLException {
+        boolean flag;
+        flag = tableIsExist("deadlines_" + id);
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            if (!flag){
+                state.executeUpdate(String.format("Create table `deadlines_%s`(`%s` VARCHAR(60))", id, date));
+            } else {
+                state.executeUpdate(String.format("alter table `deadlines_%s` add column (`%s` VARCHAR(60))", id, date));
+            }
+            for (String s : deadlines) {
+                state.executeUpdate(String.format("insert into `deadlines_%s` (`%s`) values ('%s')", id, date, s));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        }
+        finally {
+            connect.close();
+            state.close();
+        }
+    }
+    List<String> getDeadlines(String id, String date) throws SQLException {
+
+        return null;
+    }
+    HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException {
+
+        return null;
     }
 
     /**
