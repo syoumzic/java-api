@@ -1,4 +1,5 @@
 import JavaBots.Bot;
+import JavaBots.DiscordBot.Discord_Bot;
 import JavaBots.TelegramBot.Telegram_Bot;
 import botLogic.Logic;
 import botLogic.dataBase.Data;
@@ -20,11 +21,13 @@ public class Main {
 
         Logic logic = new Logic(dataBase, parser, time, scheduler);
 
-        String botName = "echo";
-        String botToken = System.getenv("BOT_TOKEN");
-        Bot tg_bot = new Telegram_Bot(botName, botToken, logic);
+        String botName = "SUPBot";
+        String tgBotToken = System.getenv("TG_TOKEN");
+        String dsBotToken = System.getenv("DS_TOKEN");
+        Bot tgBot = new Telegram_Bot(botName, tgBotToken, logic);
+        Bot dsBot = new Discord_Bot(dsBotToken, logic);
 
-        logic.updateNotification(tg_bot);
+        logic.updateNotification(tgBot, dsBot);
     }
 }
 

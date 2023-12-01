@@ -158,7 +158,7 @@ public class User {
             long currentTime = time.getSecondsOfDay();
 
             if(lessonTime > currentTime)
-                notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id), lesson), lessonTime - notificationShift - currentTime, TimeUnit.SECONDS));
+                notifications.add(scheduler.schedule(() -> bot.sendMessage(Long.parseLong(id.substring(1)), lesson), lessonTime - notificationShift - currentTime, TimeUnit.SECONDS));
         }
     }
 

@@ -16,7 +16,8 @@ public class Logic{
     private final Data dataBase;
     private final Parser parser;
     private final Time time;
-    private Bot bot;
+    private Bot tgBot;
+    private Bot dsBot;
     private ScheduledExecutorService scheduler;
 
     private final HashMap<String, User>users = new HashMap<>();
@@ -31,13 +32,18 @@ public class Logic{
     /**
      * Инициализируем пользователей с уведомлениями
      */
-    public void updateNotification(Bot bot){
-        this.bot = bot;
+    public void updateNotification(Bot tgBot, Bot dsBot){
+        this.tgBot = tgBot;
+        this.dsBot = dsBot;
         try {
             for (String id : dataBase.getUserIdNotification()) {
                 User user;
                 if (!users.containsKey(id)) {
-                    user = new User(dataBase, id, parser, time, bot, scheduler);
+                    if (id.charAt(0) == 'T') {
+                        user = new User(dataBase, id, parser, time, tgBot, scheduler);
+                    } else {
+                        user = new User(dataBase, id, parser, time, dsBot, scheduler);
+                    }
                     users.put(id, user);
                 }
                 else{
@@ -47,7 +53,7 @@ public class Logic{
                 user.forceUpdateNotifications();
             }
 
-            scheduler.schedule(() -> updateNotification(bot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
+            scheduler.schedule(() -> updateNotification(tgBot, dsBot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -63,7 +69,11 @@ public class Logic{
         User user = users.get(id);
 
         if(user == null) {
-            user = new User(dataBase, id, parser, time, bot, scheduler);
+            if (id.charAt(0) == 'T') {
+                user = new User(dataBase, id, parser, time, tgBot, scheduler);
+            } else {
+                user = new User(dataBase, id, parser, time, dsBot, scheduler);
+            }
             users.put(id, user);
         }
 
