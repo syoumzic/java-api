@@ -25,7 +25,6 @@ public class MinutesHandler implements ParameterHandler{
      * Обработка введённого числа
      * @throws LogicException введены некорректные данные
      */
-    @Override
     public void handle(User user, String message) throws LogicException {
         Integer minutes;
 

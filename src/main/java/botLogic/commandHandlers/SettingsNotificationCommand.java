@@ -24,14 +24,8 @@ public class SettingsNotificationCommand extends AbstractCommand{
      * @return сообщение об успешной применении команды
      * @throws LogicException ошибка выполнения команды
      */
-    @Override
-    protected String execute(User user) throws LogicException{
-        try {
-            user.getDatabase().setNotificationShift(user.getId(), minutes.current);
-        }catch (SQLException e){
-            throw new LogicException("Внутренняя ошибка");
-        }
-
+    protected String execute(User user) throws LogicException, SQLException{
+        user.getDatabase().setNotificationShift(user.getId(), minutes.current);
         user.flushCommand();
         user.updateNotifications();
 

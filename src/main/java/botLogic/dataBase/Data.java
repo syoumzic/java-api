@@ -1,6 +1,7 @@
 package botLogic.dataBase;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -107,4 +108,7 @@ public interface Data {
      */
     void deleteSchedule(String id, int day) throws SQLException;
 
+    void setDeadlines(String id, List<String>deadlines, int day) throws SQLException;
+    List<String> getDeadlines(String id, int day) throws SQLException;
+    HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException;
 }

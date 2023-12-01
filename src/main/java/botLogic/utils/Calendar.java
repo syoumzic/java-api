@@ -1,11 +1,8 @@
 package botLogic.utils;
 
-import java.time.DateTimeException;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.time.*;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +10,6 @@ import java.util.regex.Pattern;
  * Класс обработчика времени
  */
 public class Calendar implements Time{
-
     /**
      * Вычисляет общее время (в минутах)
      */
@@ -47,7 +43,8 @@ public class Calendar implements Time{
 
         int day = Integer.parseInt(matcher.group(1));
         int month = Integer.parseInt(matcher.group(2));
-        return LocalDate.of(0, month, day);
+        int year = LocalDate.now().getYear();
+        return LocalDate.of(year, month, day);
     }
 
     /**
@@ -57,6 +54,14 @@ public class Calendar implements Time{
         LocalTime tomorrowTime = LocalTime.MAX;
         LocalTime currentTime = LocalTime.now();
         return (int)currentTime.until(tomorrowTime, ChronoUnit.SECONDS);
+    }
+
+    /**
+     * Возвращает сколько дней прошло с прошлой чётной недели первого дня относительно текущей даты
+     * @return смещенная дата
+     */
+    public int getShift(){
+        return getShift(LocalDate.now());
     }
 
     /**

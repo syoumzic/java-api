@@ -3,7 +3,7 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.parameterHandler.ScheduleHandler;
+import botLogic.parameterHandler.ListHandler;
 import botLogic.utils.Reference;
 import botLogic.utils.Time;
 
@@ -22,7 +22,7 @@ public class ChangeScheduleCommand extends AbstractCommand {
      * Установка считывания даты и расписания
      */
     public ChangeScheduleCommand(Time time){
-        setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule, time));
+        setParameterHandlers(new DateHandler(date), new ListHandler(schedule, time));
     }
 
     /**
@@ -30,20 +30,16 @@ public class ChangeScheduleCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return сообщение успешного обновления расписания
      */
-    protected String execute(User user) throws LogicException {
+    protected String execute(User user) throws LogicException, SQLException {
         try{
             user.getDatabase().getUsersGroup(user.getId());
         }catch(SQLException e){
             return "Для начала укажите свою группу";
         }
 
-        try {
-            user.getDatabase().setCastomSchedule(user.getId(),
-                                                 schedule.current,
-                                                 user.getTime().getShift(date.current));
-        }catch(SQLException e){
-            throw new LogicException("Внутренняя ошибка");
-        }
+        user.getDatabase().setCastomSchedule(user.getId(),
+                                             schedule.current,
+                                             user.getTime().getShift(date.current));
 
         user.flushCommand();
         user.updateNotifications();

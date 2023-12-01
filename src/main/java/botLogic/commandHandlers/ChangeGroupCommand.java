@@ -42,12 +42,12 @@ public class ChangeGroupCommand extends AbstractCommand {
             }
 
             user.getDatabase().deleteSchedule(user.getId(), 0);
-        } catch (SQLException ex) {
-            throw new LogicException("Внутренняя ошибка");
+        } catch (SQLException e) {
+            throw new LogicException("Внутренняя ошибка", e);
         } catch (IOException e){
-            throw new LogicException("Ошибка считывания расписания.");
+            throw new LogicException("Ошибка считывания расписания.", e);
         } catch (NoSuchElementException e){
-            throw new LogicException("Не удалось найти группу с таким номером");
+            throw new LogicException("Не удалось найти группу с таким номером", e);
         }
 
         user.flushCommand();

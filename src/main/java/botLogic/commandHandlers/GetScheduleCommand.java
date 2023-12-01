@@ -34,11 +34,10 @@ public class GetScheduleCommand extends AbstractCommand {
         try{
             user.getDatabase().getUsersGroup(user.getId());
         }catch(SQLException e){
-            return "Для начала укажите свою группу";
+            throw new LogicException("Для начала укажите свою группу");
         }
 
         int numberDay = user.getTime().getShift(date.current);
-
         List<String> schedule = null;
 
         try{
@@ -55,11 +54,11 @@ public class GetScheduleCommand extends AbstractCommand {
 
                     schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
                 }catch(SQLException e){
-                    throw new LogicException("Внутренняя ошибка");
+                    throw new LogicException("Внутренняя ошибка", e);
                 }catch (IOException e){
-                    throw new LogicException("Ошибка считывания расписания.");
+                    throw new LogicException("Ошибка считывания расписания.", e);
                 } catch (NoSuchElementException e){
-                    throw new LogicException("Не удалось найти группу с таким номером");
+                    throw new LogicException("Не удалось найти группу с таким номером", e);
                 }
             }
             else {
@@ -69,19 +68,6 @@ public class GetScheduleCommand extends AbstractCommand {
 
         if (schedule.isEmpty()) return "В этот день у вас нет пар";
 
-        return toString(schedule);
-    }
-
-    /**
-     * Превращает список в строку
-     * @param schedule список предметов
-     * @return предметы через перенос строки в формате string
-     */
-
-    private String toString(List<String>schedule){
-        StringBuilder concat = new StringBuilder();
-        for(String lesson : schedule)
-            concat.append(lesson).append("\n");
-        return concat.toString();
+        return String.join("\n", schedule) + "\n";
     }
 }

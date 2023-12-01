@@ -15,27 +15,22 @@ import java.util.regex.Pattern;
 /**
  * Считыватель предметов
  */
-public class ScheduleHandler implements ParameterHandler{
+public class ListHandler implements ParameterHandler{
     private Reference<List<String>>callbackSchedule;
     private Time time;
     /**
      * Конструктор класса ScheduleHandler
      * @param callbackSchedule ссылка на расписание в которое запишется считанное значение
      */
-    public ScheduleHandler(Reference<List<String>> callbackSchedule, Time time){
+    public ListHandler(Reference<List<String>> callbackSchedule, Time time){
         this.callbackSchedule = callbackSchedule;
         this.time = time;
     }
 
     public String startMessage(){
-        return  "Перечислите предметы по порядку через enter (ctrl+enter) (если предмета нет, то ставить '-')\n" +
-                "Предметы перечисляются в формате: [время] [кабинет] [название предмета]\n" +
-                "Кабинет является необязательным параметром\n" +
-                "\n" +
-                "Пример:\n" +
-                "9:00 514 Основы проектной деятельности\n" +
-                "10:40 632 Объектно-ориентированное программирование \n" +
-                "16:00 Прикладная физическая культура";
+        return  "Перечислите список по порядку через enter (ctrl+enter)\n" +
+                "Строки перечисляются в формате: [время] [название]\n" +
+                "Для указания пустого списка введите '-'\n";
     }
 
     /**
@@ -46,10 +41,15 @@ public class ScheduleHandler implements ParameterHandler{
     public void handle(User user, String message) throws LogicException {
         callbackSchedule.current = new ArrayList<String>();
         int second = -1;
+
+        if(Objects.equals(message, "-"))
+            return;
+
         for(String lesson : message.split("\n")){
-            if(Objects.equals(lesson, "")) throw new LogicException("обнаружена пустая строчка \n" +
-                                                                       "если предмета нет, необходимо ставить '-'");
-            if(lesson.length() >= 64) throw new LogicException("превышена макимальная длинна на предмета");
+            if(Objects.equals(lesson, "")) throw new LogicException("Обнаружена пустая строчка \n" +
+                                                                       "если для пустого списка введите -");
+
+            if(lesson.length() >= 64) throw new LogicException("превышена максимальная строки");
             Pattern timePattern = Pattern.compile("^\\s*(\\d{1,2}):(\\d{2})");
             Matcher matcher = timePattern.matcher(lesson);
 
@@ -62,7 +62,7 @@ public class ScheduleHandler implements ParameterHandler{
                 throw new LogicException("для строки '%s' время указано некорректно".formatted(lesson));
             }
 
-            if(nextSecond <= second) throw new LogicException("Расписание идёт не по порядку");
+            if(nextSecond <= second) throw new LogicException("Элементы идёт не по порядку");
             second = nextSecond;
 
             callbackSchedule.current.add(lesson);

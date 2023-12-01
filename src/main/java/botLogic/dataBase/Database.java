@@ -5,10 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,6 +140,21 @@ public class Database implements Data {
             connect.close();
             state.close();
         }
+    }
+
+    @Override
+    public void setDeadlines(String id, List<String> deadlines, int day) throws SQLException {
+
+    }
+
+    @Override
+    public List<String> getDeadlines(String id, int day) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException {
+        return null;
     }
 
     /**

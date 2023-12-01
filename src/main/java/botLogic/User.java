@@ -116,10 +116,13 @@ public class User {
             case "/change_group" -> new ChangeGroupCommand();
             case "/change_schedule" -> new ChangeScheduleCommand(time);
             case "/schedule" -> new GetScheduleCommand();
-            case "/next_lesson" -> new NextLessonCommand();
+            case "/next_lesson" -> new NextLessonCommand(time);
             case "/notification_on" -> new EnableNotificationCommand();
             case "/notification_off" -> new DisableNotificationCommand();
             case "/notification_set" -> new SettingsNotificationCommand();
+            case "/add_deadlines" -> new AddDeadlinesCommand(time);
+            case "/edit_deadlines" -> new EditDeadlinesCommand(time);
+            case "/next_deadlines" -> new NextDeadlinesCommand(time);
             default -> throw new LogicException("Команда не найдена");
         };
     }
@@ -149,7 +152,7 @@ public class User {
      */
     public void forceUpdateNotifications() throws SQLException{
         forceDisableNotifications();
-        List<String> schedule = dataBase.getSchedule(id, time.getShift(LocalDate.now()));
+        List<String> schedule = dataBase.getSchedule(id, time.getShift());
         for (String lesson : schedule) {
             if (lesson.equals("-")) continue;
 
