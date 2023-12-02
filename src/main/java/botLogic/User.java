@@ -5,11 +5,15 @@ import botLogic.commandHandlers.*;
 import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Time;
+import com.google.protobuf.TextFormat;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +70,7 @@ public class User {
             return e.getMessage();
         }
         catch (Exception e){
-            System.out.printf(e.getMessage());
+            System.out.printf(e.getLocalizedMessage());
             return "Внутренняя ошибка";
         }
     }
@@ -78,26 +82,6 @@ public class User {
      */
     private boolean isCommand(String message){
         return message.startsWith("/");
-    }
-
-    public Data getDatabase(){
-        return dataBase;
-    }
-
-    public String getId(){
-        return id;
-    }
-
-    public Parser getParser(){
-        return parser;
-    }
-
-    public Time getTime(){
-        return time;
-    }
-
-    public Bot getBot(){
-        return bot;
     }
 
     public ScheduledExecutorService getScheduler(){
@@ -115,7 +99,7 @@ public class User {
             case "/start" -> new StartCommand();
             case "/change_group" -> new ChangeGroupCommand();
             case "/change_schedule" -> new ChangeScheduleCommand(time);
-            case "/schedule" -> new GetScheduleCommand();
+            case "/schedule" -> new GetScheduleCommand(time);
             case "/next_lesson" -> new NextLessonCommand(time);
             case "/notification_on" -> new EnableNotificationCommand();
             case "/notification_off" -> new DisableNotificationCommand();
@@ -165,6 +149,15 @@ public class User {
         }
     }
 
+    public List<List<String>> loadSchedule() throws NoSuchElementException, IOException, SQLException {
+        String group = dataBase.getUsersGroup(id);
+        return parser.parse(time, group);
+    }
+
+    public boolean scheduleExist() throws SQLException {
+        return dataBase.tableIsExist(dataBase.getUsersGroup(id));
+    }
+
     /**
      * Реализация выключения уведомления для пользователя на день с сохранением в базу данных
      */
@@ -180,5 +173,100 @@ public class User {
         for (ScheduledFuture<?> notification : notifications)
             notification.cancel(true);
         notifications.clear();
+    }
+
+    /**
+     * Метод базы данных getSchedule для данного пользователя
+     */
+    public List<String> getSchedule(int day) throws SQLException{
+        return dataBase.getSchedule(id, day);
+    }
+
+    /**
+     * Метод базы данных setSchedule для данного пользователя
+     */
+    public void setSchedule(List<List<String>>schedule) throws SQLException{
+        dataBase.setSchedule(id, schedule);
+    }
+
+    /**
+     * Метод базы данных addUserGroup для данного пользователя
+     */
+    public void addUserGroup(String group) throws SQLException{
+        dataBase.addUserGroup(id, group);
+    }
+
+    /**
+     * Метод базы данных getUserGroup для данного пользователя
+     */
+    public String getUsersGroup() throws SQLException{
+        return dataBase.getUsersGroup(id);
+    }
+
+    /**
+     * Метод базы данных setDeadlines для данного пользователя
+     */
+    public void setDeadlines(List<String>deadlines, String day) throws SQLException{
+        dataBase.setDeadlines(id, deadlines, day);
+    }
+
+    /**
+     * Метод базы данных getDeadlines для данного пользователя
+     */
+    public List<String> getDeadlines(String day) throws SQLException{
+        return dataBase.getDeadlines(id, day);
+    }
+
+    /**
+     * Метод базы данных setCustomSchedule для данного пользователя
+     */
+    public void setCustomSchedule(List<String>schedule, int day) throws SQLException{
+        dataBase.setCastomSchedule(id, schedule, day);
+    }
+
+    /**
+     * Метод базы данных getStatusNotification для данного пользователя
+     */
+    public int getStatusNotification() throws SQLException{
+        return dataBase.getStatusNotifications(id);
+    }
+
+    /**
+     * Метод базы данных getStatusNotification для данного пользователя
+     */
+    public void setStatusNotification(int status) throws SQLException{
+        dataBase.setStatusNotifications(id, status);
+    }
+
+    /**
+     * Метод базы данных getStatusNotification для данного пользователя
+     */
+    public int getNotificationShift() throws SQLException{
+        return dataBase.getNotificationShift(id);
+    }
+
+    /**
+     * Метод базы данных getStatusNotification для данного пользователя
+     */
+    public void setNotificationShift(int minutes) throws SQLException{
+        dataBase.setNotificationShift(id, minutes);
+    }
+
+    /**
+     *
+     */
+    public void editDeadlines(List<String>deadlines) throws SQLException {
+        dataBase.editDeadlines(id, deadlines);
+    }
+
+    public HashMap<String, List<String>> getAllDeadlines() throws SQLException{
+        return dataBase.getAllDeadlines(id);
+    }
+
+    public void setCastomSchedule(List<String> current, int shift) throws SQLException{
+        dataBase.setCastomSchedule(id, current, shift);
+    }
+
+    public void deleteScheule() {
     }
 }

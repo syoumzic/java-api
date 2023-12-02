@@ -108,7 +108,8 @@ public interface Data {
      */
     void deleteSchedule(String id, int day) throws SQLException;
 
-    void setDeadlines(String id, List<String>deadlines, int day) throws SQLException;
-    List<String> getDeadlines(String id, int day) throws SQLException;
+    void setDeadlines(String id, List<String>deadlines, String date) throws SQLException;
+    List<String> getDeadlines(String id, String date) throws SQLException;
     HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException;
+    void editDeadlines(String id, List<String>deadlines) throws SQLException;
 }

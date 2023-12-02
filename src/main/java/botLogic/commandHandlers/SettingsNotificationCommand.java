@@ -13,6 +13,9 @@ import java.sql.SQLException;
 public class SettingsNotificationCommand extends AbstractCommand{
     Reference<Integer>minutes = new Reference<Integer>();
 
+    /**
+     * Установка необходимого обработчика
+     */
     public SettingsNotificationCommand(){
         setParameterHandlers(new MinutesHandler(minutes));
     }
@@ -25,7 +28,7 @@ public class SettingsNotificationCommand extends AbstractCommand{
      * @throws LogicException ошибка выполнения команды
      */
     protected String execute(User user) throws LogicException, SQLException{
-        user.getDatabase().setNotificationShift(user.getId(), minutes.current);
+        user.setNotificationShift(minutes.current);
         user.flushCommand();
         user.updateNotifications();
 

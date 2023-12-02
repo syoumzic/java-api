@@ -20,10 +20,13 @@ public class CalendarTest {
     @Test
     public void checkCorrectDate() {
         Time time = new Calendar();
-        Assertions.assertEquals(LocalDate.of(0, 11, 3), time.getLocalDate("3.11"));
-        Assertions.assertEquals(LocalDate.of(0, 11, 2), time.getLocalDate("2.11"));
-        Assertions.assertEquals(LocalDate.of(0, 10, 31), time.getLocalDate("31.10"));
-        Assertions.assertEquals(LocalDate.of(0, 1, 1), time.getLocalDate("1.01"));
+
+        int year = LocalDate.now().getYear();
+
+        Assertions.assertEquals(LocalDate.of(year, 11, 3), time.getLocalDate("3.11"));
+        Assertions.assertEquals(LocalDate.of(year, 11, 2), time.getLocalDate("2.11"));
+        Assertions.assertEquals(LocalDate.of(year, 10, 31), time.getLocalDate("31.10"));
+        Assertions.assertEquals(LocalDate.of(year, 1, 1), time.getLocalDate("1.01"));
 
         Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("3.11.2023"));
         Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("2023.11.01"));

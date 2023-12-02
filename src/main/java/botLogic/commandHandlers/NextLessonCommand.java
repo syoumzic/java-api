@@ -27,12 +27,12 @@ public class NextLessonCommand extends AbstractCommand {
      */
     protected String execute(User user) throws LogicException, SQLException{
         try{
-            user.getDatabase().getUsersGroup(user.getId());
+            user.getUsersGroup();
         }catch(SQLException e){
             throw new LogicException("Для начала укажите свою группу");
         }
 
-        List<String>lessons = user.getDatabase().getSchedule(user.getId(), time.getShift());
+        List<String>lessons = user.getSchedule(time.getShift());
         int currentSeconds = time.getSecondsOfDay();
 
         for(String lesson : lessons)

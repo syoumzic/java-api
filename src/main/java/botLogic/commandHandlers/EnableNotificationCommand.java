@@ -19,12 +19,12 @@ public class EnableNotificationCommand extends AbstractCommand{
         user.flushCommand();
 
         try{
-            user.getDatabase().getUsersGroup(user.getId());
+            user.getUsersGroup();
         }catch (SQLException e){
             throw new LogicException("Для начала укажите группу");
         }
 
-        user.getDatabase().setStatusNotifications(user.getId(), 1);
+        user.setStatusNotification(1);
         user.forceUpdateNotifications();
         return "Уведомления включены";
     }

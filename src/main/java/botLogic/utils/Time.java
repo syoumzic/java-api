@@ -1,29 +1,48 @@
 package botLogic.utils;
 
+import javassist.LoaderClassPath;
+
 import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Интерфейс для управления обработчиком времени
  */
 public interface Time {
+
     /**
-     * Вычисляет общее время
+     * Возвращает текущую дату в строке
+     */
+    String getDateString(LocalDate date);
+
+    /**
+     * Извлекает из день, месяц, год из строки
+     */
+    LocalDate getAbsoluteDate(String stringDate) throws DateTimeException;
+
+    /**
+     * Извлекает из день и месяц из строки
+     */
+    LocalDate getLocalDate(String stringDate) throws DateTimeException;
+
+    /**
+     * Вычисляет общее время (в минутах)
      */
     int getSecondsOfDay();
 
     /**
-     * Извлекает из пары общее время
+     * Извлекает из пары общее время (в минутах)
      */
     int getSecondsOfDay(String lesson) throws DateTimeException;
 
     /**
-     * Извлекает из localDate
-     */
-    LocalDate getLocalDate(String date) throws DateTimeException;
-
-    /**
-     * Вычисляет сколько осталось до завтра
+     * Вычисляет сколько осталось до завтра (в минутах)
      */
     int getSecondsUtilTomorrow();
 
@@ -38,5 +57,5 @@ public interface Time {
      * @param date дата
      * @return смещенная дата
      */
-    int getShift(LocalDate date);
+    int getShift(final LocalDate date);
 }

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class ListHandler implements ParameterHandler{
     private Reference<List<String>>callbackSchedule;
     private Time time;
+
     /**
      * Конструктор класса ScheduleHandler
      * @param callbackSchedule ссылка на расписание в которое запишется считанное значение

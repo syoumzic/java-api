@@ -18,7 +18,7 @@ public class AddDeadlinesCommand extends AbstractCommand{
 
     public AddDeadlinesCommand(Time time) {
         this.time = time;
-        setParameterHandlers(new DateHandler(date), new ListHandler(deadlines, time));
+        setParameterHandlers(new DateHandler(date, time), new ListHandler(deadlines, time));
     }
 
     /**
@@ -28,7 +28,7 @@ public class AddDeadlinesCommand extends AbstractCommand{
      * @throws LogicException ошибка выполнения команды
      */
     protected String execute(User user) throws LogicException, SQLException {
-        user.getDatabase().setDeadlines(user.getId(), deadlines.current, time.getShift());
+        user.setDeadlines(deadlines.current, time.getDateString(date.current));
         return "Дедлайны успешно установлены";
     }
 }

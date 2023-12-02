@@ -143,18 +143,23 @@ public class Database implements Data {
     }
 
     @Override
-    public void setDeadlines(String id, List<String> deadlines, int day) throws SQLException {
-
-    }
-
-    @Override
-    public List<String> getDeadlines(String id, int day) throws SQLException {
-        return null;
-    }
-
-    @Override
     public HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException {
         return null;
+    }
+
+    @Override
+    public void setDeadlines(String id, List<String> deadlines, String date) throws SQLException {
+
+    }
+
+    @Override
+    public List<String> getDeadlines(String id, String date) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void editDeadlines(String id, List<String> deadlines) throws SQLException {
+
     }
 
     /**

@@ -24,7 +24,7 @@ public class NextDeadlinesCommand extends AbstractCommand {
      * @throws LogicException ошибка выполнения команды
      */
     public String execute(User user) throws LogicException, SQLException{
-        HashMap<String, List<String>> deadlines = user.getDatabase().getAllDeadlines(user.getId());
+        HashMap<String, List<String>> deadlines = user.getAllDeadlines();
 
         int currentSeconds = time.getSecondsOfDay();
         for(String day : deadlines.keySet())

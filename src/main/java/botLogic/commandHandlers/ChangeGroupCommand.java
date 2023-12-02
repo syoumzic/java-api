@@ -27,28 +27,21 @@ public class ChangeGroupCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return сообщение успешного выполнения
      */
-    public String execute(User user) throws LogicException{
-        try{
-            user.getDatabase().addUserGroup(user.getId(), group.current);
+    public String execute(User user) throws LogicException, SQLException{
+        user.addUserGroup(group.current);
 
-             if(!user.getDatabase().tableIsExist(group.current.toLowerCase())){
-                List<List<String>> weeksSchedule = user.getParser().parse(user.getTime(), user.getDatabase()
-                        .getUsersGroup(user.getId())
-                        .toUpperCase());
-
-                user
-                        .getDatabase()
-                        .setSchedule(user.getDatabase().getUsersGroup(user.getId()), weeksSchedule);
+        if(!user.scheduleExist()){
+            try {
+                List<List<String>> weekSchedule = user.loadSchedule();
+                user.setSchedule(weekSchedule);
+            }catch (IOException e){
+                throw new LogicException("Не удалось прочесть расписание");
+            }catch (NoSuchElementException e){
+                throw new LogicException("Не удалось найти группу с таким номером");
             }
-
-            user.getDatabase().deleteSchedule(user.getId(), 0);
-        } catch (SQLException e) {
-            throw new LogicException("Внутренняя ошибка", e);
-        } catch (IOException e){
-            throw new LogicException("Ошибка считывания расписания.", e);
-        } catch (NoSuchElementException e){
-            throw new LogicException("Не удалось найти группу с таким номером", e);
         }
+
+        user.deleteScheule();
 
         user.flushCommand();
         user.updateNotifications();

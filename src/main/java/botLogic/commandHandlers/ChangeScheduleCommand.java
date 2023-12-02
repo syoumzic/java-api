@@ -17,12 +17,13 @@ import java.util.List;
 public class ChangeScheduleCommand extends AbstractCommand {
     private Reference<LocalDate>date = new Reference<>();
     private Reference<List<String>>schedule = new Reference<>();
-
+    private Time time;
     /**
      * Установка считывания даты и расписания
      */
     public ChangeScheduleCommand(Time time){
-        setParameterHandlers(new DateHandler(date), new ListHandler(schedule, time));
+        this.time = time;
+        setParameterHandlers(new DateHandler(date, time), new ListHandler(schedule, time));
     }
 
     /**
@@ -32,14 +33,12 @@ public class ChangeScheduleCommand extends AbstractCommand {
      */
     protected String execute(User user) throws LogicException, SQLException {
         try{
-            user.getDatabase().getUsersGroup(user.getId());
+            user.getUsersGroup();
         }catch(SQLException e){
             return "Для начала укажите свою группу";
         }
 
-        user.getDatabase().setCastomSchedule(user.getId(),
-                                             schedule.current,
-                                             user.getTime().getShift(date.current));
+        user.setCastomSchedule(schedule.current, time.getShift(date.current));
 
         user.flushCommand();
         user.updateNotifications();

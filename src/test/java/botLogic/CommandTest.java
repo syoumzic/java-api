@@ -5,6 +5,7 @@ import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Calendar;
 import botLogic.utils.Time;
+import com.mysql.cj.log.Log;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -15,9 +16,7 @@ import org.mockito.quality.Strictness;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +67,7 @@ public class CommandTest {
      * @throws NoSuchElementException не бросается
      */
     @BeforeEach
-    public void MockitoInit() throws SQLException, IOException, NoSuchElementException{
+    public void MockitoInit() throws NoSuchElementException, IOException, SQLException{
         time = new Calendar();
         user = new User(database, id, parser, time, bot, scheduler);
         logic = new Logic(database, parser, time, scheduler);
@@ -166,16 +165,16 @@ public class CommandTest {
      * @throws SQLException не бросается
      */
     @Test
-    public void changeGroupUnreadScheduleTest() throws IOException, SQLException{
-        Mockito.when(parser.parse(time, group)).thenThrow(IOException.class);
+    public void changeGroupUnreadScheduleTest() throws NoSuchElementException, IOException, SQLException{
         Mockito.when(database.tableIsExist(group)).thenReturn(false);
+        Mockito.when(parser.parse(time, group)).thenThrow(IOException.class);
 
         user.processMessage("/change_group");
         String answer = user.processMessage(group);
 
         Mockito.verify(parser).parse(time, group);
         Mockito.verify(database, Mockito.never()).setSchedule(Mockito.anyString(), Mockito.any());
-        Assertions.assertEquals("Ошибка считывания расписания.", answer);
+        Assertions.assertEquals("Не удалось прочесть расписание", answer);
     }
 
     /**
@@ -184,7 +183,8 @@ public class CommandTest {
      * @throws SQLException не бросается
      */
     @Test
-    public void changeGroupNoSuchGroupTest() throws IOException, SQLException{
+    public void changeGroupNoSuchGroupTest() throws NoSuchElementException, IOException, SQLException{
+        Mockito.when(database.tableIsExist(group)).thenReturn(false);
         Mockito.when(parser.parse(time, group)).thenThrow(NoSuchElementException.class);
 
         user.processMessage("/change_group");
@@ -204,9 +204,11 @@ public class CommandTest {
         List<String> customSchedule = List.of("8:00 Матан", "10:00 Алгем");
         String customScheduelString = String.join("\n", customSchedule);
 
-        user.processMessage("/change_schedule");
-        user.processMessage(dateString);
-        String answer = user.processMessage(customScheduelString);
+        String answer;
+
+        answer = user.processMessage("/change_schedule");
+        answer = user.processMessage(dateString);
+        answer = user.processMessage(customScheduelString);
 
         Assertions.assertEquals("Расписание обновлено", answer);
         Mockito.verify(database).setCastomSchedule(id, customSchedule, time.getShift());
@@ -228,13 +230,17 @@ public class CommandTest {
      * Проверка корректности включения уведомлений
      */
     @Test
-    public void setNotificationVerifyTest(){
+    public void setNotificationVerifyTest() throws SQLException{
         String answer = user.processMessage("/notification_on");
 
         Assertions.assertEquals("Уведомления включены", answer);
-        Mockito.verify(scheduler, Mockito.times(group.length())).schedule(Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.eq(TimeUnit.SECONDS));
+        Mockito.verify(scheduler, Mockito.times(schedule.size())).schedule(Mockito.any(Runnable.class), Mockito.anyLong(), Mockito.eq(TimeUnit.SECONDS));
+        long currentTime = time.getSecondsOfDay();
+        long shiftTime = database.getNotificationShift(id) * 60;
+
         for(String lesson : schedule) {
-            Mockito.verify(scheduler).schedule(runnableCaptor.capture(), Mockito.eq(time.getSecondsOfDay(lesson)), Mockito.eq(TimeUnit.SECONDS));
+            long lessonTime = time.getSecondsOfDay(lesson);
+            Mockito.verify(scheduler).schedule(runnableCaptor.capture(), Mockito.eq(lessonTime - currentTime - shiftTime), Mockito.eq(TimeUnit.SECONDS));
             runnableCaptor.getValue().run();
             Mockito.verify(bot).sendMessage(Long.parseLong(id.substring(1)), lesson);
         }

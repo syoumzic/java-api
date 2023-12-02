@@ -1,6 +1,7 @@
 package botLogic.utils;
 
 import java.time.*;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
@@ -10,6 +11,45 @@ import java.util.regex.Pattern;
  * Класс обработчика времени
  */
 public class Calendar implements Time{
+
+    /**
+     * Возвращает текущую дату в строке
+     */
+    public String getDateString(LocalDate date) {
+        return "%d.%d.%d".formatted(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+    }
+
+    /**
+     * Извлекает из день, месяц, год из строки
+     */
+    public LocalDate getAbsoluteDate(String date) throws DateTimeException{
+        Pattern pattern = Pattern.compile("^(\\d{1,2}).(\\d{2}).(\\d{4})$");
+
+        Matcher matcher = pattern.matcher(date);
+        if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
+
+        int day = Integer.parseInt(matcher.group(1));
+        int month = Integer.parseInt(matcher.group(2));
+        int year = Integer.parseInt(matcher.group(3));
+        return LocalDate.of(year, month, day);
+    }
+
+    /**
+     * Извлекает из день и месяц из строки
+     */
+    public LocalDate getLocalDate(String date) throws DateTimeException{
+        Pattern pattern = Pattern.compile("^(\\d{1,2}).(\\d{2})$");
+
+        Matcher matcher = pattern.matcher(date);
+        if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
+
+        int day = Integer.parseInt(matcher.group(1));
+        int month = Integer.parseInt(matcher.group(2));
+        int year = LocalDate.now().getYear();
+        return LocalDate.of(year, month, day);
+    }
+
+
     /**
      * Вычисляет общее время (в минутах)
      */
@@ -30,21 +70,6 @@ public class Calendar implements Time{
         int minute = Integer.parseInt(matcher.group(2));
 
         return LocalTime.of(hour, minute).toSecondOfDay();
-    }
-
-    /**
-     * Извлекает из date localDate
-     */
-    public LocalDate getLocalDate(String date) throws DateTimeException{
-        Pattern pattern = Pattern.compile("^(\\d{1,2}).(\\d{2})$");
-
-        Matcher matcher = pattern.matcher(date);
-        if(!matcher.find()) throw new DateTimeException("дата введена некорректно");
-
-        int day = Integer.parseInt(matcher.group(1));
-        int month = Integer.parseInt(matcher.group(2));
-        int year = LocalDate.now().getYear();
-        return LocalDate.of(year, month, day);
     }
 
     /**
