@@ -135,9 +135,9 @@ public interface Data {
     void setDeadlines(String id, List<String>deadlines, String date) throws SQLException;
 
     /**
-     * Метод для получения всех id пользователей.
+     * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.
      * @return Возвращает id пользователей.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    List<String> getAllUsersId() throws  SQLException;
+    List<String> getUsersIdDeadline() throws  SQLException;
 }

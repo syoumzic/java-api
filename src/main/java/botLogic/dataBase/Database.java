@@ -315,15 +315,15 @@ public class Database implements Data {
     }
 
     /**
-     * Метод для получения всех id пользователей.
+     * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.
      * @return Возвращает id пользователей.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    public List<String> getAllUsersId() throws  SQLException{
+    public List<String> getUsersIdDeadline() throws  SQLException{
         List<String> usersId = new ArrayList<>();
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
-        result = state.executeQuery("SELECT `id` FROM `users`");
+        result = state.executeQuery("select `id` from `users` where `existDL`='1'");
         while (result.next()) {
             usersId.add(result.getString(1));
         }
@@ -391,6 +391,7 @@ public class Database implements Data {
         state = connect.createStatement();
         try{
             if (!flag){
+                state.executeUpdate(String.format("update `users` set `existDL`='1' where `id`='%s'", id));
                 state.executeUpdate(String.format("Create table `deadlines_%s`(`id` int primary key not null auto_increment, `%s` VARCHAR(60))", id, date));
             }
             if (!state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date)).next()){
