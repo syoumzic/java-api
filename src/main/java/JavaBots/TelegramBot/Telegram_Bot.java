@@ -60,7 +60,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
 
             SendMessage message = new SendMessage();
             message.setChatId(chat_id);
-            message.setText(logic.processMessage('T' + chat_id, message_text));
+            message.setText(logic.processMessage('t' + chat_id, message_text));
 
             try {
                 execute(message);

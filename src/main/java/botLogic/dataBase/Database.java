@@ -315,6 +315,25 @@ public class Database implements Data {
     }
 
     /**
+     * Метод для получения всех id пользователей.
+     * @return Возвращает id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public List<String> getAllUsersId() throws  SQLException{
+        List<String> usersId = new ArrayList<>();
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery("SELECT `id` FROM `users`");
+        while (result.next()) {
+            usersId.add(result.getString(1));
+        }
+        connect.close();
+        state.close();
+
+        return usersId;
+    }
+
+    /**
      * Проверка существования таблицы в базе данных.
      * @param name_table Имя таблицы в базе данных.
      * @return Возвращает, существует ли таблица в базе данных.
@@ -357,19 +376,37 @@ public class Database implements Data {
         }
     }
 
-    void setDeadlines(String id, List<String>deadlines, String date) throws SQLException {
+    /**
+     * Метод для записи дедлайнов на определённую дату.
+     * @param id Пользователя.
+     * @param deadlines Список дедлайнов для записи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public void setDeadlines(String id, List<String>deadlines, String date) throws SQLException {
         boolean flag;
+        int count = 0;
         flag = tableIsExist("deadlines_" + id);
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
         try{
             if (!flag){
-                state.executeUpdate(String.format("Create table `deadlines_%s`(`%s` VARCHAR(60))", id, date));
-            } else {
+                state.executeUpdate(String.format("Create table `deadlines_%s`(`id` int primary key not null auto_increment, `%s` VARCHAR(60))", id, date));
+            }
+            if (!state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date)).next()){
                 state.executeUpdate(String.format("alter table `deadlines_%s` add column (`%s` VARCHAR(60))", id, date));
             }
+            if (state.executeQuery(String.format("select count(`id`) from `deadlines_`", id)).next()){
+                count = result.getInt(1);
+            }
+            int i = 0;
             for (String s : deadlines) {
-                state.executeUpdate(String.format("insert into `deadlines_%s` (`%s`) values ('%s')", id, date, s));
+                if (i < count) {
+                    state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, i + 1));
+                } else {
+                    state.executeUpdate(String.format("insert into `deadlines_%s` (`%s`) values ('%s')", id, date, s));
+                }
+                i++;
             }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
@@ -379,13 +416,55 @@ public class Database implements Data {
             state.close();
         }
     }
-    List<String> getDeadlines(String id, String date) throws SQLException {
 
-        return null;
+    /**
+     * Метод для получения списка дедлайнов пользователя.
+     * @param id Пользователя.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @return Возвращает список всех дедлайнов на день.
+     * @throws SQLException Отсутствует таблица код ошибки 1146.
+     */
+    public List<String> getDeadlines(String id, String date) throws SQLException {
+        boolean flag = tableIsExist("deadlines_" + id);
+        List<String> deadlines = new ArrayList<>();
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        if (!flag) return deadlines;
+        try{
+            result = state.executeQuery(String.format("SELECT `%s` FROM `deadlines_%s`", date, id));
+            while (result.next()){
+                if (Objects.equals(result.getString(1), "end")) break;
+                deadlines.add(result.getString(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+            result.close();
+        }
+        return deadlines;
     }
-    HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException {
 
-        return null;
+    /**
+     * Метод для перезаписи дедлайнов на день.
+     * @param id Пользователя.
+     * @param newDeadlines Список новых дедлайнов для перезаписи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка отсутствия записей на этот день.
+     */
+    public void editDeadlines(String id, List<String> newDeadlines, String date) throws SQLException {
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try {
+            state.executeUpdate(String.format("alter table `deadlines_%s` drop column `%s`", id, date));
+            setDeadlines(id, newDeadlines, date);
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
     }
 
     /**
