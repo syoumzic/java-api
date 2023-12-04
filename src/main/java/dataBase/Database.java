@@ -1,5 +1,7 @@
 package dataBase;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,9 +15,10 @@ import java.util.regex.Pattern;
  * Класс представляющий собой данные
  */
 public class Database implements Data {
-    private final String url = System.getenv("URL");
-    private final String user = System.getenv("NAMEUSER");
-    private final String password = System.getenv("PASSUSER");
+    private final Dotenv dotenv = Dotenv.load();
+    private final String url = dotenv.get("URL");
+    private final String user = dotenv.get("NAMEUSER");
+    private final String password = dotenv.get("PASSUSER");
 
     // JDBC variables for opening and managing connection
     private Connection connect;
@@ -83,6 +86,7 @@ public class Database implements Data {
             int max_iter = 0;
             int index;
             for (int i = 0; i < 14; i++) {
+                schedule.get(i).add("end");
                 iter = schedule.get(i).iterator();
                 index = 0;
                 while (iter.hasNext() && index < max_iter) {
@@ -125,6 +129,7 @@ public class Database implements Data {
             int size = 0;
             if (result.next()) size = result.getInt(1);
             int i = 0;
+            schedule.add("end");
             for (String s : schedule) {
                 if (i < size) {
                     state.executeUpdate(String.format("update `%s` set `%s` = '%s' where `id` = '%s'", id, day, s, i + 1));
@@ -142,37 +147,6 @@ public class Database implements Data {
         }
     }
 
-    /**
-     * Метод позволяет узнать следующую пару на текущий момент.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер текущего дня недели от 1 до 14.
-     * @param current_time Текущее время в минутах с начала дня
-     * @return Возвращает следующую пару.
-     */
-    public String getNextLesson (String id, int day, int current_time) throws SQLException{
-        String lesson = null;
-        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d\\d)");
-        Matcher matcher;
-        connect = DriverManager.getConnection(url, user, password);
-        state = connect.createStatement();
-        try {
-            List<String> schedule = getSchedule(id, day);
-            for (String less : schedule){
-                matcher = pattern.matcher(less);
-                matcher.find();
-                if (!less.equals("-") && current_time <= Integer.parseInt(matcher.group(1)) * 60
-                        + Integer.parseInt(matcher.group(2))) {
-                    return less;
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        } finally {
-            connect.close();
-            state.close();
-        }
-        return "Сегодня у вас больше нет пар";
-    }
 
     /**
      * Метод добавляющий пользователя в базу данных.
@@ -401,6 +375,7 @@ public class Database implements Data {
                 count = result.getInt(1);
             }
             int i = 0;
+            deadlines.add("end");
             for (String s : deadlines) {
                 if (i < count) {
                     state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, i + 1));
@@ -485,6 +460,8 @@ public class Database implements Data {
         }
     }
 
+
+
     /**
      * Приватный метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
      * @param id Идентификатор пользователя в базе данных.
@@ -531,13 +508,44 @@ public class Database implements Data {
         return schedule;
     }
 
-    @Override
+    /**
+     * Метод для установки времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @param hours Количество часов.
+     * @throws SQLException Ошибка записи в базу данных.
+     */
     public void setDeadlineNotificationShift(String id, int hours) throws SQLException {
-
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            state.executeUpdate(String.format("Update `users` set `deadline_shift` = '%d' where `id` = '%s'", hours, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
     }
 
-    @Override
+    /**
+     * Метод для получения времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @return Количество часов.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
     public int getDeadlineNotificationShift(String id) throws SQLException {
-        return 0;
+        int hours = 1;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            result = state.executeQuery(String.format("SELECT `deadline_shift` FROM `users` WHERE `id` = '%s'", id));
+            if (result.next()) hours = result.getInt(1);
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+        return hours;
     }
 }

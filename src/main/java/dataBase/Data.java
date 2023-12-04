@@ -32,15 +32,6 @@ public interface Data {
     void setCastomSchedule(String id, List<String> schedule, int day) throws SQLException;
 
     /**
-     * Метод позволяет узнать следующую пару на текущий момент.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер текущего дня недели от 1 до 14.
-     * @param current_time Текущее время в минутах с начала дня
-     * @return Возвращает следующую пару.
-     */
-    String getNextLesson (String id, int day, int current_time) throws SQLException;
-
-    /**
      * Метод добавляющий пользователя в базу данных.
      * @param id Идентификатор пользователя в базе данных.
      * @param group Номер группы пользователя.
@@ -140,6 +131,20 @@ public interface Data {
      * @throws SQLException Ошибка доступа к базе данных.
      */
     List<String> getUsersIdDeadline() throws  SQLException;
+
+    /**
+     * Метод для установки времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @param hours Количество часов.
+     * @throws SQLException Ошибка записи в базу данных.
+     */
     void setDeadlineNotificationShift(String id, int hours) throws SQLException;
+
+    /**
+     * Метод для получения времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @return Количество часов.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
     int getDeadlineNotificationShift(String id) throws SQLException;
 }
