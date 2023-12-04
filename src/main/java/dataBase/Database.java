@@ -18,7 +18,7 @@ public class Database implements Data {
     private final Dotenv dotenv = Dotenv.load();
     private final String url = dotenv.get("URL");
     private final String user = dotenv.get("NAMEUSER");
-    private final String password = dotenv.get("PASSUSER");
+    private final String password = dotenv.get("MYSQL_ROOT_PASSWORD");
 
     // JDBC variables for opening and managing connection
     private Connection connect;
