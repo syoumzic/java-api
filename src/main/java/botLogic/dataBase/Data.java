@@ -107,4 +107,37 @@ public interface Data {
      */
     void deleteSchedule(String id, int day) throws SQLException;
 
+    /**
+     * Метод для получения списка дедлайнов пользователя.
+     * @param id Пользователя.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @return Возвращает список всех дедлайнов на день.
+     * @throws SQLException Отсутствует таблица код ошибки 1146.
+     */
+    List<String> getDeadlines(String id, String date) throws SQLException;
+
+    /**
+     * Метод для перезаписи дедлайнов на день.
+     * @param id Пользователя.
+     * @param newDeadlines Список новых дедлайнов для перезаписи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка отсутствия записей на этот день.
+     */
+    void editDeadlines(String id, List<String> newDeadlines, String date) throws SQLException;
+
+    /**
+     * Метод для записи дедлайнов на определённую дату.
+     * @param id Пользователя.
+     * @param deadlines Список дедлайнов для записи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    void setDeadlines(String id, List<String>deadlines, String date) throws SQLException;
+
+    /**
+     * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.
+     * @return Возвращает id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    List<String> getUsersIdDeadline() throws  SQLException;
 }

@@ -39,7 +39,7 @@ public class Logic{
             for (String id : dataBase.getUserIdNotification()) {
                 User user;
                 if (!users.containsKey(id)) {
-                    if (id.charAt(0) == 'T') {
+                    if (id.charAt(0) == 't') {
                         user = new User(dataBase, id, parser, time, tgBot, scheduler);
                     } else {
                         user = new User(dataBase, id, parser, time, dsBot, scheduler);
@@ -69,7 +69,7 @@ public class Logic{
         User user = users.get(id);
 
         if(user == null) {
-            if (id.charAt(0) == 'T') {
+            if (id.charAt(0) == 't') {
                 user = new User(dataBase, id, parser, time, tgBot, scheduler);
             } else {
                 user = new User(dataBase, id, parser, time, dsBot, scheduler);
