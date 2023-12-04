@@ -86,6 +86,7 @@ public class Database implements Data {
             int max_iter = 0;
             int index;
             for (int i = 0; i < 14; i++) {
+                schedule.get(i).add("end");
                 iter = schedule.get(i).iterator();
                 index = 0;
                 while (iter.hasNext() && index < max_iter) {
@@ -128,6 +129,7 @@ public class Database implements Data {
             int size = 0;
             if (result.next()) size = result.getInt(1);
             int i = 0;
+            schedule.add("end");
             for (String s : schedule) {
                 if (i < size) {
                     state.executeUpdate(String.format("update `%s` set `%s` = '%s' where `id` = '%s'", id, day, s, i + 1));
@@ -373,6 +375,7 @@ public class Database implements Data {
                 count = result.getInt(1);
             }
             int i = 0;
+            deadlines.add("end");
             for (String s : deadlines) {
                 if (i < count) {
                     state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, i + 1));
