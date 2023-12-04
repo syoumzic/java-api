@@ -2,11 +2,9 @@ package botLogic.commandHandlers;
 
 import botLogic.LogicException;
 import botLogic.User;
-import botLogic.utils.Time;
+import utils.Time;
 
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 
 /**

@@ -1,9 +1,7 @@
-package botLogic.parser;
+package parser;
 
-import botLogic.LogicException;
-import botLogic.utils.Time;
+import utils.Time;
 
-import javax.security.auth.login.AppConfigurationEntry;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;

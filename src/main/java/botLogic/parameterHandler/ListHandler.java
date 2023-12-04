@@ -2,8 +2,8 @@ package botLogic.parameterHandler;
 
 import botLogic.LogicException;
 import botLogic.User;
-import botLogic.utils.Reference;
-import botLogic.utils.Time;
+import utils.Reference;
+import utils.Time;
 
 import java.time.DateTimeException;
 import java.util.ArrayList;

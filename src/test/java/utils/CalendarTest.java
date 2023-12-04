@@ -1,13 +1,12 @@
-package botLogic;
+package utils;
 
-import botLogic.utils.Calendar;
-import botLogic.utils.Time;
+import utils.Calendar;
+import utils.Time;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 /**
  * Проверяет работу обработчика времени

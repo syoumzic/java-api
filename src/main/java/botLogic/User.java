@@ -2,10 +2,10 @@ package botLogic;
 
 import JavaBots.Bot;
 import botLogic.commandHandlers.*;
-import botLogic.dataBase.Data;
-import botLogic.parser.Parser;
-import botLogic.utils.Notifications;
-import botLogic.utils.Time;
+import dataBase.Data;
+import parser.Parser;
+import utils.Notifications;
+import utils.Time;
 
 import java.io.IOException;
 import java.sql.SQLException;

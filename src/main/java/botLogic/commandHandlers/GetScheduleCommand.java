@@ -2,14 +2,12 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.utils.Reference;
-import botLogic.utils.Time;
+import utils.Reference;
+import utils.Time;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * команда /schedule

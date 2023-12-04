@@ -3,7 +3,7 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.RangeHandler;
-import botLogic.utils.Reference;
+import utils.Reference;
 
 import java.sql.SQLException;
 

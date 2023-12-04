@@ -1,6 +1,6 @@
-package botLogic.parser;
+package parser;
 
-import botLogic.utils.Time;
+import utils.Time;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.time.Clock;
+
 /**
  * Класс представляющий собой считыватель расписания
  */

@@ -1,12 +1,10 @@
 package botLogic;
 
 import JavaBots.Bot;
-import botLogic.dataBase.Data;
-import botLogic.parser.Parser;
-import botLogic.utils.Calendar;
-import botLogic.utils.Time;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.mysql.cj.log.Log;
+import dataBase.Data;
+import parser.Parser;
+import utils.Calendar;
+import utils.Time;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

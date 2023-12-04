@@ -4,10 +4,8 @@ import botLogic.LogicException;
 import botLogic.User;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import botLogic.utils.Time;
+import utils.Time;
 
 
 public class NextDeadlinesCommand extends AbstractCommand {

@@ -4,8 +4,8 @@ import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.ListHandler;
-import botLogic.utils.Reference;
-import botLogic.utils.Time;
+import utils.Reference;
+import utils.Time;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

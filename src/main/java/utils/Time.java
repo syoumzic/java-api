@@ -1,4 +1,4 @@
-package botLogic.utils;
+package utils;
 
 import javassist.LoaderClassPath;
 

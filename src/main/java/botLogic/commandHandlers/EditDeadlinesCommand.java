@@ -4,14 +4,13 @@ import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
 import botLogic.parameterHandler.ListHandler;
-import botLogic.utils.Calendar;
-import botLogic.utils.Reference;
+import utils.Reference;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-import botLogic.utils.Time;
+import utils.Time;
 
 public class EditDeadlinesCommand extends AbstractCommand{
     private Reference<LocalDate>date = new Reference<>();

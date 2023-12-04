@@ -1,9 +1,9 @@
 package botLogic;
 
 import JavaBots.Bot;
-import botLogic.dataBase.Data;
-import botLogic.parser.Parser;
-import botLogic.utils.Time;
+import dataBase.Data;
+import parser.Parser;
+import utils.Time;
 
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;

@@ -2,8 +2,7 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.GroupHandler;
-import botLogic.parser.Parser;
-import botLogic.utils.Reference;
+import utils.Reference;
 
 import java.io.IOException;
 import java.sql.SQLException;
