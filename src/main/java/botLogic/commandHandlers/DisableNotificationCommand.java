@@ -15,6 +15,7 @@ public class DisableNotificationCommand extends AbstractCommand{
      * @return сообщение об успешной применении команды
      */
     protected String execute(User user) throws SQLException {
+        user.setStatusNotifications(0);
         user.disableNotifications();
         return "Уведомления успешно удалены";
     }

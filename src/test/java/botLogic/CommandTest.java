@@ -5,6 +5,7 @@ import botLogic.dataBase.Data;
 import botLogic.parser.Parser;
 import botLogic.utils.Calendar;
 import botLogic.utils.Time;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mysql.cj.log.Log;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -167,7 +168,7 @@ public class CommandTest {
      */
     @Test
     public void changeGroupUnreadScheduleTest() throws NoSuchElementException, IOException, SQLException{
-        Mockito.when(database.tableIsExist(group)).thenReturn(false);
+        Mockito.when(database.getSchedule(id, 0)).thenThrow(SQLException.class);
         Mockito.when(parser.parse(time, group)).thenThrow(IOException.class);
 
         user.processMessage("/change_group");
@@ -185,7 +186,7 @@ public class CommandTest {
      */
     @Test
     public void changeGroupNoSuchGroupTest() throws NoSuchElementException, IOException, SQLException{
-        Mockito.when(database.tableIsExist(group)).thenReturn(false);
+        Mockito.when(database.getSchedule(id, 0)).thenThrow(SQLException.class);
         Mockito.when(parser.parse(time, group)).thenThrow(NoSuchElementException.class);
 
         user.processMessage("/change_group");
@@ -232,6 +233,7 @@ public class CommandTest {
      */
     @Test
     public void setNotificationVerifyTest() throws SQLException{
+        Mockito.when(database.getStatusNotifications(id)).thenReturn(1);
         String answer = user.processMessage("/notification_on");
 
         Assertions.assertEquals("Уведомления включены", answer);
@@ -245,18 +247,6 @@ public class CommandTest {
             runnableCaptor.getValue().run();
             Mockito.verify(bot).sendMessage(Long.parseLong(id.substring(1)), lesson);
         }
-    }
-
-    /**
-     * Проверка корректности невключения при отсутствии группы
-     * @throws SQLException обрабатывается
-     */
-    @Test
-    public void setNotificationWithNoGroupTest() throws SQLException{
-        Mockito.when(database.getUsersGroup(id)).thenThrow(SQLException.class);
-
-        String answer = user.processMessage("/notification_on");
-        Assertions.assertEquals("Для начала укажите группу", answer);
     }
 
     /**
@@ -304,14 +294,14 @@ public class CommandTest {
      * Проверка установки дедлайнов
      */
     @Test
-    public void setDeadlinesVerify() throws SQLException{
+    public void setDeadlinesTest() throws SQLException{
         List<String>deadlines = List.of("12:00 Записаться на курсы по английскому", "18:00 Сдать задачу по дискретной математике");
         String stringDeadlines = String.join("\n", deadlines) + "\n";
 
         String answer;
 
-        answer = user.processMessage("/add_deadlines");
-        answer = user.processMessage(dateString);
+        user.processMessage("/add_deadlines");
+        user.processMessage(dateString);
         answer = user.processMessage(stringDeadlines);
 
         Assertions.assertEquals("Дедлайны успешно установлены", answer);
@@ -319,7 +309,7 @@ public class CommandTest {
     }
 
     /**
-     * Проверка установки дедлайнов
+     * Проверка не установки дедлайнов при неправильных параметрах
      */
     @Test
     public void setDeadlinesIncorrectInputTest() throws SQLException{
@@ -328,11 +318,116 @@ public class CommandTest {
 
         String answer;
 
-        answer = user.processMessage("/add_deadlines");
-        answer = user.processMessage(dateString);
+        user.processMessage("/add_deadlines");
+        user.processMessage(dateString);
         answer = user.processMessage(stringDeadlines);
 
         Assertions.assertEquals("для строки '%s' не указано время".formatted(deadlines.get(0)), answer);
         Mockito.verify(database, Mockito.never()).setDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка складывания дедлайнов командой add_deadline
+     */
+    @Test
+    public void addDeadlineTest() throws SQLException{
+        List<String>deadlines = new ArrayList<>(List.of("19:10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому"));
+        List<String>addedDeadlines = List.of("20:00 Сделать тест по истории");
+        String stringAddedDeadlines = String.join("\n", addedDeadlines) + "\n";
+
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(deadlines);
+
+        String answer;
+
+        user.processMessage("/add_deadlines");
+        user.processMessage(dateString);
+        answer = user.processMessage(stringAddedDeadlines);
+
+        Assertions.assertEquals("Дедлайны успешно установлены", answer);
+
+        deadlines.addAll(addedDeadlines);
+        Mockito.verify(database).setDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка редактирования дедлайнов
+     */
+    @Test
+    public void editDeadlineTest() throws SQLException{
+        List<String>deadlines = new ArrayList<>(List.of("19:10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому"));
+        String stringDeadlines = String.join("\n", deadlines) + "\n";
+
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(new ArrayList<>());
+
+        user.processMessage("/edit_deadlines");
+        user.processMessage(dateString);
+        String answer = user.processMessage(stringDeadlines);
+
+        Assertions.assertEquals("Дедлайны успешно обновлены", answer);
+        Mockito.verify(database).editDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка редактирования дедлайнов с неправильными данными
+     */
+    @Test
+    public void editDeadlinesIncorrectInputTest() throws SQLException{
+        List<String>deadlines = List.of("10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому");
+        String stringDeadlines = String.join("\n", deadlines) + "\n";
+
+        String answer;
+
+        user.processMessage("/edit_deadlines");
+        user.processMessage(dateString);
+        answer = user.processMessage(stringDeadlines);
+
+        Assertions.assertEquals("для строки '%s' не указано время".formatted(deadlines.get(0)), answer);
+        Mockito.verify(database, Mockito.never()).setDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка редактирования дедлайнов в первый раз
+     */
+    @Test
+    public void editDeadlineFirstTimeTest() throws SQLException{
+        List<String>deadlines = new ArrayList<>(List.of("19:10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому"));
+        String stringDeadlines = String.join("\n", deadlines) + "\n";
+
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenThrow(SQLException.class);
+
+        user.processMessage("/edit_deadlines");
+        user.processMessage(dateString);
+        String answer = user.processMessage(stringDeadlines);
+
+        Assertions.assertEquals("На этот день нет дедлайнов", answer);
+        Mockito.verify(database, Mockito.never()).editDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка команды /next_deadline
+     */
+    @Test
+    public void getNextDeadlineTest() throws SQLException{
+        List<String>deadlines;
+        String stringDeadlines;
+        String answer;
+
+        deadlines = List.of("19:10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому");
+        stringDeadlines = String.join("\n", deadlines) + "\n";
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(deadlines);
+        answer = user.processMessage("/next_deadlines");
+        Assertions.assertEquals(deadlines.get(0), answer);
+
+        deadlines = List.of("1:10 Записаться на курсы по английскому", "8:20 Записаться на курсы по английскому");
+        stringDeadlines = String.join("\n", deadlines) + "\n";
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(deadlines);
+        answer = user.processMessage("/next_deadlines");
+        Assertions.assertEquals(deadlines.get(1), answer);
+
+        deadlines = List.of("1:10 Записаться на курсы по английскому", "4:20 Записаться на курсы по английскому");
+        stringDeadlines = String.join("\n", deadlines) + "\n";
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(deadlines);
+        answer = user.processMessage("/next_deadlines");
+        Assertions.assertEquals("Дедлайнов на сегодня нет", answer);
     }
 }

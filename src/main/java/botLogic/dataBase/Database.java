@@ -532,26 +532,12 @@ public class Database implements Data {
     }
 
     @Override
-    public void setDeadlines(String id, List<String> deadlines, String date) throws SQLException {
+    public void setDeadlineNotificationShift(String id, int hours) throws SQLException {
 
     }
 
     @Override
-    public List<String> getDeadlines(String id, String date) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public void editDeadlines(String id, List<String> deadlines) throws SQLException {
-
-    }
-
     public int getDeadlineNotificationShift(String id) throws SQLException {
         return 0;
-    }
-
-    @Override
-    public void setDeadlineNotificationShift(String id, int current) {
-
     }
 }

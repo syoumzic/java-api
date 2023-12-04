@@ -42,6 +42,7 @@ public class AddDeadlinesCommand extends AbstractCommand{
         }
 
         nextDeadlines.addAll(deadlines.current);
+
         user.setDeadlines(nextDeadlines, absoluteDate);
         user.updateNotifications();
 

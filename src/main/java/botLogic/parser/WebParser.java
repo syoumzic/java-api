@@ -104,8 +104,7 @@ public class WebParser implements Parser {
                 continue;
             }
 
-            if(lesson.className().equals("divide")) {                                                       //тег, после которого заканчиваются теги предметов на день
-                currentSchedule.add("end");                                                                 //строка конца предметов
+            if(lesson.className().equals("divide")) {
                 day++;
                 continue;
             }

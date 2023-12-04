@@ -31,14 +31,16 @@ public class ChangeGroupCommand extends AbstractCommand {
     public String execute(User user) throws LogicException, SQLException{
         user.addUserGroup(group.current);
 
-        if(!user.scheduleExist()){
+        try{
+            user.getSchedule(0);
+        }catch(SQLException sqlException){
             try {
                 List<List<String>> weekSchedule = user.loadSchedule();
                 user.setSchedule(weekSchedule);
             }catch (IOException e){
-                throw new LogicException("Не удалось прочесть расписание");
+                throw new LogicException("Не удалось прочесть расписание", e);
             }catch (NoSuchElementException e){
-                throw new LogicException("Не удалось найти группу с таким номером");
+                throw new LogicException("Не удалось найти группу с таким номером", e);
             }
         }
 

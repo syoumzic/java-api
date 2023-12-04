@@ -100,6 +100,7 @@ public class User {
             case "/add_deadlines" -> new AddDeadlinesCommand(scheduler, time);
             case "/edit_deadlines" -> new EditDeadlinesCommand(time);
             case "/next_deadlines" -> new NextDeadlinesCommand(time);
+            case "/deadline_time" -> new SettingsDeadlinesNotificationCommand();
             default -> throw new LogicException("Команда не найдена");
         };
     }
@@ -116,28 +117,23 @@ public class User {
      * Включение уведомлений для пользователя на день с сохранением в базу данных
      */
     public void updateNotifications() throws SQLException{
-        if (dataBase.getStatusNotifications(id) == 1){
+        if (getStatusNotifications() == 1){
             forceUpdateNotification();
         }
     }
 
     public void forceUpdateNotification() throws SQLException{
-        lessonNotifications.setNotification(getSchedule(time.getShift()), getLessonNotificationsShift());
+        lessonNotifications.setNotification(getSchedule(time.getShift()), getLessonNotificationsShift() * 60L);
         try {
-            lessonNotifications.setNotification(getDeadlines(time.getDateString()), getLessonNotificationsShift());
+            lessonNotifications.setNotification(getDeadlines(time.getDateString()), getDeadlinesNotificationsShift() * 3600L);
         }
-        finally { }
+        catch (SQLException ignored){ }
     }
 
     /**
      * Реализация выключения уведомления для пользователя на день с сохранением в базу данных
      */
     public void disableNotifications() throws SQLException {
-        forceDisableNotifications();
-        dataBase.setStatusNotifications(id, 0);
-    }
-
-    public void forceDisableNotifications() throws SQLException {
         lessonNotifications.removeNotification();
         deadlineNotifications.removeNotification();
     }
@@ -148,14 +144,6 @@ public class User {
 
     public List<List<String>> loadSchedule() throws NoSuchElementException, IOException, SQLException {
         return parser.parse(time, dataBase.getUsersGroup(id));
-    }
-
-    public boolean scheduleExist() throws SQLException {
-        return dataBase.tableIsExist(dataBase.getUsersGroup(id));
-    }
-
-    public boolean deadlineExist(String date) throws SQLException {
-        return dataBase.tableIsExist(date);
     }
 
     /**
@@ -203,7 +191,7 @@ public class User {
     /**
      * Метод базы данных getStatusNotification для данного пользователя
      */
-    public void setStatusNotification(int status) throws SQLException{
+    public void setStatusNotifications(int status) throws SQLException{
         dataBase.setStatusNotifications(id, status);
     }
 
@@ -217,8 +205,8 @@ public class User {
     /**
      *
      */
-    public void editDeadlines(List<String>deadlines) throws SQLException {
-        dataBase.editDeadlines(id, deadlines);
+    public void editDeadlines(List<String>deadlines, String date) throws SQLException {
+        dataBase.editDeadlines(id, deadlines, date);
     }
 
     public void setCastomSchedule(List<String> current, int shift) throws SQLException{
@@ -233,13 +221,16 @@ public class User {
         return dataBase.getDeadlineNotificationShift(id);
     }
 
-    public void setDeadlineNotificationShift(int current) {
-        dataBase.setDeadlineNotificationShift(id, current);
+    public void setDeadlineNotificationShift(int hours) throws SQLException {
+        dataBase.setDeadlineNotificationShift(id, hours);
     }
-    /**
-     *
-     */
+
     public void deleteScheule() {
+
+    }
+
+    private int getStatusNotifications() throws SQLException{
+        return dataBase.getStatusNotifications(id);
     }
 
 }

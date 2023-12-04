@@ -20,12 +20,11 @@ public class Notifications {
         this.time = time;
     }
 
-    public void setNotification(List<String>tusks, int minuteShift){
+    public void setNotification(List<String>tusks, long notificationShift){
         for (String tusk : tusks) {
             if (tusk.equals("-")) continue;
 
             long lessonTime = time.getSecondsOfDay(tusk);
-            long notificationShift = minuteShift * 60;
             long currentTime = time.getSecondsOfDay();
 
             if(lessonTime > currentTime)

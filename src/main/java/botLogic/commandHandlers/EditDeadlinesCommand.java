@@ -39,7 +39,7 @@ public class EditDeadlinesCommand extends AbstractCommand{
             return "На этот день нет дедлайнов";
         }
 
-        user.editDeadlines(deadlines.current);
+        user.editDeadlines(deadlines.current, time.getDateString(date.current));
         user.updateNotifications();
         return "Дедлайны успешно обновлены";
     }

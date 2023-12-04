@@ -18,7 +18,7 @@ public class CalendarTest {
      * Проверяет корректность преобразования даты из String в LocalDate
      */
     @Test
-    public void checkCorrectDate() {
+    public void toStringTest() {
         Time time = new Calendar();
 
         int year = LocalDate.now().getYear();
@@ -32,5 +32,16 @@ public class CalendarTest {
         Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("2023.11.01"));
         Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("3 ноября"));
         Assertions.assertThrows(DateTimeException.class, () -> time.getLocalDate("1.38"));
+    }
+
+    /**
+     * Проверяет корректность преобразования даты из LocalDate в String
+     */
+    @Test
+    public void toLocalDateTest(){
+        Time time = new Calendar();
+
+        Assertions.assertEquals("1.10.2023", time.getDateString(LocalDate.of(2023, 10, 1)));
+        Assertions.assertEquals("10.1.2023", time.getDateString(LocalDate.of(2023, 1, 10)));
     }
 }

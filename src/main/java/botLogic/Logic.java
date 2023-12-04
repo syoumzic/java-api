@@ -50,7 +50,7 @@ public class Logic{
                     user = users.get(id);
                 }
 
-                user.forceDisableNotifications();
+                user.forceUpdateNotification();
             }
 
             scheduler.schedule(() -> updateNotification(tgBot, dsBot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);

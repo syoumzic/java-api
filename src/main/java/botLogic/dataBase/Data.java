@@ -140,4 +140,6 @@ public interface Data {
      * @throws SQLException Ошибка доступа к базе данных.
      */
     List<String> getUsersIdDeadline() throws  SQLException;
+    void setDeadlineNotificationShift(String id, int hours) throws SQLException;
+    int getDeadlineNotificationShift(String id) throws SQLException;
 }

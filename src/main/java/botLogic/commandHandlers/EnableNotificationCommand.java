@@ -16,13 +16,7 @@ public class EnableNotificationCommand extends AbstractCommand{
      * @throws LogicException ошибка выполнения команды
      */
     protected String execute(User user) throws LogicException, SQLException {
-        try{
-            user.getUsersGroup();
-        }catch (SQLException e){
-            throw new LogicException("Для начала укажите группу");
-        }
-
-        user.setStatusNotification(1);
+        user.setStatusNotifications(1);
         user.updateNotifications();
 
         return "Уведомления включены";
