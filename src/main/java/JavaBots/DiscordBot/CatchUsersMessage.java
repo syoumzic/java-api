@@ -20,6 +20,6 @@ public class CatchUsersMessage extends ListenerAdapter {
         Message message = event.getMessage();
         String text = message.getContentRaw();
         String id = message.getAuthor().getId();
-        bot.sendMessage(Long.parseLong(id), logic.processMessage('D' + id, text));
+        bot.sendMessage(Long.parseLong(id), logic.processMessage('d' + id, text));
     }
 }
