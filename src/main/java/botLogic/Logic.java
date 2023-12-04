@@ -1,9 +1,9 @@
 package botLogic;
 
 import JavaBots.Bot;
-import botLogic.dataBase.Data;
-import botLogic.parser.Parser;
-import botLogic.utils.Time;
+import dataBase.Data;
+import parser.Parser;
+import utils.Time;
 
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,12 +50,12 @@ public class Logic{
                     user = users.get(id);
                 }
 
-                user.forceUpdateNotifications();
+                user.forceUpdateNotification();
             }
 
             scheduler.schedule(() -> updateNotification(tgBot, dsBot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
-            System.out.println(e.toString());
+            System.out.println(e.getLocalizedMessage());
         }
     }
 

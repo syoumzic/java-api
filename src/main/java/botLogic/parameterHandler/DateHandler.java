@@ -1,9 +1,9 @@
 package botLogic.parameterHandler;
 
 import botLogic.User;
-import botLogic.utils.Time;
+import utils.Time;
 import botLogic.LogicException;
-import botLogic.utils.Reference;
+import utils.Reference;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -13,12 +13,13 @@ import java.time.LocalDate;
  */
 public class DateHandler implements ParameterHandler{
     private Reference<LocalDate>callbackDate;
-
+    private Time time;
     /**
      * Конструктор класса DateHandler
      * @param callbackDate ссылка на дату в которую запишется считанное значение
      */
-    public DateHandler(Reference<LocalDate> callbackDate){
+    public DateHandler(Reference<LocalDate> callbackDate, Time time){
+        this.time = time;
         this.callbackDate = callbackDate;
     }
 
@@ -32,8 +33,6 @@ public class DateHandler implements ParameterHandler{
      * @throws LogicException дата не валидна
      */
     public void handle(User user, String message) throws LogicException {
-        Time time = user.getTime();
-
         try{
             callbackDate.current = time.getLocalDate(message);
         }catch(DateTimeException e){

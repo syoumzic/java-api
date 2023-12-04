@@ -1,6 +1,6 @@
-package botLogic.parser;
+package parser;
 
-import botLogic.utils.Time;
+import utils.Time;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -104,8 +104,7 @@ public class WebParser implements Parser {
                 continue;
             }
 
-            if(lesson.className().equals("divide")) {                                                       //тег, после которого заканчиваются теги предметов на день
-                currentSchedule.add("end");                                                                 //строка конца предметов
+            if(lesson.className().equals("divide")) {
                 day++;
                 continue;
             }

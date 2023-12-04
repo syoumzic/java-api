@@ -2,12 +2,12 @@ import JavaBots.Bot;
 import JavaBots.DiscordBot.Discord_Bot;
 import JavaBots.TelegramBot.Telegram_Bot;
 import botLogic.Logic;
-import botLogic.dataBase.Data;
-import botLogic.dataBase.Database;
-import botLogic.parser.Parser;
-import botLogic.parser.WebParser;
-import botLogic.utils.Calendar;
-import botLogic.utils.Time;
+import dataBase.Data;
+import dataBase.Database;
+import parser.Parser;
+import parser.WebParser;
+import utils.Calendar;
+import utils.Time;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

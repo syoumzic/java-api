@@ -1,4 +1,4 @@
-package botLogic.dataBase;
+package dataBase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -529,5 +529,15 @@ public class Database implements Data {
         result.close();
 
         return schedule;
+    }
+
+    @Override
+    public void setDeadlineNotificationShift(String id, int hours) throws SQLException {
+
+    }
+
+    @Override
+    public int getDeadlineNotificationShift(String id) throws SQLException {
+        return 0;
     }
 }

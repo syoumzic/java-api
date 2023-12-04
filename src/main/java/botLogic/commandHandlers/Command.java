@@ -3,6 +3,8 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 
+import java.sql.SQLException;
+
 /**
  * Интерфейс, предназначенный для обработки команды
  */
@@ -15,5 +17,5 @@ public interface Command {
      * @return сообщение успешного выполнения
      * @throws LogicException ошибка считывания параметров
      */
-    String handle(User user, String message) throws LogicException;
+    String handle(User user, String message) throws LogicException, SQLException;
 }
