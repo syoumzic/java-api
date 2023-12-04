@@ -50,12 +50,12 @@ public class Logic{
                     user = users.get(id);
                 }
 
-                user.forceUpdateNotifications();
+                user.forceDisableNotifications();
             }
 
             scheduler.schedule(() -> updateNotification(tgBot, dsBot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
-            System.out.println(e.toString());
+            System.out.println(e.getLocalizedMessage());
         }
     }
 

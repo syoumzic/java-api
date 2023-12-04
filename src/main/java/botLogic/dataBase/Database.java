@@ -142,26 +142,6 @@ public class Database implements Data {
         }
     }
 
-    @Override
-    public HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public void setDeadlines(String id, List<String> deadlines, String date) throws SQLException {
-
-    }
-
-    @Override
-    public List<String> getDeadlines(String id, String date) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public void editDeadlines(String id, List<String> deadlines) throws SQLException {
-
-    }
-
     /**
      * Метод позволяет узнать следующую пару на текущий момент.
      * @param id Идентификатор пользователя в базе данных.
@@ -438,5 +418,29 @@ public class Database implements Data {
         result.close();
 
         return schedule;
+    }
+
+    @Override
+    public void setDeadlines(String id, List<String> deadlines, String date) throws SQLException {
+
+    }
+
+    @Override
+    public List<String> getDeadlines(String id, String date) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void editDeadlines(String id, List<String> deadlines) throws SQLException {
+
+    }
+
+    public int getDeadlineNotificationShift(String id) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void setDeadlineNotificationShift(String id, int current) {
+
     }
 }

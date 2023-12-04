@@ -55,6 +55,7 @@ public class CommandTest {
 
     final LocalDate localDate = LocalDate.of(2023, 11, 27);
     final String dateString = "%s.%s".formatted(localDate.getDayOfMonth(), localDate.getMonthValue());
+    final String absoluteDateString = "%s.%s.%s".formatted(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
     final LocalTime localTime = LocalTime.of(6, 0);
     final List<String> schedule = Arrays.asList("8:00 Матан", "10:00 Алгем", "12:00 Дискретка");
     final String id = "T228";
@@ -282,7 +283,7 @@ public class CommandTest {
         user.processMessage("/notification_set");
         String answer = user.processMessage("dkfjo");
 
-        Assertions.assertEquals("Введено не время", answer);
+        Assertions.assertEquals("Введено не число", answer);
         Mockito.verify(database, Mockito.never()).setNotificationShift(Mockito.eq(id), Mockito.anyInt());
     }
 
@@ -297,5 +298,41 @@ public class CommandTest {
 
         Assertions.assertEquals("Ожидается число от 0 до 90", answer);
         Mockito.verify(database, Mockito.never()).setNotificationShift(Mockito.eq(id), Mockito.anyInt());
+    }
+
+    /**
+     * Проверка установки дедлайнов
+     */
+    @Test
+    public void setDeadlinesVerify() throws SQLException{
+        List<String>deadlines = List.of("12:00 Записаться на курсы по английскому", "18:00 Сдать задачу по дискретной математике");
+        String stringDeadlines = String.join("\n", deadlines) + "\n";
+
+        String answer;
+
+        answer = user.processMessage("/add_deadlines");
+        answer = user.processMessage(dateString);
+        answer = user.processMessage(stringDeadlines);
+
+        Assertions.assertEquals("Дедлайны успешно установлены", answer);
+        Mockito.verify(database).setDeadlines(id, deadlines, absoluteDateString);
+    }
+
+    /**
+     * Проверка установки дедлайнов
+     */
+    @Test
+    public void setDeadlinesIncorrectInputTest() throws SQLException{
+        List<String>deadlines = List.of("10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому");
+        String stringDeadlines = String.join("\n", deadlines) + "\n";
+
+        String answer;
+
+        answer = user.processMessage("/add_deadlines");
+        answer = user.processMessage(dateString);
+        answer = user.processMessage(stringDeadlines);
+
+        Assertions.assertEquals("для строки '%s' не указано время".formatted(deadlines.get(0)), answer);
+        Mockito.verify(database, Mockito.never()).setDeadlines(id, deadlines, absoluteDateString);
     }
 }

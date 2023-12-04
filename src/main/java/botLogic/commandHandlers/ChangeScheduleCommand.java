@@ -39,8 +39,6 @@ public class ChangeScheduleCommand extends AbstractCommand {
         }
 
         user.setCastomSchedule(schedule.current, time.getShift(date.current));
-
-        user.flushCommand();
         user.updateNotifications();
 
         return "Расписание обновлено";

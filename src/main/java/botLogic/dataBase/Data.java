@@ -110,6 +110,7 @@ public interface Data {
 
     void setDeadlines(String id, List<String>deadlines, String date) throws SQLException;
     List<String> getDeadlines(String id, String date) throws SQLException;
-    HashMap<String, List<String>> getAllDeadlines(String id) throws SQLException;
     void editDeadlines(String id, List<String>deadlines) throws SQLException;
+    int getDeadlineNotificationShift(String id) throws SQLException;
+    void setDeadlineNotificationShift(String id, int current);
 }

@@ -19,6 +19,11 @@ public interface Time {
     /**
      * Возвращает текущую дату в строке
      */
+    String getDateString();
+
+    /**
+     * Возвращает дату в строке
+     */
     String getDateString(LocalDate date);
 
     /**

@@ -15,6 +15,13 @@ public class Calendar implements Time{
     /**
      * Возвращает текущую дату в строке
      */
+    public String getDateString() {
+        return getDateString(LocalDate.now());
+    }
+
+    /**
+     * Возвращает дату в строке
+     */
     public String getDateString(LocalDate date) {
         return "%d.%d.%d".formatted(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
     }

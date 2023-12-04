@@ -36,7 +36,12 @@ public abstract class AbstractCommand implements Command{
             currentParameter.handle(user, message);
 
         currentParameter = handlers.poll();          //next parameter
-        return (currentParameter == null)? execute(user) : currentParameter.startMessage();
+
+        if(currentParameter == null){
+            user.flushCommand();
+            return execute(user);
+        }
+        return currentParameter.startMessage();
     }
 
     /**

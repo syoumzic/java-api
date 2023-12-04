@@ -32,8 +32,6 @@ public class GetScheduleCommand extends AbstractCommand {
      * @return расписание
      */
     protected String execute(User user) throws LogicException, SQLException{
-        user.flushCommand();
-
         try{
             user.getUsersGroup();
         }catch(SQLException e){

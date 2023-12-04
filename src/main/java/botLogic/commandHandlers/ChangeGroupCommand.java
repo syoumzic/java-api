@@ -2,6 +2,7 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.GroupHandler;
+import botLogic.parser.Parser;
 import botLogic.utils.Reference;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.NoSuchElementException;
  * команда /change_group
  */
 public class ChangeGroupCommand extends AbstractCommand {
-    Reference<String> group = new Reference<>();
+    private Reference<String> group = new Reference<>();
 
     /**
      * Инициализация считывания группы
@@ -42,8 +43,6 @@ public class ChangeGroupCommand extends AbstractCommand {
         }
 
         user.deleteScheule();
-
-        user.flushCommand();
         user.updateNotifications();
 
         return "Группа успешно обновлена!";

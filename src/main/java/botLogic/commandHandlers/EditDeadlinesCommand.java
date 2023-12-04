@@ -14,9 +14,9 @@ import java.util.List;
 import botLogic.utils.Time;
 
 public class EditDeadlinesCommand extends AbstractCommand{
-    Reference<LocalDate>date = new Reference<>();
-    Reference<List<String>>deadlines = new Reference<>();
-    Time time;
+    private Reference<LocalDate>date = new Reference<>();
+    private Reference<List<String>>deadlines = new Reference<>();
+    private Time time;
 
     /**
      *  Установка считывания времени и дедлайнов
@@ -40,6 +40,7 @@ public class EditDeadlinesCommand extends AbstractCommand{
         }
 
         user.editDeadlines(deadlines.current);
+        user.updateNotifications();
         return "Дедлайны успешно обновлены";
     }
 }

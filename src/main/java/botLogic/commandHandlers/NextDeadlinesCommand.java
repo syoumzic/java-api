@@ -11,27 +11,26 @@ import botLogic.utils.Time;
 
 
 public class NextDeadlinesCommand extends AbstractCommand {
-    Time time;
+    final private Time time;
 
     public NextDeadlinesCommand(Time time){
         this.time = time;
     }
 
     /**
-     * Выводит ближайший дедлайн
-     * @param user текущий пользователь
-     * @return сообщение об успешной применении команды
-     * @throws LogicException ошибка выполнения команды
+     * Выводит ближайший дедлайн на день
      */
     public String execute(User user) throws LogicException, SQLException{
-        HashMap<String, List<String>> deadlines = user.getAllDeadlines();
+        List<String>deadlines = user.getDeadlines(time.getDateString());
+        long currentTime = time.getSecondsOfDay();
 
-        int currentSeconds = time.getSecondsOfDay();
-        for(String day : deadlines.keySet())
-            for(String deadline : deadlines.get(day))
-                if(currentSeconds < time.getSecondsOfDay(deadline))
-                    return deadline;
+        for(String deadline : deadlines){
+            long deadlineTime = time.getSecondsOfDay(deadline);
 
-        return "Дедлайнов нет";
+            if(currentTime < deadlineTime)
+                return deadline;
+        }
+
+        return "Дедлайнов на сегодня нет";
     }
 }

@@ -13,8 +13,6 @@ public class HelpCommand extends AbstractCommand {
      * @return список команд
      */
     protected String execute(User user){
-        user.flushCommand();
-
         return  "Команды:\n" +
                 "/help - вызов шпаргалки по возможностям бота\n" +
                 "/change_group - изменить номер группы\n" +

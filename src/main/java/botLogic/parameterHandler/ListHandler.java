@@ -68,5 +68,7 @@ public class ListHandler implements ParameterHandler{
 
             callbackSchedule.current.add(lesson);
         }
+
+        callbackSchedule.current.add("end");
     }
 }

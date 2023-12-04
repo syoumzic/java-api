@@ -13,7 +13,7 @@ import java.util.List;
  * команда /next_lesson
  */
 public class NextLessonCommand extends AbstractCommand {
-    Time time;
+    private Time time;
 
     public NextLessonCommand(Time time){
         this.time = time;

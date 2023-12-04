@@ -13,7 +13,6 @@ public class DisableNotificationCommand extends AbstractCommand{
      * Выключить уведомления для конкретного пользователя
      * @param user текущий пользователь
      * @return сообщение об успешной применении команды
-     * @throws LogicException ошибка выполнения команды
      */
     protected String execute(User user) throws SQLException {
         user.disableNotifications();
