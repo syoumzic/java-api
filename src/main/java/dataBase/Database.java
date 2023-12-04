@@ -1,5 +1,7 @@
 package dataBase;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,9 +15,10 @@ import java.util.regex.Pattern;
  * Класс представляющий собой данные
  */
 public class Database implements Data {
-    private final String url = System.getenv("URL");
-    private final String user = System.getenv("NAMEUSER");
-    private final String password = System.getenv("PASSUSER");
+    private final Dotenv dotenv = Dotenv.load();
+    private final String url = dotenv.get("URL");
+    private final String user = dotenv.get("NAMEUSER");
+    private final String password = dotenv.get("PASSUSER");
 
     // JDBC variables for opening and managing connection
     private Connection connect;
