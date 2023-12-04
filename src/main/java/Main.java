@@ -4,6 +4,7 @@ import JavaBots.TelegramBot.Telegram_Bot;
 import botLogic.Logic;
 import dataBase.Data;
 import dataBase.Database;
+import io.github.cdimascio.dotenv.Dotenv;
 import parser.Parser;
 import parser.WebParser;
 import utils.Calendar;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Main {
     public static void main(String[] args) {
+        final Dotenv dotenv = Dotenv.load();
         Data dataBase = new Database();
         Parser parser = new WebParser();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -22,8 +24,8 @@ public class Main {
         Logic logic = new Logic(dataBase, parser, time, scheduler);
 
         String botName = "SUPBot";
-        String tgBotToken = System.getenv("TG_TOKEN");
-        String dsBotToken = System.getenv("DS_TOKEN");
+        String tgBotToken = dotenv.get("TG_TOKEN");
+        String dsBotToken = dotenv.get("DS_TOKEN");
         Bot tgBot = new Telegram_Bot(botName, tgBotToken, logic);
         Bot dsBot = new Discord_Bot(dsBotToken, logic);
 
