@@ -123,7 +123,7 @@ public interface Data {
      * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    void setDeadlines(String id, List<String>deadlines, String date) throws SQLException;
+    void addDeadlines(String id, List<String>deadlines, String date) throws SQLException;
 
     /**
      * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.

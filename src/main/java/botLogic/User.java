@@ -178,7 +178,7 @@ public class User {
      * Метод базы данных setDeadlines для данного пользователя
      */
     public void setDeadlines(List<String>deadlines, String day) throws SQLException{
-        dataBase.setDeadlines(id, deadlines, day);
+        dataBase.addDeadlines(id, deadlines, day);
     }
 
     /**
