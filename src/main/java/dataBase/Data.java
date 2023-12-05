@@ -1,4 +1,4 @@
-package botLogic.dataBase;
+package dataBase;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -30,15 +30,6 @@ public interface Data {
      * @param day Номер дня недели, на который сохраняется расписание.
      */
     void setCastomSchedule(String id, List<String> schedule, int day) throws SQLException;
-
-    /**
-     * Метод позволяет узнать следующую пару на текущий момент.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер текущего дня недели от 1 до 14.
-     * @param current_time Текущее время в минутах с начала дня
-     * @return Возвращает следующую пару.
-     */
-    String getNextLesson (String id, int day, int current_time) throws SQLException;
 
     /**
      * Метод добавляющий пользователя в базу данных.
@@ -107,4 +98,53 @@ public interface Data {
      */
     void deleteSchedule(String id, int day) throws SQLException;
 
+    /**
+     * Метод для получения списка дедлайнов пользователя.
+     * @param id Пользователя.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @return Возвращает список всех дедлайнов на день.
+     * @throws SQLException Отсутствует таблица код ошибки 1146.
+     */
+    List<String> getDeadlines(String id, String date) throws SQLException;
+
+    /**
+     * Метод для перезаписи дедлайнов на день.
+     * @param id Пользователя.
+     * @param newDeadlines Список новых дедлайнов для перезаписи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка отсутствия записей на этот день.
+     */
+    void editDeadlines(String id, List<String> newDeadlines, String date) throws SQLException;
+
+    /**
+     * Метод для записи дедлайнов на определённую дату.
+     * @param id Пользователя.
+     * @param deadlines Список дедлайнов для записи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    void addDeadlines(String id, List<String>deadlines, String date) throws SQLException;
+
+    /**
+     * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.
+     * @return Возвращает id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    List<String> getUsersIdDeadline() throws  SQLException;
+
+    /**
+     * Метод для установки времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @param hours Количество часов.
+     * @throws SQLException Ошибка записи в базу данных.
+     */
+    void setDeadlineNotificationShift(String id, int hours) throws SQLException;
+
+    /**
+     * Метод для получения времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @return Количество часов.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    int getDeadlineNotificationShift(String id) throws SQLException;
 }

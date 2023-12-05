@@ -3,9 +3,9 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.parameterHandler.ScheduleHandler;
-import botLogic.utils.Reference;
-import botLogic.utils.Time;
+import botLogic.parameterHandler.ListHandler;
+import utils.Reference;
+import utils.Time;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -17,12 +17,14 @@ import java.util.List;
 public class ChangeScheduleCommand extends AbstractCommand {
     private Reference<LocalDate>date = new Reference<>();
     private Reference<List<String>>schedule = new Reference<>();
+    private Time time;
 
     /**
      * Установка считывания даты и расписания
      */
     public ChangeScheduleCommand(Time time){
-        setParameterHandlers(new DateHandler(date), new ScheduleHandler(schedule, time));
+        this.time = time;
+        setParameterHandlers(new DateHandler(date, time), new ListHandler(schedule, time));
     }
 
     /**
@@ -30,22 +32,14 @@ public class ChangeScheduleCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return сообщение успешного обновления расписания
      */
-    protected String execute(User user) throws LogicException {
+    protected String execute(User user) throws LogicException, SQLException {
         try{
-            user.getDatabase().getUsersGroup(user.getId());
+            user.getUsersGroup();
         }catch(SQLException e){
             return "Для начала укажите свою группу";
         }
 
-        try {
-            user.getDatabase().setCastomSchedule(user.getId(),
-                                                 schedule.current,
-                                                 user.getTime().getShift(date.current));
-        }catch(SQLException e){
-            throw new LogicException("Внутренняя ошибка");
-        }
-
-        user.flushCommand();
+        user.setCastomSchedule(schedule.current, time.getShift(date.current));
         user.updateNotifications();
 
         return "Расписание обновлено";

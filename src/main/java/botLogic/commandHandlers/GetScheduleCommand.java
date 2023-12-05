@@ -2,25 +2,26 @@ package botLogic.commandHandlers;
 
 import botLogic.*;
 import botLogic.parameterHandler.DateHandler;
-import botLogic.utils.Reference;
+import utils.Reference;
+import utils.Time;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * команда /schedule
  */
 public class GetScheduleCommand extends AbstractCommand {
     private Reference<LocalDate> date = new Reference<>();
+    private Time time;
 
     /**
      * Установка считывания даты
      */
-    public GetScheduleCommand(){
-        setParameterHandlers(new DateHandler(date));
+    public GetScheduleCommand(Time time){
+        this.time = time;
+        setParameterHandlers(new DateHandler(date, time));
     }
 
     /**
@@ -28,60 +29,20 @@ public class GetScheduleCommand extends AbstractCommand {
      * @param user текущий пользователь
      * @return расписание
      */
-    protected String execute(User user) throws LogicException{
-        user.flushCommand();
-
+    protected String execute(User user) throws LogicException, SQLException{
         try{
-            user.getDatabase().getUsersGroup(user.getId());
+            user.getUsersGroup();
         }catch(SQLException e){
-            return "Для начала укажите свою группу";
+            throw new LogicException("Для начала укажите свою группу");
         }
 
-        int numberDay = user.getTime().getShift(date.current);
-
+        int numberDay = time.getShift(date.current);
         List<String> schedule = null;
+        schedule = user.getSchedule(numberDay);
 
-        try{
-            schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
-        } catch (SQLException ex) {
-            if (ex.getErrorCode() == 1146){
-                try {
+        if (schedule.isEmpty())
+            return "В этот день у вас нет пар";
 
-                    List<List<String>> weeksShedule = user.getParser().parse(user.getTime(), user.getDatabase().getUsersGroup(user.getId()).toUpperCase());
-
-                    user
-                        .getDatabase()
-                        .setSchedule(user.getDatabase().getUsersGroup(user.getId()), weeksShedule);
-
-                    schedule = user.getDatabase().getSchedule(user.getId(), numberDay);
-                }catch(SQLException e){
-                    throw new LogicException("Внутренняя ошибка");
-                }catch (IOException e){
-                    throw new LogicException("Ошибка считывания расписания.");
-                } catch (NoSuchElementException e){
-                    throw new LogicException("Не удалось найти группу с таким номером");
-                }
-            }
-            else {
-                System.out.println(ex.getMessage());
-            }
-        }
-
-        if (schedule.isEmpty()) return "В этот день у вас нет пар";
-
-        return toString(schedule);
-    }
-
-    /**
-     * Превращает список в строку
-     * @param schedule список предметов
-     * @return предметы через перенос строки в формате string
-     */
-
-    private String toString(List<String>schedule){
-        StringBuilder concat = new StringBuilder();
-        for(String lesson : schedule)
-            concat.append(lesson).append("\n");
-        return concat.toString();
+        return String.join("\n", schedule) + "\n";
     }
 }

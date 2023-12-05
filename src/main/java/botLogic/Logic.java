@@ -1,9 +1,9 @@
 package botLogic;
 
 import JavaBots.Bot;
-import botLogic.dataBase.Data;
-import botLogic.parser.Parser;
-import botLogic.utils.Time;
+import dataBase.Data;
+import parser.Parser;
+import utils.Time;
 
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,7 +16,8 @@ public class Logic{
     private final Data dataBase;
     private final Parser parser;
     private final Time time;
-    private Bot bot;
+    private Bot tgBot;
+    private Bot dsBot;
     private ScheduledExecutorService scheduler;
 
     private final HashMap<String, User>users = new HashMap<>();
@@ -28,30 +29,39 @@ public class Logic{
         this.scheduler = scheduler;
     }
 
+    public void setBots(Bot tgBot, Bot dsBot){
+        this.tgBot = tgBot;
+        this.dsBot = dsBot;
+    }
+
     /**
      * Инициализируем пользователей с уведомлениями
      */
-    public void updateNotification(Bot bot){
-        this.bot = bot;
+    public void updateNotification(){
         try {
             for (String id : dataBase.getUserIdNotification()) {
                 User user;
                 if (!users.containsKey(id)) {
-                    user = new User(dataBase, id, parser, time, bot, scheduler);
+                    if (id.charAt(0) == 't') {
+                        user = new User(dataBase, id, parser, time, tgBot, scheduler);
+                    } else {
+                        user = new User(dataBase, id, parser, time, dsBot, scheduler);
+                    }
                     users.put(id, user);
                 }
                 else{
                     user = users.get(id);
                 }
 
-                user.forceUpdateNotifications();
+                user.forceUpdateNotification();
             }
 
-            scheduler.schedule(() -> updateNotification(bot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
+            scheduler.schedule(this::updateNotification, time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
-            System.out.println(e.toString());
+            System.out.println(e.getLocalizedMessage());
         }
     }
+
 
     /**
      * Обрабатывает сообщение для конкретного пользователя
@@ -63,7 +73,11 @@ public class Logic{
         User user = users.get(id);
 
         if(user == null) {
-            user = new User(dataBase, id, parser, time, bot, scheduler);
+            if (id.charAt(0) == 't') {
+                user = new User(dataBase, id, parser, time, tgBot, scheduler);
+            } else {
+                user = new User(dataBase, id, parser, time, dsBot, scheduler);
+            }
             users.put(id, user);
         }
 

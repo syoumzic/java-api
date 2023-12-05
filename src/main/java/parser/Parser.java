@@ -1,6 +1,6 @@
-package botLogic.parser;
+package parser;
 
-import botLogic.utils.Time;
+import utils.Time;
 
 import java.io.IOException;
 import java.util.List;

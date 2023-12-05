@@ -28,7 +28,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
         this.botToken = botToken;
         this.logic = logic;
 
-        TelegramBotsApi telegramBotsApi = null;
+        TelegramBotsApi telegramBotsApi;
         try {
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(this);
@@ -40,12 +40,12 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
 
     @Override
     public String getBotUsername() {
-        return this.botName;
+        return botName;
     }
 
     @Override
     public String getBotToken() {
-        return this.botToken;
+        return botToken;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Telegram_Bot extends TelegramLongPollingBot implements Bot {
 
             SendMessage message = new SendMessage();
             message.setChatId(chat_id);
-            message.setText(logic.processMessage(chat_id, message_text));
+            message.setText(logic.processMessage('t' + chat_id, message_text));
 
             try {
                 execute(message);

@@ -3,6 +3,8 @@ package botLogic.commandHandlers;
 import botLogic.LogicException;
 import botLogic.User;
 
+import java.sql.SQLException;
+
 /**
  * команда /start
  */
@@ -13,7 +15,7 @@ public class StartCommand extends AbstractCommand {
      * @param user текущий пользователя
      * @return приветственное сообщение
      */
-    public String execute(User user) throws LogicException {
+    public String execute(User user) throws LogicException, SQLException {
         Command helpCommand = new HelpCommand();
         Command changeGroupCommand = new ChangeGroupCommand();
 

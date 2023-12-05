@@ -1,24 +1,22 @@
-package botLogic.dataBase;
+package dataBase;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 /**
  * Класс представляющий собой данные
  */
 public class Database implements Data {
-    private final String url = System.getenv("URL");
-    private final String user = System.getenv("NAMEUSER");
-    private final String password = System.getenv("PASSUSER");
+    private final Dotenv dotenv = Dotenv.load();
+    private final String url = dotenv.get("URL");
+    private final String user = dotenv.get("NAMEUSER");
+    private final String password = dotenv.get("MYSQL_ROOT_PASSWORD");
 
     // JDBC variables for opening and managing connection
     private Connection connect;
@@ -86,6 +84,7 @@ public class Database implements Data {
             int max_iter = 0;
             int index;
             for (int i = 0; i < 14; i++) {
+                schedule.get(i).add("end");
                 iter = schedule.get(i).iterator();
                 index = 0;
                 while (iter.hasNext() && index < max_iter) {
@@ -128,6 +127,7 @@ public class Database implements Data {
             int size = 0;
             if (result.next()) size = result.getInt(1);
             int i = 0;
+            schedule.add("end");
             for (String s : schedule) {
                 if (i < size) {
                     state.executeUpdate(String.format("update `%s` set `%s` = '%s' where `id` = '%s'", id, day, s, i + 1));
@@ -145,37 +145,6 @@ public class Database implements Data {
         }
     }
 
-    /**
-     * Метод позволяет узнать следующую пару на текущий момент.
-     * @param id Идентификатор пользователя в базе данных.
-     * @param day Номер текущего дня недели от 1 до 14.
-     * @param current_time Текущее время в минутах с начала дня
-     * @return Возвращает следующую пару.
-     */
-    public String getNextLesson (String id, int day, int current_time) throws SQLException{
-        String lesson = null;
-        Pattern pattern = Pattern.compile("(\\d{1,2}):(\\d\\d)");
-        Matcher matcher;
-        connect = DriverManager.getConnection(url, user, password);
-        state = connect.createStatement();
-        try {
-            List<String> schedule = getSchedule(id, day);
-            for (String less : schedule){
-                matcher = pattern.matcher(less);
-                matcher.find();
-                if (!less.equals("-") && current_time <= Integer.parseInt(matcher.group(1)) * 60
-                        + Integer.parseInt(matcher.group(2))) {
-                    return less;
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getErrorCode() + ex.getMessage());
-        } finally {
-            connect.close();
-            state.close();
-        }
-        return "Сегодня у вас больше нет пар";
-    }
 
     /**
      * Метод добавляющий пользователя в базу данных.
@@ -318,6 +287,25 @@ public class Database implements Data {
     }
 
     /**
+     * Метод для получения всех id пользователей, у которых есть таблица дедлайнов.
+     * @return Возвращает id пользователей.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public List<String> getUsersIdDeadline() throws  SQLException{
+        List<String> usersId = new ArrayList<>();
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        result = state.executeQuery("select `id` from `users` where `existDL`='1'");
+        while (result.next()) {
+            usersId.add(result.getString(1));
+        }
+        connect.close();
+        state.close();
+
+        return usersId;
+    }
+
+    /**
      * Проверка существования таблицы в базе данных.
      * @param name_table Имя таблицы в базе данных.
      * @return Возвращает, существует ли таблица в базе данных.
@@ -361,6 +349,106 @@ public class Database implements Data {
     }
 
     /**
+     * Метод для записи дедлайнов на определённую дату.
+     * @param id Пользователя.
+     * @param deadlines Список дедлайнов для записи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public void addDeadlines(String id, List<String>deadlines, String date) throws SQLException {
+        boolean flag;
+        int count_row = 0;
+        int position_end = 0;
+        flag = tableIsExist("deadlines_" + id);
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            if (!flag){
+                state.executeUpdate(String.format("update `users` set `existDL`='1' where `id`='%s'", id));
+                state.executeUpdate(String.format("Create table `deadlines_%s`(`id` int primary key not null auto_increment, `%s` VARCHAR(60))", id, date));
+            }
+            result = state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date));
+            if (!result.next()){
+                state.executeUpdate(String.format("alter table `deadlines_%s` add column (`%s` VARCHAR(60))", id, date));
+            }
+            result = state.executeQuery(String.format("select count(`id`) from `deadlines_%s`", id));
+            if (result.next()){
+                count_row = result.getInt(1);
+            }
+            result = state.executeQuery(String.format("select count(`%s`) from `deadlines_%s`", date, id));
+            if (result.next()){
+                position_end = result.getInt(1);
+                if (position_end == 0) position_end ++;
+            }
+            deadlines.add("end");
+            for (String s : deadlines) {
+                if (position_end <= count_row) {
+                    state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, position_end));
+                } else {
+                    state.executeUpdate(String.format("insert into `deadlines_%s` (`%s`) values ('%s')", id, date, s));
+                }
+                position_end++;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        }
+        finally {
+            connect.close();
+            state.close();
+        }
+    }
+
+    /**
+     * Метод для получения списка дедлайнов пользователя.
+     * @param id Пользователя.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @return Возвращает список всех дедлайнов на день.
+     * @throws SQLException Отсутствует таблица код ошибки 1146.
+     */
+    public List<String> getDeadlines(String id, String date) throws SQLException {
+        boolean flag = tableIsExist("deadlines_" + id);
+        List<String> deadlines = new ArrayList<>();
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        if (!flag) return deadlines;
+        try{
+            result = state.executeQuery(String.format("SELECT `%s` FROM `deadlines_%s`", date, id));
+            while (result.next()){
+                if (Objects.equals(result.getString(1), "end")) break;
+                deadlines.add(result.getString(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+            result.close();
+        }
+        return deadlines;
+    }
+
+    /**
+     * Метод для перезаписи дедлайнов на день.
+     * @param id Пользователя.
+     * @param newDeadlines Список новых дедлайнов для перезаписи.
+     * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
+     * @throws SQLException Ошибка отсутствия записей на этот день.
+     */
+    public void editDeadlines(String id, List<String> newDeadlines, String date) throws SQLException {
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try {
+            state.executeUpdate(String.format("alter table `deadlines_%s` drop column `%s`", id, date));
+            addDeadlines(id, newDeadlines, date);
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+    }
+
+    /**
      * Приватный метод для удаления таблицы из базы данных.
      * @param name_table Имя таблицы в базе данных.
      */
@@ -376,6 +464,8 @@ public class Database implements Data {
             state.close();
         }
     }
+
+
 
     /**
      * Приватный метод для смены значения параметра: Использовать индивидуальное расписание в базе данных.
@@ -421,5 +511,46 @@ public class Database implements Data {
         result.close();
 
         return schedule;
+    }
+
+    /**
+     * Метод для установки времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @param hours Количество часов.
+     * @throws SQLException Ошибка записи в базу данных.
+     */
+    public void setDeadlineNotificationShift(String id, int hours) throws SQLException {
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            state.executeUpdate(String.format("Update `users` set `deadline_shift` = '%d' where `id` = '%s'", hours, id));
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+    }
+
+    /**
+     * Метод для получения времени, за которое нужно предупредить о дедлайне.
+     * @param id Пользователя.
+     * @return Количество часов.
+     * @throws SQLException Ошибка доступа к базе данных.
+     */
+    public int getDeadlineNotificationShift(String id) throws SQLException {
+        int hours = 1;
+        connect = DriverManager.getConnection(url, user, password);
+        state = connect.createStatement();
+        try{
+            result = state.executeQuery(String.format("SELECT `deadline_shift` FROM `users` WHERE `id` = '%s'", id));
+            if (result.next()) hours = result.getInt(1);
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode() + ex.getMessage());
+        } finally {
+            connect.close();
+            state.close();
+        }
+        return hours;
     }
 }
