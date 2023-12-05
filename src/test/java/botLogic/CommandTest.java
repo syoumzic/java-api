@@ -303,7 +303,7 @@ public class CommandTest {
         answer = user.processMessage(stringDeadlines);
 
         Assertions.assertEquals("Дедлайны успешно установлены", answer);
-        Mockito.verify(database).setDeadlines(id, deadlines, absoluteDateString);
+        Mockito.verify(database).addDeadlines(id, deadlines, absoluteDateString);
     }
 
     /**
@@ -321,7 +321,7 @@ public class CommandTest {
         answer = user.processMessage(stringDeadlines);
 
         Assertions.assertEquals("для строки '%s' не указано время".formatted(deadlines.get(0)), answer);
-        Mockito.verify(database, Mockito.never()).setDeadlines(id, deadlines, absoluteDateString);
+        Mockito.verify(database, Mockito.never()).addDeadlines(id, deadlines, absoluteDateString);
     }
 
     /**
@@ -344,7 +344,7 @@ public class CommandTest {
         Assertions.assertEquals("Дедлайны успешно установлены", answer);
 
         deadlines.addAll(addedDeadlines);
-        Mockito.verify(database).setDeadlines(id, deadlines, absoluteDateString);
+        Mockito.verify(database).addDeadlines(id, deadlines, absoluteDateString);
     }
 
     /**
@@ -380,7 +380,7 @@ public class CommandTest {
         answer = user.processMessage(stringDeadlines);
 
         Assertions.assertEquals("для строки '%s' не указано время".formatted(deadlines.get(0)), answer);
-        Mockito.verify(database, Mockito.never()).setDeadlines(id, deadlines, absoluteDateString);
+        Mockito.verify(database, Mockito.never()).addDeadlines(id, deadlines, absoluteDateString);
     }
 
     /**
