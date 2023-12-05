@@ -367,13 +367,16 @@ public class Database implements Data {
                 state.executeUpdate(String.format("update `users` set `existDL`='1' where `id`='%s'", id));
                 state.executeUpdate(String.format("Create table `deadlines_%s`(`id` int primary key not null auto_increment, `%s` VARCHAR(60))", id, date));
             }
-            if (!state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date)).next()){
+            result = state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date));
+            if (!result.next()){
                 state.executeUpdate(String.format("alter table `deadlines_%s` add column (`%s` VARCHAR(60))", id, date));
             }
-            if (state.executeQuery(String.format("select count(`id`) from `deadlines_%s`", id)).next()){
+            result = state.executeQuery(String.format("select count(`id`) from `deadlines_%s`", id));
+            if (result.next()){
                 count_row = result.getInt(1);
             }
-            if (state.executeQuery(String.format("select count(`%s`) from `deadlines_%s`", date, id)).next()){
+            result = state.executeQuery(String.format("select count(`%s`) from `deadlines_%s`", date, id));
+            if (result.next()){
                 position_end = result.getInt(1);
                 if (position_end == 0) position_end ++;
             }
