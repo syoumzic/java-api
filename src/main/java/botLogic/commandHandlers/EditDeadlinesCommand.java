@@ -36,11 +36,11 @@ public class EditDeadlinesCommand extends AbstractCommand{
      */
     protected String execute(User user) throws LogicException, SQLException {
         try{
-            user.editDeadlines(deadlines.current, time.getDateString(date.current));
+            user.getDeadlines(time.getDateString());
         }catch(SQLException e){
             return "На этот день нет дедлайнов";
         }
-
+        user.editDeadlines(deadlines.current, time.getDateString(date.current));
         user.updateNotifications();
         return "Дедлайны успешно обновлены";
     }

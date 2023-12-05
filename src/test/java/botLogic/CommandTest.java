@@ -319,11 +319,10 @@ public class CommandTest {
      */
     @Test
     public void addDeadlineTest() throws SQLException{
-        List<String>deadlines = new ArrayList<>(List.of("19:10 Записаться на курсы по английскому", "19:20 Записаться на курсы по английскому"));
-        List<String>addedDeadlines = List.of("20:00 Сделать тест по истории");
+        List<String>addedDeadlines = new ArrayList<>(List.of("20:00 Сделать тест по истории"));
         String stringAddedDeadlines = String.join("\n", addedDeadlines) + "\n";
 
-        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(deadlines);
+        Mockito.when(database.getDeadlines(id, absoluteDateString)).thenReturn(addedDeadlines);
 
         String answer;
 
@@ -333,8 +332,7 @@ public class CommandTest {
 
         Assertions.assertEquals("Дедлайны успешно установлены", answer);
 
-        deadlines.addAll(addedDeadlines);
-        Mockito.verify(database).addDeadlines(id, deadlines, absoluteDateString);
+        Mockito.verify(database).addDeadlines(id, addedDeadlines, absoluteDateString);
     }
 
     /**
