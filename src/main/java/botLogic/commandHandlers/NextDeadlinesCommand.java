@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.util.List;
 import utils.Time;
 
-
+/**
+ * команда /next_deadlines
+ */
 public class NextDeadlinesCommand extends AbstractCommand {
     final private Time time;
 

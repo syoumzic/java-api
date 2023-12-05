@@ -8,6 +8,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Обработчик уведомлений
+ */
 public class Notifications {
     private final List<ScheduledFuture<?>> notifications = new ArrayList<>();
     private final Time time;
@@ -20,6 +23,9 @@ public class Notifications {
         this.time = time;
     }
 
+    /**
+     * Установка уведомлений
+     */
     public void setNotification(List<String>tusks, long notificationShift){
         for (String tusk : tusks) {
             if (tusk.equals("-")) continue;
@@ -27,11 +33,14 @@ public class Notifications {
             long lessonTime = time.getSecondsOfDay(tusk);
             long currentTime = time.getSecondsOfDay();
 
-            if(lessonTime > currentTime)
+            if(lessonTime - notificationShift > currentTime)
                 notifications.add(scheduler.schedule(() -> user.sendMessage(tusk), lessonTime - notificationShift - currentTime, TimeUnit.SECONDS));
         }
     }
 
+    /**
+     * Удаление уведомлений
+     */
     public void removeNotification(){
         for (ScheduledFuture<?> notification : notifications)
             notification.cancel(true);

@@ -43,7 +43,7 @@ public class ChangeGroupCommand extends AbstractCommand {
             }
         }
 
-        user.deleteScheule();
+        user.deleteSchedule();
         user.updateNotifications();
 
         return "Группа успешно обновлена!";

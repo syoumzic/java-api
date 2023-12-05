@@ -12,6 +12,9 @@ import java.util.List;
 
 import utils.Time;
 
+/**
+ * Команда /edit_deadlines
+ */
 public class EditDeadlinesCommand extends AbstractCommand{
     private Reference<LocalDate>date = new Reference<>();
     private Reference<List<String>>deadlines = new Reference<>();
@@ -33,12 +36,11 @@ public class EditDeadlinesCommand extends AbstractCommand{
      */
     protected String execute(User user) throws LogicException, SQLException {
         try{
-            user.getDeadlines(time.getDateString(date.current));
+            user.editDeadlines(deadlines.current, time.getDateString(date.current));
         }catch(SQLException e){
             return "На этот день нет дедлайнов";
         }
 
-        user.editDeadlines(deadlines.current, time.getDateString(date.current));
         user.updateNotifications();
         return "Дедлайны успешно обновлены";
     }

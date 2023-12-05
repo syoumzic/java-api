@@ -13,12 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * /add_deadlines
+ */
 public class AddDeadlinesCommand extends AbstractCommand{
     private Reference<LocalDate>date = new Reference<>();
     private Reference<List<String>>deadlines = new Reference<>();
     private ScheduledExecutorService scheduler;
     private Time time;
 
+    /**
+     * Установка считывания даты и списка
+     */
     public AddDeadlinesCommand(ScheduledExecutorService scheduler, Time time) {
         this.scheduler = scheduler;
         this.time = time;
@@ -33,17 +39,7 @@ public class AddDeadlinesCommand extends AbstractCommand{
      */
     protected String execute(User user) throws LogicException, SQLException {
         String absoluteDate = time.getDateString(date.current);
-
-        List<String>nextDeadlines;
-        try{
-            nextDeadlines = user.getDeadlines(absoluteDate);
-        }catch(SQLException e){
-            nextDeadlines = new ArrayList<>();
-        }
-
-        nextDeadlines.addAll(deadlines.current);
-
-        user.setDeadlines(nextDeadlines, absoluteDate);
+        user.setDeadlines(deadlines.current, absoluteDate);
         user.updateNotifications();
 
         return "Дедлайны успешно установлены";

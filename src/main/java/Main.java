@@ -29,7 +29,8 @@ public class Main {
         Bot tgBot = new Telegram_Bot(botName, tgBotToken, logic);
         Bot dsBot = new Discord_Bot(dsBotToken, logic);
 
-        logic.updateNotification(tgBot, dsBot);
+        logic.setBots(tgBot, dsBot);
+        logic.updateNotification();
     }
 }
 

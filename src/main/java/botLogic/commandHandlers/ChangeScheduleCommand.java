@@ -18,6 +18,7 @@ public class ChangeScheduleCommand extends AbstractCommand {
     private Reference<LocalDate>date = new Reference<>();
     private Reference<List<String>>schedule = new Reference<>();
     private Time time;
+
     /**
      * Установка считывания даты и расписания
      */
