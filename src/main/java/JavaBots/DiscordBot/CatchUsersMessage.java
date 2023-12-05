@@ -6,6 +6,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Обработчик сообщений дискорд бота
+ */
 public class CatchUsersMessage extends ListenerAdapter {
 
     private final Discord_Bot bot;

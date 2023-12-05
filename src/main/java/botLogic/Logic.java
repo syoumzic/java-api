@@ -29,12 +29,15 @@ public class Logic{
         this.scheduler = scheduler;
     }
 
+    public void setBots(Bot tgBot, Bot dsBot){
+        this.tgBot = tgBot;
+        this.dsBot = dsBot;
+    }
+
     /**
      * Инициализируем пользователей с уведомлениями
      */
-    public void updateNotification(Bot tgBot, Bot dsBot){
-        this.tgBot = tgBot;
-        this.dsBot = dsBot;
+    public void updateNotification(){
         try {
             for (String id : dataBase.getUserIdNotification()) {
                 User user;
@@ -53,11 +56,12 @@ public class Logic{
                 user.forceUpdateNotification();
             }
 
-            scheduler.schedule(() -> updateNotification(tgBot, dsBot), time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
+            scheduler.schedule(this::updateNotification, time.getSecondsUtilTomorrow(), TimeUnit.SECONDS);
         }catch (Exception e){
             System.out.println(e.getLocalizedMessage());
         }
     }
+
 
     /**
      * Обрабатывает сообщение для конкретного пользователя

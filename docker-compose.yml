@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+  db:
+    image: mysql:8.2
+    container_name: db
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - botnet
+    volumes:
+      - database:/var/lib/mysql
+  bot:
+    build:
+      dockerfile: ./Dockerfile
+    container_name: bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - botnet
+    depends_on:
+      - db
+networks:
+  botnet:
+    external: true
+volumes:
+  database:
+    external: true

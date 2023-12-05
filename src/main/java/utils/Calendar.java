@@ -55,7 +55,6 @@ public class Calendar implements Time{
         return LocalDate.of(year, month, day);
     }
 
-
     /**
      * Вычисляет общее время (в минутах)
      */

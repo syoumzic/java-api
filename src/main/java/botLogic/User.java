@@ -101,6 +101,7 @@ public class User {
             case "/edit_deadlines" -> new EditDeadlinesCommand(time);
             case "/next_deadlines" -> new NextDeadlinesCommand(time);
             case "/deadline_time" -> new SettingsDeadlinesNotificationCommand();
+            case "/deadlines" -> new GetDeadlineCommand(time);
             default -> throw new LogicException("Команда не найдена");
         };
     }
@@ -109,12 +110,15 @@ public class User {
         this.command = command;
     }
 
+    /**
+     * Сброс команды
+     */
     public void flushCommand(){
         this.command = null;
     }
 
     /**
-     * Включение уведомлений для пользователя на день с сохранением в базу данных
+     * Обновление уведомлений для пользователя если они включены
      */
     public void updateNotifications() throws SQLException{
         if (getStatusNotifications() == 1){
@@ -122,7 +126,11 @@ public class User {
         }
     }
 
+    /**
+     * Реализация включения уведомления для пользователя
+     */
     public void forceUpdateNotification() throws SQLException{
+        disableNotifications();
         lessonNotifications.setNotification(getSchedule(time.getShift()), getLessonNotificationsShift() * 60L);
         try {
             lessonNotifications.setNotification(getDeadlines(time.getDateString()), getDeadlinesNotificationsShift() * 3600L);
@@ -131,17 +139,23 @@ public class User {
     }
 
     /**
-     * Реализация выключения уведомления для пользователя на день с сохранением в базу данных
+     * Реализация выключения уведомления для пользователя
      */
-    public void disableNotifications() throws SQLException {
+    public void disableNotifications(){
         lessonNotifications.removeNotification();
         deadlineNotifications.removeNotification();
     }
 
+    /**
+     * Отправка сообщения для конкретного пользователя
+     */
     public void sendMessage(String message){
         bot.sendMessage(Long.parseLong(id.substring(1)), message);
     }
 
+    /**
+     * Метод парсера для данного пользователя
+     */
     public List<List<String>> loadSchedule() throws NoSuchElementException, IOException, SQLException {
         return parser.parse(time, dataBase.getUsersGroup(id));
     }
@@ -157,7 +171,7 @@ public class User {
      * Метод базы данных setSchedule для данного пользователя
      */
     public void setSchedule(List<List<String>>schedule) throws SQLException{
-        dataBase.setSchedule(id, schedule);
+        dataBase.setSchedule(dataBase.getUsersGroup(id), schedule);
     }
 
     /**
@@ -178,7 +192,7 @@ public class User {
      * Метод базы данных setDeadlines для данного пользователя
      */
     public void setDeadlines(List<String>deadlines, String day) throws SQLException{
-        dataBase.setDeadlines(id, deadlines, day);
+        dataBase.addDeadlines(id, deadlines, day);
     }
 
     /**
@@ -196,41 +210,58 @@ public class User {
     }
 
     /**
-     * Метод базы данных getStatusNotification для данного пользователя
+     * Метод базы данных setNotificationShift для данного пользователя
      */
     public void setNotificationShift(int minutes) throws SQLException{
         dataBase.setNotificationShift(id, minutes);
     }
 
     /**
-     *
+     * Метод базы данных editDeadlines для данного пользователя
      */
     public void editDeadlines(List<String>deadlines, String date) throws SQLException {
         dataBase.editDeadlines(id, deadlines, date);
     }
 
+    /**
+     * Метод базы данных setCastomSchedule для данного пользователя
+     */
     public void setCastomSchedule(List<String> current, int shift) throws SQLException{
         dataBase.setCastomSchedule(id, current, shift);
     }
 
+    /**
+     * Метод базы данных getLessonNotificationsShift для данного пользователя
+     */
     public int getLessonNotificationsShift() throws SQLException{
         return dataBase.getNotificationShift(id);
     }
 
+    /**
+     * Метод базы данных getDeadlinesNotificationsShift для данного пользователя
+     */
     public int getDeadlinesNotificationsShift() throws SQLException{
         return dataBase.getDeadlineNotificationShift(id);
     }
 
+    /**
+     * Метод базы данных setDeadlineNotificationShift для данного пользователя
+     */
     public void setDeadlineNotificationShift(int hours) throws SQLException {
         dataBase.setDeadlineNotificationShift(id, hours);
     }
 
-    public void deleteScheule() {
-
+    /**
+     * Метод базы данных deleteScheule для данного пользователя
+     */
+    public void deleteSchedule() throws SQLException {
+        dataBase.deleteSchedule(id, 0);
     }
 
+    /**
+     * Метод базы данных getStatusNotifications для данного пользователя
+     */
     private int getStatusNotifications() throws SQLException{
         return dataBase.getStatusNotifications(id);
     }
-
 }

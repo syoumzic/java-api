@@ -8,8 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Класс представляющий собой данные
@@ -18,7 +16,7 @@ public class Database implements Data {
     private final Dotenv dotenv = Dotenv.load();
     private final String url = dotenv.get("URL");
     private final String user = dotenv.get("NAMEUSER");
-    private final String password = dotenv.get("PASSUSER");
+    private final String password = dotenv.get("MYSQL_ROOT_PASSWORD");
 
     // JDBC variables for opening and managing connection
     private Connection connect;
@@ -357,9 +355,10 @@ public class Database implements Data {
      * @param date Дата, на которую нужно получить дедлайн, в формате d.mm.
      * @throws SQLException Ошибка доступа к базе данных.
      */
-    public void setDeadlines(String id, List<String>deadlines, String date) throws SQLException {
+    public void addDeadlines(String id, List<String>deadlines, String date) throws SQLException {
         boolean flag;
-        int count = 0;
+        int count_row = 0;
+        int position_end = 0;
         flag = tableIsExist("deadlines_" + id);
         connect = DriverManager.getConnection(url, user, password);
         state = connect.createStatement();
@@ -368,21 +367,27 @@ public class Database implements Data {
                 state.executeUpdate(String.format("update `users` set `existDL`='1' where `id`='%s'", id));
                 state.executeUpdate(String.format("Create table `deadlines_%s`(`id` int primary key not null auto_increment, `%s` VARCHAR(60))", id, date));
             }
-            if (!state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date)).next()){
+            result = state.executeQuery(String.format("show columns from `deadlines_%s` like '%s'", id, date));
+            if (!result.next()){
                 state.executeUpdate(String.format("alter table `deadlines_%s` add column (`%s` VARCHAR(60))", id, date));
             }
-            if (state.executeQuery(String.format("select count(`id`) from `deadlines_`", id)).next()){
-                count = result.getInt(1);
+            result = state.executeQuery(String.format("select count(`id`) from `deadlines_%s`", id));
+            if (result.next()){
+                count_row = result.getInt(1);
             }
-            int i = 0;
+            result = state.executeQuery(String.format("select count(`%s`) from `deadlines_%s`", date, id));
+            if (result.next()){
+                position_end = result.getInt(1);
+                if (position_end == 0) position_end ++;
+            }
             deadlines.add("end");
             for (String s : deadlines) {
-                if (i < count) {
-                    state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, i + 1));
+                if (position_end <= count_row) {
+                    state.executeUpdate(String.format("update `deadlines_%s` set `%s` = '%s' where `id` = '%s'", id, date, s, position_end));
                 } else {
                     state.executeUpdate(String.format("insert into `deadlines_%s` (`%s`) values ('%s')", id, date, s));
                 }
-                i++;
+                position_end++;
             }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
@@ -434,7 +439,7 @@ public class Database implements Data {
         state = connect.createStatement();
         try {
             state.executeUpdate(String.format("alter table `deadlines_%s` drop column `%s`", id, date));
-            setDeadlines(id, newDeadlines, date);
+            addDeadlines(id, newDeadlines, date);
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode() + ex.getMessage());
         } finally {
