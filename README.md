@@ -26,6 +26,7 @@ ___
 * URL='Ссылка для подключения к MySQL'
 * NAMEUSER='имя для бд'
 * MYSQL_ROOT_PASSWORD='пароль для бд'
+* MYSQL_DATABASE='название базы данных'
 ### Инструкция по сборке проекта на сервере
 * Клонируем репозиторий;
 * Создаём в корневой папке проекта файл .env(предыдущий пункт);
@@ -35,13 +36,4 @@ ___
   #### sudo docker volume create database 
 * Собираем проект:
   #### sudo docker-compose -p bot up -d
-* Настраиваем MYSQL:
-  #### sudo docker exec -it db mysql -u root -p 
-* Вводим пароль для доступа к базе данных (по умолчанию root);
-* Создаём базу данных выполняя SQL запрос:
-  #### create database `mydbtest`;
-* Выбираем базу данных:
-  #### use `mydbtest`;
-* Создаём главную таблицу с пользователями:
-  #### create table \`users\` (\`id\` varchar(45) not null primary key, \`group\` varchar(20) not null, \`useIndiv\` tinyint not null default 1, \`time\` int not null default 10, \`notification\` tinyint not null default 0, \`existDL\` tinyint not null default 0, \`deadline_shift\` int not null default 1);
-#### При возникновении ошибки ERROR [internal] booting buildkit сборку выполнить командой: sudo DOCKER_BUILDKIT=0 docker-compose -p bot up -d
+##### При возникновении ошибки ERROR [internal] booting buildkit сборку выполнить командой:#### sudo DOCKER_BUILDKIT=0 docker-compose -p bot up -d
